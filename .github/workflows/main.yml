@@ -1,0 +1,103 @@
+name: autotests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+    container:
+      image: praktikumcpp/practicum_cpp_backend:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Load tests
+        uses: actions/checkout@v2
+        with:
+          repository: cpppracticum/cpp-backend-tests-practicum
+          path: 'cpp-backend-tests-practicum'
+
+
+      - name: Install dependencies
+        run: |
+          cp -R /home/forconan/.conan /github/home/.conan
+
+      - name: build tests sprint1 sync_server
+        run: |
+          cd sprint1/problems/sync_server/solution
+          mkdir build
+          cd build
+          conan install ..
+          cmake -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+          cmake --build .
+ 
+      - name: run tests sprint1 sync_server
+        run: pytest --junitxml=results.xml cpp-backend-tests-practicum/tests/test_l02_hello_beast.py
+        env:
+          DELIVERY_APP: ${{ github.workspace }}/sprint1/problems/sync_server/solution/build/bin/hello
+          CONFIG_PATH: 
+
+      - name: build tests sprint1 restaurant_single_threaded
+        run: |
+          cd sprint1/problems/restaurant_single_threaded/solution
+          mkdir build
+          cd build
+          conan install ..
+          cmake -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+          cmake --build .
+
+      - name: run tests sprint1 restaurant_single_threaded
+        run: ./sprint1/problems/restaurant_single_threaded/solution/build/bin/restaurant
+
+      - name: build tests sprint1 restaurant_multi_threaded
+        run: |
+          cd sprint1/problems/restaurant_multi_threaded/solution
+          mkdir build
+          cd build
+          conan install ..
+          cmake -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+          cmake --build .
+
+      - name: run tests sprint1 restaurant_multi_threaded
+        run: ./sprint1/problems/restaurant_multi_threaded/solution/build/bin/restaurant
+
+      - name: build tests sprint1 async_server
+        run: |
+          cd sprint1/problems/async_server/solution
+          mkdir build
+          cd build
+          conan install ..
+          cmake -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+          cmake --build .
+
+      - name: run tests sprint1 async_server
+        run: pytest --junitxml=results.xml cpp-backend-tests-practicum/tests/test_l03_hello_async.py
+        env:
+          DELIVERY_APP: ${{ github.workspace }}/sprint1/problems/async_server/solution/build/bin/hello_async
+          CONFIG_PATH: 
+
+      - name: build tests sprint1 map_json
+        run: |
+          cd sprint1/problems/map_json/solution
+          mkdir build
+          cd build
+          conan install ..
+          cmake -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+          cmake --build .
+
+      - name: run tests sprint1 map_json
+        run: pytest --junitxml=results.xml cpp-backend-tests-practicum/tests/test_l04_map_json.py
+        env:
+          DELIVERY_APP: ${{ github.workspace }}/sprint1/problems/map_json/solution/build/bin/game_server
+          CONFIG_PATH: ${{ github.workspace }}/sprint1/problems/map_json/solution/data/config.json
+
+      - name: Publish XML reports
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: ./*.xml
