@@ -15,11 +15,20 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+IF (APPLE)
+   FIND_LIBRARY(COREAUDIO_LIBRARY CoreAudio)
+   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
+   FIND_LIBRARY(AUDIOUNIT_LIBRARY AudioUnit)
+ENDIF (APPLE)
+
 # Под Windows нужно определить макрос NOMINMAX для корректной работы при включении
 # библиотеки minisound
 if(WIN32)
   add_definitions(-DNOMINMAX)
 endif()
 
-add_executable(radio src/main.cpp src/audio.h)
+add_executable(radio src/main.cpp src/receiver.h src/sender.h src/audio.h)
 target_link_libraries(radio PRIVATE Threads::Threads)
+target_link_libraries(radio PUBLIC ${COREAUDIO_LIBRARY})
+target_link_libraries(radio PUBLIC ${COREFOUNDATION_LIBRARY})
+target_link_libraries(radio PUBLIC ${AUDIOUNIT_LIBRARY})

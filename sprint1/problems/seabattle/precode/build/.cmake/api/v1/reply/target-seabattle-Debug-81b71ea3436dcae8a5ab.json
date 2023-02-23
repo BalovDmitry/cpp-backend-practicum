@@ -1,0 +1,228 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "bin/seabattle"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"link_directories",
+			"conan_global_flags",
+			"conan_basic_setup",
+			"add_compile_options",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt",
+			"build/conanbuildinfo.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 28,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 11,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 683,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 1186,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 1197,
+				"parent" : 3
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 1179,
+				"parent" : 3
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g  -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DBOOST_STACKTRACE_ADDR2LINE_LOCATION=\\\"/usr/bin/addr2line\\\""
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DBOOST_STACKTRACE_USE_ADDR2LINE"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DBOOST_STACKTRACE_USE_BACKTRACE"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DBOOST_STACKTRACE_USE_NOOP"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED"
+				},
+				{
+					"fragment" : "-std=gnu++20"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 6,
+					"path" : "/Users/balovdmitry/.conan/data/boost/1.78.0/_/_/package/d19fb5a1a1f707ae3bfa5cd218d2158540168ef4/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/Users/balovdmitry/.conan/data/zlib/1.2.13/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/Users/balovdmitry/.conan/data/bzip2/1.0.8/_/_/package/2b8e4ed96946ad0a4cd2c6e1e01636aa2a421589/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/Users/balovdmitry/.conan/data/libbacktrace/cci.20210118/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/Users/balovdmitry/.conan/data/libiconv/1.17/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/include"
+				},
+				{
+					"backtrace" : 7,
+					"path" : "/opt/homebrew/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "seabattle::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-L/Users/balovdmitry/.conan/data/boost/1.78.0/_/_/package/d19fb5a1a1f707ae3bfa5cd218d2158540168ef4/lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-L/Users/balovdmitry/.conan/data/zlib/1.2.13/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-L/Users/balovdmitry/.conan/data/bzip2/1.0.8/_/_/package/2b8e4ed96946ad0a4cd2c6e1e01636aa2a421589/lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-L/Users/balovdmitry/.conan/data/libbacktrace/cci.20210118/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-L/Users/balovdmitry/.conan/data/libiconv/1.17/_/_/package/095512ed878f14a09dd732e9f6868729dd437529/lib",
+				"role" : "libraryPath"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "seabattle",
+	"nameOnDisk" : "seabattle",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/main.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/seabattle.h",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}

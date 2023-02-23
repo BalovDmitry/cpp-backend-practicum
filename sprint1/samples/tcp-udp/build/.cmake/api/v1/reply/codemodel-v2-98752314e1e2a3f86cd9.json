@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "TCP_UDP_Practice",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "TCPClient::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TCPClient-Debug-e8260d4bae80be1e006b.json",
+					"name" : "TCPClient",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TCPServer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TCPServer-Debug-bc300676d7f037f0c9cb.json",
+					"name" : "TCPServer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "UDPClient::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-UDPClient-Debug-5a6f9a9dcc3e1084e307.json",
+					"name" : "UDPClient",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "UDPServer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-UDPServer-Debug-d043d5f3ac684906cf5f.json",
+					"name" : "UDPServer",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint1/samples/tcp-udp/build",
+		"source" : "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint1/samples/tcp-udp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
