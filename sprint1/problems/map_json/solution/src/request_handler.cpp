@@ -88,13 +88,13 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
                 roadVal = {
                     {"x0", road.GetStart().x},
                     {"y0", road.GetStart().y},
-                    {"y0", road.GetEnd().y}
+                    {"y1", road.GetEnd().y}
                 };
             } else {
                 roadVal = {
                     {"x0", road.GetStart().x},
                     {"y0", road.GetStart().y},
-                    {"x0", road.GetEnd().x}
+                    {"x1", road.GetEnd().x}
                 };
             }
             roads.push_back(boost::json::serialize(roadVal));
@@ -237,8 +237,7 @@ RequestType RequestHandler::GetRequestType(const std::vector<std::string>& split
     
     else if (CheckRequestCorrectness(splittedRequest)
             && splittedRequest.size() == 4
-            && splittedRequest[3].starts_with("map")
-            && splittedRequest[3].size() == 4) {
+            && splittedRequest[3].starts_with("map")) {
         
         result = RequestType::GET_MAP_BY_ID;
     }
