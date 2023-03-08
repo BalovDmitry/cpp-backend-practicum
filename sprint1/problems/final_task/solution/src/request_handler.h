@@ -68,12 +68,6 @@ private:
         std::string& bodyText, 
         http::status& status);
 
-    boost::json::object CreateErrorValue(const std::string& code, const std::string& message);
-
-    boost::json::array CreateRoadsArray(const model::Map& map);
-    boost::json::array CreateBuildingsArray(const model::Map& map);
-    boost::json::array CreateOfficesArray(const model::Map& map);
-
     bool MakeGetMapListBody(std::string& bodyText, http::status& status);
     bool MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status);
     bool MakeBadRequestBody(std::string& bodyText, http::status& status);

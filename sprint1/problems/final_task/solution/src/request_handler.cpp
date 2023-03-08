@@ -1,4 +1,5 @@
 #include "request_handler.h"
+#include "json_helper.h"
 
 #include <vector>
 #include <string>
@@ -67,72 +68,14 @@ bool RequestHandler::MakeGetMapListBody(std::string& bodyText, http::status& sta
     return true;
 }
 
-boost::json::array RequestHandler::CreateRoadsArray(const model::Map& map) {
-    boost::json::array roads;
-
-    for (const auto& road : map.GetRoads()) {
-        boost::json::value roadVal;
-        if (road.IsVertical()) {
-            roadVal = {
-                {"x0", road.GetStart().x},
-                {"y0", road.GetStart().y},
-                {"y1", road.GetEnd().y}
-            };
-        } else {
-            roadVal = {
-                {"x0", road.GetStart().x},
-                {"y0", road.GetStart().y},
-                {"x1", road.GetEnd().x}
-            };
-        }
-        roads.push_back(std::move(roadVal));
-    }
-
-    return roads;
-}
-
-boost::json::array RequestHandler::CreateBuildingsArray(const model::Map& map) {
-    boost::json::array buildings;
-
-    for (const auto& building : map.GetBuildings()) {
-        boost::json::value buildingVal {
-            {"x", building.GetBounds().position.x},
-            {"y", building.GetBounds().position.y},
-            {"w", building.GetBounds().size.width},
-            {"h", building.GetBounds().size.height}
-        };
-        buildings.push_back(std::move(buildingVal));
-    }
-
-    return buildings;
-}
-
-boost::json::array RequestHandler::CreateOfficesArray(const model::Map& map) {
-    boost::json::array offices;
-
-    for (const auto& office : map.GetOffices()) {
-        boost::json::value officeVal{
-            {"id", *office.GetId()},
-            {"x", office.GetPosition().x},
-            {"y", office.GetPosition().y},
-            {"offsetX", office.GetOffset().dx},  
-            {"offsetY", office.GetOffset().dy}
-        };
-        offices.push_back(std::move(officeVal));
-    }
-
-    return offices;
-}
-
-
 bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status) {
     boost::json::object val;
     
     auto map = game_.FindMap(id);
     if (map) {
-        auto roads = CreateRoadsArray(*map);
-        auto buildings = CreateBuildingsArray(*map);
-        auto offices = CreateOfficesArray(*map);
+        auto roads = json_helper::CreateRoadsArray(*map);
+        auto buildings = json_helper::CreateBuildingsArray(*map);
+        auto offices = json_helper::CreateOfficesArray(*map);
 
         val["id"] = *map->GetId();
         val["name"] = map->GetName();
@@ -142,7 +85,7 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
 
         status = http::status::ok;
     } else {
-        val = CreateErrorValue("mapNotFound", "Map not found");
+        val = json_helper::CreateErrorValue("mapNotFound", "Map not found");
         status = http::status::not_found;
     }
 
@@ -151,24 +94,16 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
     return true;
 }
 
-boost::json::object RequestHandler::CreateErrorValue(const std::string& code, const std::string& message) {
-    boost::json::object val;
-    
-    val["code"] = code;
-    val["message"] = message;
-
-    return val;
-}
 
 bool RequestHandler::MakeBadRequestBody(std::string& bodyText, http::status& status) {
-    bodyText += boost::json::serialize(CreateErrorValue("badRequest", "Bad request"));
+    bodyText += boost::json::serialize(json_helper::CreateErrorValue("badRequest", "Bad request"));
     status = http::status::bad_request;
 
     return true;
 }
 
 bool RequestHandler::MakeMethodNotAllowedBody(std::string& bodyText, http::status& status) {
-    bodyText += boost::json::serialize(CreateErrorValue("methodNotAllowed", "Method not allowed"));
+    bodyText += boost::json::serialize(json_helper::CreateErrorValue("methodNotAllowed", "Method not allowed"));
     status = http::status::method_not_allowed;
 
     return true;
