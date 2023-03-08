@@ -97,18 +97,14 @@ boost::json::array CreateRoadsArray(const model::Map& map) {
 
     for (const auto& road : map.GetRoads()) {
         boost::json::object roadVal;
+        
+        roadVal["x0"] = road.GetStart().x;
+        roadVal["y0"] = road.GetStart().y;
+        
         if (road.IsVertical()) {
-            roadVal = {
-                {"x0", road.GetStart().x},
-                {"y0", road.GetStart().y},
-                {"y1", road.GetEnd().y}
-            };
+            roadVal["y1"] = road.GetEnd().y;
         } else {
-            roadVal = {
-                {"x0", road.GetStart().x},
-                {"y0", road.GetStart().y},
-                {"x1", road.GetEnd().x}
-            };
+            roadVal["x1"] = road.GetEnd().x;
         }
         roads.push_back(std::move(roadVal));
     }
@@ -120,12 +116,13 @@ boost::json::array CreateBuildingsArray(const model::Map& map) {
     boost::json::array buildings;
 
     for (const auto& building : map.GetBuildings()) {
-        boost::json::object buildingVal {
-            {"x", building.GetBounds().position.x},
-            {"y", building.GetBounds().position.y},
-            {"w", building.GetBounds().size.width},
-            {"h", building.GetBounds().size.height}
-        };
+        boost::json::object buildingVal; 
+        
+        buildingVal["x"] = building.GetBounds().position.x;
+        buildingVal["y"] = building.GetBounds().position.y;
+        buildingVal["w"] = building.GetBounds().size.width;
+        buildingVal["h"] = building.GetBounds().size.height;
+
         buildings.push_back(std::move(buildingVal));
     }
 
@@ -136,13 +133,14 @@ boost::json::array CreateOfficesArray(const model::Map& map) {
     boost::json::array offices;
 
     for (const auto& office : map.GetOffices()) {
-        boost::json::object officeVal{
-            {"id", *office.GetId()},
-            {"x", office.GetPosition().x},
-            {"y", office.GetPosition().y},
-            {"offsetX", office.GetOffset().dx},  
-            {"offsetY", office.GetOffset().dy}
-        };
+        boost::json::object officeVal;
+
+        officeVal["id"] = *office.GetId();
+        officeVal["x"] = office.GetPosition().x;
+        officeVal["y"] = office.GetPosition().y;
+        officeVal["offsetX"] = office.GetOffset().dx;
+        officeVal["offsetY"] = office.GetOffset().dx;
+        
         offices.push_back(std::move(officeVal));
     }
 
