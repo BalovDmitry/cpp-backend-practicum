@@ -96,7 +96,7 @@ boost::json::array CreateRoadsArray(const model::Map& map) {
     boost::json::array roads;
 
     for (const auto& road : map.GetRoads()) {
-        boost::json::value roadVal;
+        boost::json::object roadVal;
         if (road.IsVertical()) {
             roadVal = {
                 {"x0", road.GetStart().x},
@@ -120,7 +120,7 @@ boost::json::array CreateBuildingsArray(const model::Map& map) {
     boost::json::array buildings;
 
     for (const auto& building : map.GetBuildings()) {
-        boost::json::value buildingVal {
+        boost::json::object buildingVal {
             {"x", building.GetBounds().position.x},
             {"y", building.GetBounds().position.y},
             {"w", building.GetBounds().size.width},
@@ -136,7 +136,7 @@ boost::json::array CreateOfficesArray(const model::Map& map) {
     boost::json::array offices;
 
     for (const auto& office : map.GetOffices()) {
-        boost::json::value officeVal{
+        boost::json::object officeVal{
             {"id", *office.GetId()},
             {"x", office.GetPosition().x},
             {"y", office.GetPosition().y},
