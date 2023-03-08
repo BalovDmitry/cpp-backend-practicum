@@ -29,9 +29,15 @@ struct ContentType {
 };
 
 enum class RequestType {
-    GET_MAP_BY_ID,
     GET_MAP_LIST,
+    GET_MAP_BY_ID,
     UNKNOWN
+};
+
+struct RequestTypeSize {
+    RequestTypeSize() = delete;
+    constexpr static size_t GET_MAP_LIST = 3;
+    constexpr static size_t GET_MAP_BY_ID = 4;
 };
 
 class RequestHandler {

@@ -68,8 +68,8 @@ private:
         stream_.expires_after(30s);
         // Считываем request_ из stream_, используя buffer_ для хранения считанных данных
         http::async_read(stream_, buffer_, request_,
-        // По окончании операции будет вызван метод OnRead
-        beast::bind_front_handler(&SessionBase::OnRead, GetSharedThis()));
+                        // По окончании операции будет вызван метод OnRead
+                        beast::bind_front_handler(&SessionBase::OnRead, GetSharedThis()));
     }
 
     void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read) {
