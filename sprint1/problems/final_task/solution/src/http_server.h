@@ -30,8 +30,7 @@ protected:
     using HttpRequest = http::request<http::string_body>;
     
     explicit SessionBase(tcp::socket&& socket)
-        : stream_(std::move(socket)) {
-    }
+        : stream_(std::move(socket)) {}
 
     ~SessionBase() = default;
 
@@ -48,46 +47,10 @@ protected:
     }
 
 private:
-    void Read() {
-        // Очищаем запрос от прежнего значения (метод Read может быть вызван несколько раз)
-        request_ = {};
-        stream_.expires_after(30s);
-        // Считываем request_ из stream_, используя buffer_ для хранения считанных данных
-        http::async_read(stream_, buffer_, request_,
-                         // По окончании операции будет вызван метод OnRead
-                         beast::bind_front_handler(&SessionBase::OnRead, GetSharedThis()));
-    }
-
-    void OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std::size_t bytes_written) {
-        if (ec) {
-            return ReportError(ec, "write"sv);
-        }
-
-        if (close) {
-            // Семантика ответа требует закрыть соединение
-            return Close();
-        }
-
-        // Считываем следующий запрос
-        Read();
-    }
-
-    void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read) {
-        using namespace std::literals;
-        if (ec == http::error::end_of_stream) {
-            // Нормальная ситуация - клиент закрыл соединение
-            return Close();
-        }
-        if (ec) {
-            return ReportError(ec, "read"sv);
-        }
-        HandleRequest(std::move(request_));
-    }
-
-    void Close() {
-        beast::error_code ec;
-        stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
-    }
+    void Read();
+    void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read);
+    void OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std::size_t bytes_written);
+    void Close();
 
     // Обработку запроса делегируем подклассу
     virtual void HandleRequest(HttpRequest&& request) = 0;
@@ -106,8 +69,7 @@ public:
     template <typename Handler>
     Session(tcp::socket&& socket, Handler&& request_handler)
         : SessionBase(std::move(socket))
-        , request_handler_(std::forward<Handler>(request_handler)) {
-    }
+        , request_handler_(std::forward<Handler>(request_handler)) {}
 
 private:
     void HandleRequest(HttpRequest&& request) override {
@@ -118,10 +80,9 @@ private:
             self->Write(std::move(response));
         });
     }
-
     std::shared_ptr<SessionBase> GetSharedThis() override {
         return this->shared_from_this();
-    } 
+    }
 
 private:
     RequestHandler request_handler_;    
@@ -158,24 +119,22 @@ public:
 private:
     void DoAccept() {
         acceptor_.async_accept(
-            // Передаём последовательный исполнитель, в котором будут вызываться обработчики
-            // асинхронных операций сокета
-            net::make_strand(ioc_),
-            // С помощью bind_front_handler создаём обработчик, привязанный к методу OnAccept
-            // текущего объекта.
-            // Так как Listener — шаблонный класс, нужно подсказать компилятору, что
-            // shared_from_this — метод класса, а не свободная функция.
-            // Для этого вызываем его, используя this
-            // Этот вызов bind_front_handler аналогичен
-            // namespace ph = std::placeholders;
-            // std::bind(&Listener::OnAccept, this->shared_from_this(), ph::_1, ph::_2)
-            beast::bind_front_handler(&Listener::OnAccept, this->shared_from_this()));
+        // Передаём последовательный исполнитель, в котором будут вызываться обработчики
+        // асинхронных операций сокета
+        net::make_strand(ioc_),
+        // С помощью bind_front_handler создаём обработчик, привязанный к методу OnAccept
+        // текущего объекта.
+        // Так как Listener — шаблонный класс, нужно подсказать компилятору, что
+        // shared_from_this — метод класса, а не свободная функция.
+        // Для этого вызываем его, используя this
+        // Этот вызов bind_front_handler аналогичен
+        // namespace ph = std::placeholders;
+        // std::bind(&Listener::OnAccept, this->shared_from_this(), ph::_1, ph::_2)
+        beast::bind_front_handler(&Listener::OnAccept, this->shared_from_this()));
     }
 
     // Метод socket::async_accept создаст сокет и передаст его передан в OnAccept
     void OnAccept(sys::error_code ec, tcp::socket socket) {
-        using namespace std::literals;
-
         if (ec) {
             return ReportError(ec, "accept"sv);
         }
@@ -186,11 +145,11 @@ private:
         // Принимаем новое соединение
         DoAccept();
     }
-
     void AsyncRunSession(tcp::socket&& socket) {
         std::make_shared<Session<RequestHandler>>(std::move(socket), request_handler_)->Run();
     }
 
+private:
     net::io_context& ioc_;
     tcp::acceptor acceptor_;
     RequestHandler request_handler_;

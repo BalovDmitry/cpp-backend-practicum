@@ -24,20 +24,24 @@ struct ContentType {
     ContentType() = delete;
     constexpr static std::string_view TEXT_HTML = "text/html"sv;
     constexpr static std::string_view APP_JSON = "application/json"sv;
-    // При необходимости внутрь ContentType можно добавить и другие типы контента
 };
 
 enum class RequestType {
-    GET_MAP_BY_ID,
     GET_MAP_LIST,
+    GET_MAP_BY_ID,
     UNKNOWN
+};
+
+struct RequestTypeSize {
+    RequestTypeSize() = delete;
+    constexpr static size_t GET_MAP_LIST = 3;
+    constexpr static size_t GET_MAP_BY_ID = 4;
 };
 
 class RequestHandler {
 public:
     explicit RequestHandler(model::Game& game)
-        : game_{game} {
-    }
+        : game_{game} {}
 
     RequestHandler(const RequestHandler&) = delete;
     RequestHandler& operator=(const RequestHandler&) = delete;

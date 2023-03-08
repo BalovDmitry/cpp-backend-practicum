@@ -216,7 +216,7 @@ std::vector<std::string> RequestHandler::GetVectorFromTarget(std::string_view ta
 }
 
 bool RequestHandler::CheckRequestCorrectness(const std::vector<std::string>& splittedRequest) {
-    if ((splittedRequest.size() == 3 || splittedRequest.size() == 4)
+    if ((splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID || splittedRequest.size() == RequestTypeSize::GET_MAP_LIST)
         && splittedRequest[0] == "api"
         && splittedRequest[1] == "v1"
         && splittedRequest[2] == "maps") {
@@ -230,14 +230,14 @@ RequestType RequestHandler::GetRequestType(const std::vector<std::string>& split
     RequestType result = RequestType::UNKNOWN;
 
     if (CheckRequestCorrectness(splittedRequest)
-        && splittedRequest.size() == 3) {
+        && splittedRequest.size() == RequestTypeSize::GET_MAP_LIST) {
         
         result = RequestType::GET_MAP_LIST;
     }
     
     else if (CheckRequestCorrectness(splittedRequest)
-            && splittedRequest.size() == 4
-            && splittedRequest[3].starts_with("map")) {
+            && splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID
+            && splittedRequest.back().starts_with("map")) {
         
         result = RequestType::GET_MAP_BY_ID;
     }

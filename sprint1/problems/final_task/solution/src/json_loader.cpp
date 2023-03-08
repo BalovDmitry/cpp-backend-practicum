@@ -1,6 +1,5 @@
 #include "json_loader.h"
 
-#include <boost/json/parse.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -92,14 +91,23 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
     // Загрузить модель игры из файла
     model::Game game;
 
-    std::ifstream fStream(json_path);
-    std::stringstream buf;
-    buf << fStream.rdbuf();
-
-    boost::system::error_code ec;
-    auto val = boost::json::parse(buf.str(), ec);
-    
     try {
+
+        std::ifstream fStream(json_path);
+        if (!fStream) {
+            throw std::runtime_error("Couldn't open json file!");
+        }
+
+        std::stringstream buf;
+        buf << fStream.rdbuf();
+
+        boost::system::error_code ec;
+        auto val = boost::json::parse(buf.str(), ec);
+
+        if (ec) {
+            throw std::runtime_error("Couldn't parse json file!");
+        }
+
         auto mapsObj = val.as_object()["maps"];
         for (const auto& map : mapsObj.as_array()) {
             const auto& mapObj = map.as_object();
