@@ -79,9 +79,9 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
 
         val["id"] = *map->GetId();
         val["name"] = map->GetName();
-        val["roads"] = json_helper::CreateRoadsArrayString(*map);
-        val["buildings"] = boost::json::serialize(buildings);
-        val["offices"] = boost::json::serialize(offices);
+        val["roads"] = roads;
+        val["buildings"] = buildings;
+        val["offices"] = offices;
 
         status = http::status::ok;
     } else {
