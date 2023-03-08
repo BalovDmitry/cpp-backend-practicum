@@ -1,4 +1,5 @@
 #include "json_loader.h"
+#include "json_helper.h"
 
 #include <boost/json/parse.hpp>
 #include <fstream>
@@ -6,85 +7,6 @@
 #include <iostream>
 
 namespace json_loader {
-
-bool AddRoadsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
-    bool result = false;
-    try {
-        for (const auto& road : mapObj.at("roads").as_array()) {
-            const auto& roadObj = road.as_object();
-            
-            model::Point start;
-            start.x = roadObj.at("x0").as_int64();
-            start.y = roadObj.at("y0").as_int64();
-
-            if (roadObj.contains("x1")) {
-                model::Coord endCoord = roadObj.at("x1").as_int64();
-                currentMap.AddRoad({model::Road::HORIZONTAL, start, endCoord});
-            } else {
-                model::Coord endCoord = roadObj.at("y1").as_int64();
-                currentMap.AddRoad({model::Road::VERTICAL, start, endCoord});
-            }
-        }
-
-        result = true;
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-
-    return result;
-}
-
-bool AddBuildingsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
-    bool result = false;
-    try {
-        for (const auto& building : mapObj.at("buildings").as_array()) {
-            const auto& buildingObj = building.as_object();
-            
-            model::Rectangle rectangle;
-            rectangle.position.x = buildingObj.at("x").as_int64();
-            rectangle.position.y = buildingObj.at("y").as_int64();
-            rectangle.size.width = buildingObj.at("w").as_int64();
-            rectangle.size.height = buildingObj.at("h").as_int64();
-
-            currentMap.AddBuilding(model::Building{std::move(rectangle)});
-        }
-
-        result = true;
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-
-    return result;
-}
-
-bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
-    bool result = false;
-    try {
-        for (const auto& office : mapObj.at("offices").as_array()) {
-            const auto& officeObj = office.as_object();
-            
-            auto id = officeObj.at("id").as_string();
-            model::Office::Id currentId({id.data(), id.size()});
-            
-            model::Point position;
-            position.x = officeObj.at("x").as_int64();
-            position.y = officeObj.at("y").as_int64();
-
-            model::Offset offset;
-            offset.dx = officeObj.at("offsetX").as_int64();
-            offset.dy = officeObj.at("offsetY").as_int64();
-
-            currentMap.AddOffice(
-                model::Office(std::move(currentId), std::move(position), std::move(offset)));
-        }
-
-        result = true;
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-
-    return result;
-}
 
 model::Game LoadGame(const std::filesystem::path& json_path) {
     // Загрузить содержимое файла json_path, например, в виде строки
@@ -118,15 +40,15 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
             model::Map::Id currentId({id.data(), id.size()});
             model::Map currentMap(currentId, { name.data(), name.size() });
 
-            if (!AddRoadsToMap(currentMap, mapObj)) {
+            if (!json_helper::AddRoadsToMap(currentMap, mapObj)) {
                 throw std::runtime_error("Roads havent'been added!");
             }
 
-            if (!AddBuildingsToMap(currentMap, mapObj)) {
+            if (!json_helper::AddBuildingsToMap(currentMap, mapObj)) {
                 throw std::runtime_error("Buildings havent'been added!");
             }
 
-            if (!AddOfficesToMap(currentMap, mapObj)) {
+            if (!json_helper::AddOfficesToMap(currentMap, mapObj)) {
                 throw std::runtime_error("Offices havent'been added!");
             }
 
