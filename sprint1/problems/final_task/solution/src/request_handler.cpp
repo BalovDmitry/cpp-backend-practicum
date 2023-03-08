@@ -60,8 +60,7 @@ bool RequestHandler::MakeGetMapListBody(std::string& bodyText, http::status& sta
         val["name"] = map.GetName();
         jsonList.push_back(std::move(val));
     }
-
-    bodyText += "GetMapList";
+    
     bodyText += boost::json::serialize(jsonList);
     status = http::status::ok;
 
@@ -147,7 +146,6 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
         status = http::status::not_found;
     }
 
-    bodyText += "GetById";
     bodyText += boost::json::serialize(val);
     
     return true;
