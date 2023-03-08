@@ -1,5 +1,6 @@
 #include "json_helper.h"
 
+#include <boost/json/serialize.hpp>
 #include <iostream>
 
 namespace json_helper {
@@ -145,6 +146,37 @@ boost::json::array CreateOfficesArray(const model::Map& map) {
     }
 
     return offices;
+}
+
+std::string CreateRoadsArrayString(const model::Map& map) {
+    std::string result;
+
+    result += "[";
+    bool first = true;
+
+    for (const auto& road : map.GetRoads()) {
+        if (!first) {
+            result += ", ";
+        }
+        first = false;
+
+        boost::json::object roadVal;
+        
+        roadVal["x0"] = road.GetStart().x;
+        roadVal["y0"] = road.GetStart().y;
+        
+        if (road.IsVertical()) {
+            roadVal["y1"] = road.GetEnd().y;
+        } else {
+            roadVal["x1"] = road.GetEnd().x;
+        }
+
+        result += boost::json::serialize(roadVal);
+    }
+
+    result += "]";
+
+    return result;
 }
 
 }
