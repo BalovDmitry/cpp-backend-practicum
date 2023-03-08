@@ -84,15 +84,6 @@ bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
     return result;
 }
 
-boost::json::object CreateErrorValue(const std::string& code, const std::string& message) {
-    boost::json::object val;
-    
-    val["code"] = code;
-    val["message"] = message;
-
-    return val;
-}
-
 boost::json::array CreateRoadsArray(const model::Map& map) {
     boost::json::array roads;
 
@@ -140,43 +131,12 @@ boost::json::array CreateOfficesArray(const model::Map& map) {
         officeVal["x"] = office.GetPosition().x;
         officeVal["y"] = office.GetPosition().y;
         officeVal["offsetX"] = office.GetOffset().dx;
-        officeVal["offsetY"] = office.GetOffset().dx;
+        officeVal["offsetY"] = office.GetOffset().dy;
         
         offices.push_back(std::move(officeVal));
     }
 
     return offices;
-}
-
-std::string CreateRoadsArrayString(const model::Map& map) {
-    std::string result;
-
-    result += "[";
-    bool first = true;
-
-    for (const auto& road : map.GetRoads()) {
-        if (!first) {
-            result += ", ";
-        }
-        first = false;
-
-        boost::json::object roadVal;
-        
-        roadVal["x0"] = road.GetStart().x;
-        roadVal["y0"] = road.GetStart().y;
-        
-        if (road.IsVertical()) {
-            roadVal["y1"] = road.GetEnd().y;
-        } else {
-            roadVal["x1"] = road.GetEnd().x;
-        }
-
-        result += boost::json::serialize(roadVal);
-    }
-
-    result += "]";
-
-    return result;
 }
 
 }

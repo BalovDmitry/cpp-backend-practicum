@@ -73,15 +73,11 @@ bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText
     
     auto map = game_.FindMap(id);
     if (map) {
-        auto roads = json_helper::CreateRoadsArray(*map);
-        auto buildings = json_helper::CreateBuildingsArray(*map);
-        auto offices = json_helper::CreateOfficesArray(*map);
-
         val["id"] = *map->GetId();
         val["name"] = map->GetName();
-        val["roads"] = roads;
-        val["buildings"] = buildings;
-        val["offices"] = offices;
+        val["roads"] = json_helper::CreateRoadsArray(*map);
+        val["buildings"] = json_helper::CreateBuildingsArray(*map);
+        val["offices"] = json_helper::CreateOfficesArray(*map);
 
         status = http::status::ok;
     } else {
