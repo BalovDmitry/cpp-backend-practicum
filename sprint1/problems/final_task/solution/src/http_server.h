@@ -48,8 +48,20 @@ protected:
     }
 
 private:
+    void OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std::size_t bytes_written) {
+        if (ec) {
+            return ReportError(ec, "write"sv);
+        }
+
+        if (close) {
+            // Семантика ответа требует закрыть соединение
+            return Close();
+        }
+
+        // Считываем следующий запрос
+        Read();
+    }
     void Read();
-    void OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std::size_t bytes_written) ;
     void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read);
     void Close();
 
