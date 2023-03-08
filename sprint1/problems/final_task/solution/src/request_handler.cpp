@@ -4,7 +4,6 @@
 #include <string>
 #include <boost/algorithm/string/classification.hpp> // Include boost::for is_any_of
 #include <boost/algorithm/string/split.hpp> // Include for boost::split
-#include <boost/json/parse.hpp>
 #include <boost/json/serialize.hpp>
 
 #include <sstream>
@@ -54,146 +53,123 @@ void RequestHandler::MakeBodyText(const std::vector<std::string>& splittedReques
 }
 
 bool RequestHandler::MakeGetMapListBody(std::string& bodyText, http::status& status) {
-    std::ostringstream buf;
-
-    bool first = true;
-    buf << "[";
+    boost::json::array jsonList; 
     for (const auto& map : game_.GetMaps()) {
-        if (!first) 
-            bodyText += ", ";
-        buf << "{";
-        buf << "\"id\": " << "\"" << *map.GetId() << "\", ";
-        buf << "\"name\": " << "\"" << map.GetName() << "\"";
-        buf << "}";
-        first = false;
+        boost::json::object val;
+        val["id"] = *map.GetId();
+        val["name"] = map.GetName();
+        jsonList.push_back(std::move(val));
     }
-    buf << "]";
     
-    bodyText += buf.str();
+    bodyText += boost::json::serialize(jsonList);
     status = http::status::ok;
 
     return true;
 }
 
+boost::json::array RequestHandler::CreateRoadsArray(const model::Map& map) {
+    boost::json::array roads;
+
+    for (const auto& road : map.GetRoads()) {
+        boost::json::value roadVal;
+        if (road.IsVertical()) {
+            roadVal = {
+                {"x0", road.GetStart().x},
+                {"y0", road.GetStart().y},
+                {"y1", road.GetEnd().y}
+            };
+        } else {
+            roadVal = {
+                {"x0", road.GetStart().x},
+                {"y0", road.GetStart().y},
+                {"x1", road.GetEnd().x}
+            };
+        }
+        roads.push_back(std::move(roadVal));
+    }
+
+    return roads;
+}
+
+boost::json::array RequestHandler::CreateBuildingsArray(const model::Map& map) {
+    boost::json::array buildings;
+
+    for (const auto& building : map.GetBuildings()) {
+        boost::json::value buildingVal {
+            {"x", building.GetBounds().position.x},
+            {"y", building.GetBounds().position.y},
+            {"w", building.GetBounds().size.width},
+            {"h", building.GetBounds().size.height}
+        };
+        buildings.push_back(std::move(buildingVal));
+    }
+
+    return buildings;
+}
+
+boost::json::array RequestHandler::CreateOfficesArray(const model::Map& map) {
+    boost::json::array offices;
+
+    for (const auto& office : map.GetOffices()) {
+        boost::json::value officeVal{
+            {"id", *office.GetId()},
+            {"x", office.GetPosition().x},
+            {"y", office.GetPosition().y},
+            {"offsetX", office.GetOffset().dx},  
+            {"offsetY", office.GetOffset().dy}
+        };
+        offices.push_back(std::move(officeVal));
+    }
+
+    return offices;
+}
+
+
 bool RequestHandler::MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status) {
-    std::ostringstream buf;
-
+    boost::json::object val;
+    
     auto map = game_.FindMap(id);
-    buf << "{\n";
     if (map) {
-        std::vector<std::string> roads;
-        for (const auto& road : map->GetRoads()) {
-            boost::json::value roadVal;
-            if (road.IsVertical()) {
-                roadVal = {
-                    {"x0", road.GetStart().x},
-                    {"y0", road.GetStart().y},
-                    {"y1", road.GetEnd().y}
-                };
-            } else {
-                roadVal = {
-                    {"x0", road.GetStart().x},
-                    {"y0", road.GetStart().y},
-                    {"x1", road.GetEnd().x}
-                };
-            }
-            roads.push_back(boost::json::serialize(roadVal));
-        }
+        auto roads = CreateRoadsArray(*map);
+        auto buildings = CreateBuildingsArray(*map);
+        auto offices = CreateOfficesArray(*map);
 
-        std::vector<std::string> buildings;
-        for (const auto& building : map->GetBuildings()) {
-            boost::json::value buildingVal {
-                {"x", building.GetBounds().position.x},
-                {"y", building.GetBounds().position.y},
-                {"w", building.GetBounds().size.width},
-                {"h", building.GetBounds().size.height}
-            };
-            buildings.push_back(boost::json::serialize(buildingVal));
-        }
+        val["id"] = *map->GetId();
+        val["name"] = map->GetName();
+        val["roads"] = boost::json::serialize(roads);
+        val["buildings"] = boost::json::serialize(buildings);
+        val["offices"] = boost::json::serialize(offices);
 
-        std::vector<std::string> offices;
-        for (const auto& office : map->GetOffices()) {
-            boost::json::value officeVal{
-                {"id", *office.GetId()},
-                {"x", office.GetPosition().x},
-                {"y", office.GetPosition().y},
-                {"offsetX", office.GetOffset().dx},  
-                {"offsetY", office.GetOffset().dy}
-            };
-            offices.push_back(boost::json::serialize(officeVal));
-        }
-
-        buf << "\t\"id\": " << "\"" << *map->GetId() << "\",";
-        buf << "\n";
-        buf << "\t\"name\": " << "\"" << map->GetName() << "\",";
-        buf << "\n";
-        
-        buf << "\t" << "\"roads\": [";
-        bool firstRoad = true;
-        for (const auto& r : roads) {
-            if (!firstRoad) 
-                buf << ", ";
-            buf << "\n";
-            buf << "\t\t" << r; 
-            firstRoad = false;
-        }
-        buf << "\n\t],\n";
-
-        buf << "\t" << "\"buildings\": [";
-        bool firstB = true;
-        for (const auto& b : buildings) {
-            if (!firstB) 
-                buf << ", "; 
-            buf << "\n"; 
-            buf << "\t\t" << b;
-            firstB = false;
-        }
-        buf << "\n\t],\n";
-
-        buf << "\t" << "\"offices\": [";
-        bool firstOf = true;
-        for (const auto& o : offices) {
-            if (!firstOf) 
-                buf << ", ";
-            buf << "\n";    
-            buf << "\t\t" << o; 
-            firstOf = false;
-        }
-        buf << "\n\t]\n";
         status = http::status::ok;
     } else {
-        buf << "\t\"code\": " << "\"" << "mapNotFound" << "\",\n";
-        buf << "\t\"message\": " << "\"" << "Map not found" << "\"\n";
+        val = CreateErrorValue("mapNotFound", "Map not found");
         status = http::status::not_found;
     }
 
-    buf << "}\n";        
-    bodyText += buf.str();
+    bodyText += boost::json::serialize(val);
     
     return true;
 }
 
-bool RequestHandler::MakeBadRequestBody(std::string& bodyText, http::status& status) {
-    std::ostringstream buf;
-    buf << "{\n";
-    buf << "\t\"code\": " << "\"" << "badRequest" << "\",\n";
-    buf << "\t\"message\": " << "\"" << "Bad request" << "\"\n";
-    buf << "}\n";
+boost::json::object RequestHandler::CreateErrorValue(const std::string& code, const std::string& message) {
+    boost::json::object val;
+    
+    val["code"] = code;
+    val["message"] = message;
 
+    return val;
+}
+
+bool RequestHandler::MakeBadRequestBody(std::string& bodyText, http::status& status) {
+    bodyText += boost::json::serialize(CreateErrorValue("badRequest", "Bad request"));
     status = http::status::bad_request;
-    bodyText += buf.str();
+
     return true;
 }
 
 bool RequestHandler::MakeMethodNotAllowedBody(std::string& bodyText, http::status& status) {
-    std::ostringstream buf;
-    buf << "{\n";
-    buf << "\t\"code\": " << "\"" << "methodNotAllowed" << "\",\n";
-    buf << "\t\"message\": " << "\"" << "Method not allowed" << "\"\n";
-    buf << "}\n";
-
+    bodyText += boost::json::serialize(CreateErrorValue("methodNotAllowed", "Method not allowed"));
     status = http::status::method_not_allowed;
-    bodyText += buf.str();
 
     return true;
 }
