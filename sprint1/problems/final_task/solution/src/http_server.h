@@ -61,10 +61,29 @@ private:
         // Считываем следующий запрос
         Read();
     }
-    void Read();
-    void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read);
-    void Close();
 
+    void Read() {
+        // Очищаем запрос от прежнего значения (метод Read может быть вызван несколько раз)
+        request_ = {};
+        stream_.expires_after(30s);
+        // Считываем request_ из stream_, используя buffer_ для хранения считанных данных
+        http::async_read(stream_, buffer_, request_,
+        // По окончании операции будет вызван метод OnRead
+        beast::bind_front_handler(&SessionBase::OnRead, GetSharedThis()));
+    }
+
+    void OnRead(beast::error_code ec, [[maybe_unused]] std::size_t bytes_read) {
+        if (ec == http::error::end_of_stream) {
+            // Нормальная ситуация - клиент закрыл соединение
+            return Close();
+        }
+        if (ec) {
+            return ReportError(ec, "read"sv);
+        }
+        HandleRequest(std::move(request_));
+    }
+
+    void Close();
     // Обработку запроса делегируем подклассу
     virtual void HandleRequest(HttpRequest&& request) = 0;
     virtual std::shared_ptr<SessionBase> GetSharedThis() = 0;
