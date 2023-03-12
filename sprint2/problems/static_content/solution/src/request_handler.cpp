@@ -15,7 +15,7 @@ namespace http_handler {
 
 StringResponse RequestHandler::HandleRequest(StringRequest&& req) {
     const auto text_response = [this, &req](http::status status, std::string_view text, std::string_view contentType) {
-        return this->MakeStringResponse(status, text, req.version(), req.keep_alive());
+        return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), contentType);
     };
 
     http::status status;
