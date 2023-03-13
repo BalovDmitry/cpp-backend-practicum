@@ -70,8 +70,10 @@ public:
         //std::cout << "Filename: " << fileName_ << std::endl;
         //std::cout << "File path: " << absPath_ << std::endl;
         log_file_.open(absPath_, std::ios::app);
-
-        ((log_file_ << GetTimeStamp() << " " << std::forward<decltype(args)>(args) << '\n'), ...);       
+        log_file_ << GetTimeStamp() << ": ";
+        ((log_file_ << std::forward<decltype(args)>(args)), ...); 
+        log_file_ << '\n';
+        log_file_.close();      
     }
 
     // Установите manual_ts_. Учтите, что эта операция может выполняться
