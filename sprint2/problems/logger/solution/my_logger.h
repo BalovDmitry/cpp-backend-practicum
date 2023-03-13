@@ -64,7 +64,7 @@ public:
     void Log(const Ts&... args) {
         std::lock_guard<std::mutex> g(m_);
         
-        fileName_ = "sample_log_" + GetFileTimeStamp();
+        fileName_ = "sample_log_" + GetFileTimeStamp() + ".log";
         absPath_ = std::filesystem::weakly_canonical(std::filesystem::path(LOG_PATH) / std::filesystem::path(fileName_));
 
         //std::cout << "Filename: " << fileName_ << std::endl;
