@@ -65,7 +65,7 @@ public:
         std::lock_guard<std::mutex> g(m_);
         
         fileName_ = "sample_log_" + GetFileTimeStamp();
-        absPath_ = std::filesystem::__weakly_canonical(std::filesystem::path(LOG_PATH) / std::filesystem::path(fileName_));
+        absPath_ = std::filesystem::weakly_canonical(std::filesystem::path(LOG_PATH) / std::filesystem::path(fileName_));
 
         //std::cout << "Filename: " << fileName_ << std::endl;
         //std::cout << "File path: " << absPath_ << std::endl;
