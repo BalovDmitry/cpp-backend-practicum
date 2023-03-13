@@ -12,10 +12,10 @@
 #include <filesystem>
 #include <iostream>
 
-#ifdef __LINUX__ 
-#define LOG_PATH "/var/log/"
+#ifdef __APPLE__ 
+#define LOG_PATH "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint2/problems/logger" 
 #else 
-#define LOG_PATH "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint2/problems/logger"
+#define LOG_PATH "/var/log"
 #endif
 
 
