@@ -56,7 +56,7 @@ StringResponse RequestHandler::HandleRequest(StringRequest&& req) {
     
     auto end = std::chrono::high_resolution_clock::now();
     logger::LogJsonAndMessage(json_helper::CreateResponseValue(
-        std::chrono::duration<double, std::milli>(end - start).count(), static_cast<int>(status) , contentType), "response sent");
+        std::chrono::duration<double, std::milli>(end - start).count(), static_cast<int>(status), std::string(contentType)), "response sent");
 
     return response;
 }

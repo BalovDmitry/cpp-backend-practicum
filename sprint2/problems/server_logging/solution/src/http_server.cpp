@@ -5,11 +5,11 @@
 namespace http_server {
 
 void ReportError(beast::error_code ec, std::string_view what) {
-    logger::LogJsonAndMessage(json_helper::CreateNetworkErrorValue(ec.value(), ec.message(), what), "error");
+    logger::LogJsonAndMessage(json_helper::CreateNetworkErrorValue(ec.value(), ec.message(), std::string(what)), "error");
 }
 
 void ReportRequest(const tcp::endpoint& endpoint, std::string_view uri, std::string_view method) {
-    logger::LogJsonAndMessage(json_helper::CreateRequestValue(endpoint, uri, method), "request received");
+    logger::LogJsonAndMessage(json_helper::CreateRequestValue(endpoint, std::string(uri), std::string(method)), "request received");
 }
 
 void SessionBase::Run() {

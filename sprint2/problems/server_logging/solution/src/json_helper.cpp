@@ -159,7 +159,7 @@ boost::json::object CreateStopServerValue(uint8_t code, std::optional<std::strin
     return val;
 }
 
-boost::json::object CreateNetworkErrorValue(int code, std::string_view text, std::string_view where) {
+boost::json::object CreateNetworkErrorValue(int code, const std::string&  text, const std::string&  where) {
     boost::json::object val;
 
     val["code"] = code;
@@ -169,7 +169,7 @@ boost::json::object CreateNetworkErrorValue(int code, std::string_view text, std
     return val;
 }
 
-boost::json::object CreateRequestValue(const tcp::endpoint& endpoint, std::string_view uri, std::string_view method) {
+boost::json::object CreateRequestValue(const tcp::endpoint& endpoint, const std::string& uri, const std::string&  method) {
     boost::json::object val;
 
     val["ip"] = endpoint.address().to_string();
@@ -179,7 +179,7 @@ boost::json::object CreateRequestValue(const tcp::endpoint& endpoint, std::strin
     return val;
 }
 
-boost::json::object CreateResponseValue(int response_time, int code, std::string_view content_type) {
+boost::json::object CreateResponseValue(int response_time, int code, const std::string&  content_type) {
     boost::json::object val;
 
     val["response time"] = response_time;
