@@ -34,7 +34,7 @@ void InitBoostLogFilter() {
     logging::add_common_attributes();
 
     logging::add_console_log(
-        std::clog,
+        std::cout,
         keywords::format = &MyFormatter
     );
 }
