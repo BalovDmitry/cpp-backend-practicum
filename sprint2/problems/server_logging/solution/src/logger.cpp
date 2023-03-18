@@ -29,8 +29,8 @@ void MyFormatter(logging::record_view const& rec, logging::formatting_ostream& s
     val["data"] = *rec[json_data];
     val["message"] = *rec[expr::smessage];
 
-    //strm << boost::json::serialize(val);
-    std::cout << boost::json::serialize(val);
+    strm << boost::json::serialize(val);
+    //std::cout << boost::json::serialize(val);
 }
 
 void InitBoostLogFilter() {
@@ -38,6 +38,7 @@ void InitBoostLogFilter() {
 
     logging::add_console_log(
         std::cout,
+        keywords::auto_flush = true,
         keywords::format = &MyFormatter
     );
 }
@@ -45,14 +46,6 @@ void InitBoostLogFilter() {
 void LogJsonAndMessage(boost::json::object val, std::string_view message) {
     BOOST_LOG_TRIVIAL(info) << logging::add_value(json_data, val)
                             << message;
-}
-
-void LogMessage(std::string_view message) {
-
-}
-
-void LogJson(boost::json::value val) {
-
 }
 
 }
