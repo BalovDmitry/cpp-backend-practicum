@@ -34,15 +34,6 @@ StringResponse RequestHandler::HandleRequest(StringRequest&& req) {
             contentType = ContentType::APP_JSON;
         } else {
             SetResponseDataStaticFile(splittedRequest, GetRequestTypeApi(splittedRequest), bodyText, contentType, status);
-
-            // MakeBodyTextStaticFile(splittedRequest, GetRequestTypeApi(splittedRequest), bodyText, status);
-            // contentType = GetContentType(splittedRequest);
-            // std::cout << "Splitted request: " << std::endl;
-            // for (const auto& w : splittedRequest) {
-            //     std::cout << w << std::endl;
-            // }
-            // std::cout << "Body: " << bodyText << std::endl;
-            // std::cout << "Content-Type: " << contentType << std::endl;
         }
     
     } else if(req.method() == http::verb::head) {
@@ -79,7 +70,6 @@ void RequestHandler::SetResponseDataStaticFile(
             contentType = ContentType::TEXT_PLAIN;
             return;
         }
-        //std::cout << "File " << absPath << " was successfully open!" << std::endl;
 
         std::stringstream buffer;
         buffer << fStream.rdbuf();
@@ -87,7 +77,6 @@ void RequestHandler::SetResponseDataStaticFile(
         contentType = GetContentType(splittedRequest);
         status = http::status::ok;
     } else {
-        //std::cout << "Failed to open file "sv << absPath << std::endl;
         MakeFileNotFoundBody(bodyText, status);
         contentType = ContentType::TEXT_PLAIN;
     }

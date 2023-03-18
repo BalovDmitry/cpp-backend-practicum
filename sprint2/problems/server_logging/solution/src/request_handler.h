@@ -90,7 +90,6 @@ public:
     template <typename Body, typename Allocator, typename Send>
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
         send(HandleRequest(std::move(req)));
-
     }
 
 private:
