@@ -29,7 +29,8 @@ void MyFormatter(logging::record_view const& rec, logging::formatting_ostream& s
     val["data"] = *rec[json_data];
     val["message"] = *rec[expr::smessage];
 
-    strm << boost::json::serialize(val);
+    //strm << boost::json::serialize(val);
+    std::cout << boost::json::serialize(val);
 }
 
 void InitBoostLogFilter() {
