@@ -7,6 +7,8 @@
 #include <boost/log/expressions.hpp> // для выражения, задающего фильтр 
 #include <boost/json/serialize.hpp>
 
+#include <iostream>
+
 namespace logger {
 
 namespace logging = boost::log;
