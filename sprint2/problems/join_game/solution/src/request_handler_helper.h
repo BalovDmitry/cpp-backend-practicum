@@ -5,8 +5,6 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
 
-#define BOOST_BEAST_USE_STD_STRING_VIEW
-
 namespace http_handler {
 
 namespace beast = boost::beast;

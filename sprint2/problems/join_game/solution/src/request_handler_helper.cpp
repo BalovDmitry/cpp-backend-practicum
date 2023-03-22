@@ -7,9 +7,7 @@ namespace http_handler {
 
 bool IsApiRequest(const StringRequest &req)
 {
-    //! TODO: how to remove it?
-    std::string_view target = std::string_view(req.target().data(), req.target().size());
-    auto splittedRequest = GetVectorFromTarget(target);
+    auto splittedRequest = GetVectorFromTarget(std::string_view(req.target().data(), req.target().size()));
 
     if (!splittedRequest.empty() && splittedRequest.front() == "api") {
         return true;
