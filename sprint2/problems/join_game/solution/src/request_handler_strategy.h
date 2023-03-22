@@ -1,10 +1,25 @@
 #pragma once
 
-#include "request_handler.h"
+// boost.beast будет использовать std::string_view вместо boost::string_view
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+
 #include "model.h"
 #include "path_helper.h"
+#include "http_server.h"
+#include "request_handler_helper.h"
 
 namespace http_handler {
+
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace sys = boost::system;
+
+// Запрос, тело которого представлено в виде строки
+using StringRequest = http::request<http::string_body>;
+// Ответ, тело которого представлено в виде строки
+using StringResponse = http::response<http::string_body>;
+
+using namespace std::literals;
 
 class RequestHandlerStrategyIntf {
 public:
@@ -23,8 +38,6 @@ protected:
                                 std::string_view content_type = ContentType::APP_JSON);
     bool MakeBadRequestBody(std::string& bodyText, http::status& status);
     bool MakeMethodNotAllowedBody(std::string& bodyText, http::status& status);
-
-
 };
 
 class RequestHandlerStrategyApi : public RequestHandlerStrategyIntf {

@@ -14,33 +14,35 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-add_executable(game_server
-	src/main.cpp
-	src/http_server.cpp
-	src/http_server.h
-	src/sdk.h
-	src/model.h
-	src/model.cpp
-	src/tagged.h
-	src/boost_json.cpp
-	src/json_loader.h
-	src/json_loader.cpp
-	src/request_handler.cpp
-	src/request_handler.h
-	src/json_helper.h
-	src/json_helper.cpp
-	src/path_helper.h
-	src/path_helper.cpp
-	src/logger.h
-	src/logger.cpp
-	src/dog.h
-	src/game_session.h
-	src/player.h
-	src/player_tokens.h
-	src/player_tokens.cpp
-	src/request_handler_strategy.h
-	src/request_handler_strategy.cpp
-)
+file(GLOB gameserver_SRC "src/*.h" "src/*.cpp")
+add_executable(game_server ${gameserver_SRC})
+# add_executable(game_server
+# 	src/main.cpp
+# 	src/http_server.cpp
+# 	src/http_server.h
+# 	src/sdk.h
+# 	src/model.h
+# 	src/model.cpp
+# 	src/tagged.h
+# 	src/boost_json.cpp
+# 	src/json_loader.h
+# 	src/json_loader.cpp
+# 	src/request_handler.h
+# 	src/json_helper.h
+# 	src/json_helper.cpp
+# 	src/path_helper.h
+# 	src/path_helper.cpp
+# 	src/logger.h
+# 	src/logger.cpp
+# 	src/dog.h
+# 	src/game_session.h
+# 	src/player.h
+# 	src/player_tokens.h
+# 	src/player_tokens.cpp
+# 	src/request_handler_strategy.h
+# 	src/request_handler_strategy.cpp
+# 	src/request_handler_helper.h
+# 	src/request_handler_helper.cpp
+# )
 target_link_libraries(game_server ${Boost_LIBRARIES} Threads::Threads CONAN_PKG::boost)
-#target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost)
 target_include_directories(game_server PRIVATE CONAN_PKG::boost)

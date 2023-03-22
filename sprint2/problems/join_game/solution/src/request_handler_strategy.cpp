@@ -65,13 +65,9 @@ void RequestHandlerStrategyApi::HandleRequestImpl(const StringRequest& req, http
 {
     if (req.method() == http::verb::get) {
         auto splittedRequest = GetVectorFromTarget(req.target());
-        
-        if (IsApiRequest(req)) {
-            SetResponseData(splittedRequest, GetRequestType(splittedRequest), body, status);
-            content_type = ContentType::APP_JSON;
-        } else {
+        SetResponseData(splittedRequest, GetRequestType(splittedRequest), body, status);
+        content_type = ContentType::APP_JSON;
             //SetResponseDataStaticFile(splittedRequest, GetRequestType(splittedRequest), body, content_type, status);
-        }
     
     } else if (req.method() == http::verb::head) {
         //!TODO: create body for HEAD
@@ -124,7 +120,7 @@ RequestHandlerStrategyApi::RequestType RequestHandlerStrategyApi::GetRequestType
 
 bool RequestHandlerStrategyApi::CheckRequestCorrectness(const std::vector<std::string> &splittedRequest)
 {
-    if ((splittedRequest.size() == RequestTypeApiSize::GET_MAP_BY_ID || splittedRequest.size() == RequestTypeApiSize::GET_MAP_LIST)
+    if ((splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID || splittedRequest.size() == RequestTypeSize::GET_MAP_LIST)
         && splittedRequest[0] == "api"
         && splittedRequest[1] == "v1"
         && splittedRequest[2] == "maps") {
@@ -177,6 +173,14 @@ bool RequestHandlerStrategyApi::MakeGetMapByIdBody(model::Map::Id id, std::strin
 
 void RequestHandlerStrategyStaticFile::HandleRequestImpl(const StringRequest& req, http::status &status, std::string& body, std::string_view &content_type)
 {
+    if (req.method() == http::verb::get) {
+        auto splittedRequest = GetVectorFromTarget(req.target());
+        SetResponseData(splittedRequest, body, status, content_type);
+    } else if (req.method() == http::verb::head) {
+        //!TODO: create body for HEAD
+    } else {
+        MakeMethodNotAllowedBody(body, status);
+    }
 }
 
 void RequestHandlerStrategyStaticFile::SetResponseData(const std::vector<std::string> &splittedRequest, std::string &bodyText, http::status &status, std::string_view &contentType)
