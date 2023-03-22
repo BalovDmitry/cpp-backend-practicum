@@ -26,16 +26,16 @@ public:
     StringResponse HandleRequest(StringRequest&& req);
 
 protected:
-    virtual void HandleRequestImpl(
+    virtual StringResponse HandleRequestImpl(
         const StringRequest& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) = 0;
 
 protected:
-    StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
-                                bool keep_alive,
-                                std::string_view content_type = ContentType::APP_JSON);
+    // StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
+    //                             bool keep_alive,
+    //                             std::string_view content_type = ContentType::APP_JSON);
     bool MakeBadRequestBody(std::string& bodyText, http::status& status);
     bool MakeMethodNotAllowedBody(std::string& bodyText, http::status& status);
 };
@@ -49,22 +49,27 @@ public:
         RequestTypeSize() = delete;
         constexpr static size_t GET_MAP_LIST = 3;
         constexpr static size_t GET_MAP_BY_ID = 4;
+        constexpr static size_t JOIN_GAME = 4;
     };
 
     enum class RequestType {
         GET_MAP_LIST,
         GET_MAP_BY_ID,
+        JOIN_GAME,
         UNKNOWN
     };
 
 protected:
-    void HandleRequestImpl(
+    StringResponse HandleRequestImpl(
         const StringRequest& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) override;
 
 private:
+    StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
+                            bool keep_alive, RequestType request_type,
+                            std::string_view content_type = ContentType::APP_JSON);
     void SetResponseData(
         const std::vector<std::string>& splittedRequest, 
         RequestType requestType, 
@@ -85,13 +90,16 @@ public:
         : basePath_(basePath) {}
 
 protected:
-    void HandleRequestImpl(
+    StringResponse HandleRequestImpl(
         const StringRequest& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) override;
 
 private:
+    StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
+                                bool keep_alive,
+                                std::string_view content_type);
     void SetResponseData(
         const std::vector<std::string>& splittedRequest,
         std::string& bodyText,
