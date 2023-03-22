@@ -33,9 +33,6 @@ protected:
         std::string_view& content_type) = 0;
 
 protected:
-    // StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
-    //                             bool keep_alive,
-    //                             std::string_view content_type = ContentType::APP_JSON);
     bool MakeBadRequestBody(std::string& bodyText, http::status& status);
     bool MakeMethodNotAllowedBody(std::string& bodyText, http::status& status);
 };

@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <random>
 
 #include "tagged.h"
 
@@ -167,6 +168,68 @@ private:
     Offices offices_;
 };
 
+struct Dog {
+    uint32_t id = 0;
+    std::string name;
+};
+
+class GameSession {
+public:
+    GameSession(model::Map& map)
+        : map_(map) {}
+
+    GameSession(const GameSession& session) = default;
+    GameSession& operator=(const GameSession& session) {
+        dogs_ = session.dogs_;
+        map_ = session.map_;
+        return *this;
+    }
+private:
+    std::unordered_map<uint32_t, Dog> dogs_;
+    model::Map& map_;
+};
+
+class Player {
+public:
+
+    Player(const std::string& name)
+    //, const GameSession& session)
+        : name_(name) {}
+        //, session_(session) {}
+private:
+    //GameSession session_;
+    std::string name_;
+    Dog dog_;
+};
+
+namespace detail {
+struct TokenTag {};
+}  // namespace detail
+
+using Token = util::Tagged<std::string, detail::TokenTag>;
+
+class PlayerTokens {
+public:
+    Token AddPlayer(const Player& player);
+    Player FindPlayerBy(const Token& token);
+
+private:
+    std::unordered_map<Token, Player, util::TaggedHasher<Token>> tokenToPlayer_;
+    std::random_device random_device_;
+    std::mt19937_64 generator1_{[this] {
+        std::uniform_int_distribution<std::mt19937_64::result_type> dist;
+        return dist(random_device_);
+    }()};
+    std::mt19937_64 generator2_{[this] {
+        std::uniform_int_distribution<std::mt19937_64::result_type> dist;
+        return dist(random_device_);
+    }()};
+    // Чтобы сгенерировать токен, получите из generator1_ и generator2_
+    // два 64-разрядных числа и, переведя их в hex-строки, склейте в одну.
+    // Вы можете поэкспериментировать с алгоритмом генерирования токенов,
+    // чтобы сделать их подбор ещё более затруднительным
+};
+
 class Game {
 public:
     using Maps = std::vector<Map>;
@@ -189,7 +252,9 @@ private:
     using MapIdToIndex = std::unordered_map<Map::Id, size_t, MapIdHasher>;
 
     std::vector<Map> maps_;
+    //std::vector<GameSession> sessions_;
     MapIdToIndex map_id_to_index_;
+    //PlayerTokens player_tokens_;
 };
 
 }  // namespace model

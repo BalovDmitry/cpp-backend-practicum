@@ -44,7 +44,7 @@ public:
 
             //     send(strategy_->HandleRequest(std::move(req)));
             // }); 
-            //std::lock_guard g(m_);
+            std::lock_guard g(m_);
             SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(game_));
             send(strategy_->HandleRequest(std::move(req)));
         } else {

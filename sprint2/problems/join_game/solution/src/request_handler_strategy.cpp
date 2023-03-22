@@ -12,11 +12,7 @@ namespace http_handler {
 //! INTERFACE METHODS
 
 StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
-{
-    // const auto text_response = [this, &req](http::status status, std::string_view text, std::string_view contentType) {
-    //     return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), contentType);
-    // };
-    
+{   
     auto start = std::chrono::high_resolution_clock::now();
     
     http::status status;
@@ -34,20 +30,6 @@ StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
 
     return response;
 }
-
-// StringResponse RequestHandlerStrategyIntf::MakeStringResponse(http::status status, std::string_view body, unsigned http_version, bool keep_alive, std::string_view content_type)
-// {
-//     StringResponse response(status, http_version);
-//     // if (status == http::status::method_not_allowed) {
-//     //     response.set(http::field::allow, "POST");
-//     // }
-//     response.set(http::field::content_type, content_type);
-//     response.body() = body;
-//     response.content_length(body.size());
-//     response.keep_alive(keep_alive);
-//     response.set(http::field::cache_control, "no-cache");
-//     return response;
-// }
 
 bool RequestHandlerStrategyIntf::MakeBadRequestBody(std::string &bodyText, http::status &status)
 {
