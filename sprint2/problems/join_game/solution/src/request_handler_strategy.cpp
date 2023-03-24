@@ -141,7 +141,7 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
     std::string_view result;
 
     auto str = req.at("Autorization");
-    if (str.contains("Bearer")) {
+    if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(" ");
         result = str.substr(pos + 1);
     } else {
@@ -155,7 +155,7 @@ void RequestHandlerStrategyApi::SetResponseDataPost(std::string_view request, Re
     boost::json::object res;
 
     try {
-        boost::json::value val = boost::json::parse(request);
+        boost::json::value val = boost::json::parse(std::string(request));
         if (!val.as_object().contains("userName") || !val.as_object().contains("mapId")) {
             throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
         }
