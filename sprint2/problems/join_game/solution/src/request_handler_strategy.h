@@ -34,7 +34,11 @@ protected:
 
 protected:
     bool MakeBadRequestBody(std::string& bodyText, http::status& status);
-    bool MakeMethodNotAllowedBody(std::string& bodyText, http::status& status);
+    bool MakeMethodNotAllowedBody(
+        std::string& bodyText, 
+        http::status& status, 
+        const std::string& code = "methodNotAllowed",
+        const std::string& message = "Method not allowed");
 };
 
 class RequestHandlerStrategyApi : public RequestHandlerStrategyIntf {
@@ -47,12 +51,14 @@ public:
         constexpr static size_t GET_MAP_LIST = 3;
         constexpr static size_t GET_MAP_BY_ID = 4;
         constexpr static size_t JOIN_GAME = 4;
+        constexpr static size_t GET_PLAYERS_ON_MAP = 4;
     };
 
     enum class RequestType {
         GET_MAP_LIST,
         GET_MAP_BY_ID,
         JOIN_GAME,
+        GET_PLAYERS_ON_MAP,
         UNKNOWN
     };
 
@@ -67,15 +73,22 @@ private:
     StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
                             bool keep_alive, RequestType request_type,
                             std::string_view content_type = ContentType::APP_JSON);
-    void SetResponseData(
-        const std::vector<std::string>& splittedRequest, 
+    void SetResponseDataGet(
+        const StringRequest& req, 
         RequestType requestType, 
         std::string& bodyText,
         http::status& status);
+    void SetResponseDataPost(
+        std::string_view request, 
+        RequestType requestType, 
+        std::string &body, 
+        http::status &status);
     RequestType GetRequestType(const std::vector<std::string>& splittedRequest);
     bool CheckRequestCorrectness(const std::vector<std::string>& splittedRequest);
     bool MakeGetMapListBody(std::string& bodyText, http::status& status);
     bool MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status);
+    bool MakeGetPlayersOnMapBody(const StringRequest& req, std::string& bodyText, http::status& status);
+    std::string_view ReceiveTokenFromRequest(const StringRequest& req);
 
 private:
     model::Game& game_;

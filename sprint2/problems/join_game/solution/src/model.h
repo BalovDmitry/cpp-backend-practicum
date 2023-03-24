@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <random>
 
@@ -168,9 +169,19 @@ private:
     Offices offices_;
 };
 
-struct Dog {
-    uint32_t id = 0;
-    std::string name;
+class Dog {
+public:
+    Dog(const std::string& name) 
+    {
+        name_ = name + "_" + std::to_string(Dog::id);
+        ++Dog::id;
+    }
+
+    const std::string& GetFullName() const { return name_; }
+
+private:
+    static uint32_t id;
+    std::string name_;
 };
 
 class GameSession {
@@ -184,6 +195,8 @@ public:
         map_ = session.map_;
         return *this;
     }
+    const auto& GetMapId() const { return map_.GetId(); }
+
 private:
     std::unordered_map<uint32_t, Dog> dogs_;
     model::Map& map_;
@@ -191,13 +204,19 @@ private:
 
 class Player {
 public:
+    Player(const std::string& name, model::Map& map, uint32_t id)
+        : name_(name)
+        , session_(map) 
+        , dog_(name) 
+        , id_(id) {}
 
-    Player(const std::string& name)
-    //, const GameSession& session)
-        : name_(name) {}
-        //, session_(session) {}
+    const uint32_t GetId() const { return id_; }
+    const std::string& GetName() const { return name_; }
+    const auto& GetMapId() const { return session_.GetMapId(); }
+
 private:
-    //GameSession session_;
+    u_int32_t id_ = 0;
+    GameSession session_;
     std::string name_;
     Dog dog_;
 };
@@ -207,27 +226,28 @@ struct TokenTag {};
 }  // namespace detail
 
 using Token = util::Tagged<std::string, detail::TokenTag>;
+static std::random_device RandomDevice;
 
 class PlayerTokens {
 public:
-    Token AddPlayer(const Player& player);
-    Player FindPlayerBy(const Token& token);
+    Token AddPlayer(Player&& player);
+    const Player& FindPlayerByToken(const Token& token) const;
+    const Player& FindPlayerById(uint32_t id);
+    const Token& FindTokenByPlayerId(uint32_t id);
 
 private:
-    std::unordered_map<Token, Player, util::TaggedHasher<Token>> tokenToPlayer_;
-    std::random_device random_device_;
-    std::mt19937_64 generator1_{[this] {
+    std::unordered_map<Token, uint32_t, util::TaggedHasher<Token>> tokenToPlayer_;
+    std::vector<Player> players_;
+    std::vector<Token> tokens_;
+
+    std::mt19937_64 generator1_{[] {
         std::uniform_int_distribution<std::mt19937_64::result_type> dist;
-        return dist(random_device_);
+        return dist(RandomDevice);
     }()};
-    std::mt19937_64 generator2_{[this] {
+    std::mt19937_64 generator2_{[] {
         std::uniform_int_distribution<std::mt19937_64::result_type> dist;
-        return dist(random_device_);
+        return dist(RandomDevice);
     }()};
-    // Чтобы сгенерировать токен, получите из generator1_ и generator2_
-    // два 64-разрядных числа и, переведя их в hex-строки, склейте в одну.
-    // Вы можете поэкспериментировать с алгоритмом генерирования токенов,
-    // чтобы сделать их подбор ещё более затруднительным
 };
 
 class Game {
@@ -247,14 +267,26 @@ public:
         return nullptr;
     }
 
+    Token JoinGame(const std::string &name, const Map::Id& id);
+    const Player& FindPlayerByToken(Token token);
+    const Player& FindPlayerById(uint32_t id);
+    const std::unordered_set<uint32_t>& GetPlayersOnMap(Map::Id id);
+    
 private:
     using MapIdHasher = util::TaggedHasher<Map::Id>;
     using MapIdToIndex = std::unordered_map<Map::Id, size_t, MapIdHasher>;
+    using MapidToPlayers = std::unordered_map<Map::Id, std::unordered_set<uint32_t> , MapIdHasher>;
+
+    uint32_t current_id_ = 0;
 
     std::vector<Map> maps_;
-    //std::vector<GameSession> sessions_;
+    std::vector<GameSession> sessions_;
+
+    std::unordered_map<std::string, uint32_t> name_to_id_;
+
     MapIdToIndex map_id_to_index_;
-    //PlayerTokens player_tokens_;
+    MapidToPlayers map_id_to_player_id_;
+    PlayerTokens player_tokens_;
 };
 
 }  // namespace model
