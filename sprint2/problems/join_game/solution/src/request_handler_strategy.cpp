@@ -164,11 +164,11 @@ void RequestHandlerStrategyApi::SetResponseDataPost(std::string_view request, Re
         if (name.empty()) {
             throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
         }   
-
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
         auto token = game_.JoinGame(name, model::Map::Id{mapId});
         auto player = game_.FindPlayerByToken(token);
         res["authToken"] = *token;
+        std::cout << "Token length: " << res.at("authToken").as_string().size() << std::endl;
         res["playerId"] = player.GetId();
         status = http::status::ok;
 
