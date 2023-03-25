@@ -54,7 +54,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
     };
 
     content_type = ContentType::APP_JSON;
-    auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target())));
+    auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())));
     switch (request_type) {
         case RequestType::GET_MAP_BY_ID:
         case RequestType::GET_MAP_LIST: {
@@ -124,7 +124,7 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
         }
         
         case RequestType::GET_PLAYERS_ON_MAP: {
-            //MakeGetPlayersOnMapBody(req, body, status);
+            MakeGetPlayersOnMapBody(req, body, status);
             break;
         }
 
@@ -141,8 +141,8 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
 std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
 {
     std::string_view result;
-
-    auto str = std::string_view(req.at("Autorization"));
+    auto autorization = req.at("Autorization");
+    auto str = std::string_view(autorization.data(), autorization.size());
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(" ");
         result = str.substr(pos + 1);
