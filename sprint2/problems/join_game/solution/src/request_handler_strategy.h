@@ -27,7 +27,7 @@ public:
 
 protected:
     virtual StringResponse HandleRequestImpl(
-        const StringRequest& req, 
+        StringRequest&& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) = 0;
@@ -64,7 +64,7 @@ public:
 
 protected:
     StringResponse HandleRequestImpl(
-        const StringRequest& req, 
+        StringRequest&& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) override;
@@ -101,7 +101,7 @@ public:
 
 protected:
     StringResponse HandleRequestImpl(
-        const StringRequest& req, 
+        StringRequest&& req, 
         http::status& status, 
         std::string& body, 
         std::string_view& content_type) override;

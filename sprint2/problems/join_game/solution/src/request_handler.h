@@ -52,6 +52,9 @@ public:
             //send(strategy_->HandleRequest(std::move(req)));
         }
         
+        if (strategy_) {
+            send(strategy_->HandleRequest(std::move(req)));
+        }
         //send(strategy_->HandleRequest(std::move(req)));
     }
 

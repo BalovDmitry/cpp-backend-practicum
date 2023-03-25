@@ -20,7 +20,7 @@ StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
     std::string_view contentType;
 
     // Non-virtual interface idiom
-    auto response = HandleRequestImpl(req, status, body, contentType);
+    auto response = HandleRequestImpl(std::move(req), status, body, contentType);
     
     auto end = std::chrono::high_resolution_clock::now();
     logger::LogJsonAndMessage(json_helper::CreateResponseValue(
@@ -45,7 +45,7 @@ bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText,
 
 //! API HANDLER METHODS
 
-StringResponse RequestHandlerStrategyApi::HandleRequestImpl(const StringRequest& req, http::status &status, std::string& body, std::string_view &content_type)
+StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req, http::status &status, std::string& body, std::string_view &content_type)
 {
     const auto text_response = [this, &req](http::status status, std::string_view text, RequestType type, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), type, content_type);
@@ -307,7 +307,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
 
 //! STATIC FILE HANDLER METHODS
 
-StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(const StringRequest& req, http::status &status, std::string& body, std::string_view &content_type)
+StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest&& req, http::status &status, std::string& body, std::string_view &content_type)
 {
     const auto text_response = [this, &req](http::status status, std::string_view text, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), content_type);
