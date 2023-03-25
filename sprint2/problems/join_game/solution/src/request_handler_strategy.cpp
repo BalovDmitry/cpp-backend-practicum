@@ -7,6 +7,8 @@
 #include <string>
 #include <chrono>
 
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+
 namespace http_handler {
 
 //! INTERFACE METHODS
@@ -52,7 +54,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
     };
 
     content_type = ContentType::APP_JSON;
-    auto request_type = GetRequestType(GetVectorFromTarget(req.target()));
+    auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target())));
     switch (request_type) {
         case RequestType::GET_MAP_BY_ID:
         case RequestType::GET_MAP_LIST: {
@@ -117,7 +119,7 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
         }
 
         case RequestType::GET_MAP_BY_ID: {
-            MakeGetMapByIdBody(model::Map::Id(GetVectorFromTarget(req.target()).back()), body, status);
+            MakeGetMapByIdBody(model::Map::Id(GetVectorFromTarget(std::string_view(req.target())).back()), body, status);
             break;
         }
         
@@ -286,7 +288,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     } catch (std::exception& e) {
         std::string message;
         std::string code;
-        const std::string& what = e.what();
+        std::string what = e.what();
 
         if (what == ErrorMessages::INVALID_TOKEN) {
             code = what;
