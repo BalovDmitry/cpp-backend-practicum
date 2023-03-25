@@ -15,7 +15,7 @@ bool IsApiRequest(const StringRequest &req)
     logger::LogJsonAndMessage({}, "in IsApiRequest");
     std::string_view t = {req.target().data(), req.target().size()};
     boost::json::object val;
-    val["string view request"] = t;
+    val["string view request"] = std::string(t);
     logger::LogJsonAndMessage(val, "after casting to string view");
     auto splittedRequest = GetVectorFromTarget(t);
     logger::LogJsonAndMessage({}, "after get splitted request");
