@@ -83,11 +83,9 @@ private:
         // Захватываем умный указатель на текущий объект Session в лямбде,
         // чтобы продлить время жизни сессии до вызова лямбды.
         // Используется generic-лямбда функция, способная принять response произвольного типа
-        logger::LogJsonAndMessage({}, "before session handle request");
         request_handler_(std::move(request), [self = this->shared_from_this()](auto&& response) {
             self->Write(std::move(response));
         });
-        logger::LogJsonAndMessage({}, "after session handle request");
     }
 
     std::shared_ptr<SessionBase> GetSharedThis() override {

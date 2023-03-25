@@ -19,11 +19,8 @@ StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
     std::string body;
     std::string_view contentType;
 
-    logger::LogJsonAndMessage({}, "before HandleRequestImpl");
     // Non-virtual interface idiom
     auto response = HandleRequestImpl(std::move(req), status, body, contentType);
-    
-    logger::LogJsonAndMessage({}, "after HandleRequestImpl");
 
     auto end = std::chrono::high_resolution_clock::now();
     logger::LogJsonAndMessage(json_helper::CreateResponseValue(
