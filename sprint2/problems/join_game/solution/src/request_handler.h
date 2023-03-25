@@ -51,6 +51,7 @@ public:
             //SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(game_));
             //send(strategy_->HandleRequest(std::move(req)));
         } else {
+            logger::LogJsonAndMessage({}, "after is api request check");
             strategy_ = std::make_shared<RequestHandlerStrategyStaticFile>(basePath_);
             //SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
             //send(strategy_->HandleRequest(std::move(req)));
