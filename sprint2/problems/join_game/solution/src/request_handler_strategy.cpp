@@ -77,7 +77,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
             if (req.method() == http::verb::get || req.method() == http::verb::head) {
                 SetResponseDataGet(req, request_type, body, status);
             } else {
-                MakeMethodNotAllowedBody(body, status);
+                MakeMethodNotAllowedBody(body, status, "invalidMethod", "Only GET, HEAD methods are expected");
             }
             break;
         }
@@ -140,7 +140,7 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
 {
     std::string_view result;
 
-    auto str = req.at("Autorization");
+    auto str = std::string_view(req.at("Autorization"));
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(" ");
         result = str.substr(pos + 1);
