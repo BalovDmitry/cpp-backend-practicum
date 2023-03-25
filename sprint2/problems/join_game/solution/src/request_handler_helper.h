@@ -1,5 +1,7 @@
 #pragma once
 
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+
 #include <string>
 #include <unordered_map>
 #include <boost/beast/http.hpp>
@@ -13,7 +15,7 @@ namespace http = beast::http;
 using StringRequest = http::request<http::string_body>;
 
 bool IsApiRequest(const StringRequest& req);
-std::vector<std::string> GetVectorFromTarget(const std::string& target);
+std::vector<std::string> GetVectorFromTarget(std::string_view target);
 
 using namespace std::literals;
 

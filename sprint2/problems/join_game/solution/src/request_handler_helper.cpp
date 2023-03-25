@@ -1,5 +1,7 @@
 #include "request_handler_helper.h"
 
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+
 #include <boost/algorithm/string/classification.hpp> // Include boost::for is_any_of
 #include <boost/algorithm/string/split.hpp> // Include for boost::split
 
@@ -11,7 +13,11 @@ namespace http_handler {
 bool IsApiRequest(const StringRequest &req)
 {
     logger::LogJsonAndMessage({}, "in IsApiRequest");
-    auto splittedRequest = GetVectorFromTarget(std::string(req.target().data(), req.target().size()));
+    std::string_view t = {req.target().data(), req.target().size()};
+    boost::json::object val;
+    val["string view request"] = t;
+    logger::LogJsonAndMessage(val, "after casting to string view");
+    auto splittedRequest = GetVectorFromTarget(t);
     logger::LogJsonAndMessage({}, "after get splitted request");
 
     if (!splittedRequest.empty() && splittedRequest.front() == "api") {
@@ -20,7 +26,7 @@ bool IsApiRequest(const StringRequest &req)
     return false;
 }
 
-std::vector<std::string> GetVectorFromTarget(const std::string& target)
+std::vector<std::string> GetVectorFromTarget(std::string_view target)
 {
     std::vector<std::string> result;
     boost::json::object val;
