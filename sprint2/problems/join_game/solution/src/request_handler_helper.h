@@ -13,7 +13,7 @@ namespace http = beast::http;
 using StringRequest = http::request<http::string_body>;
 
 bool IsApiRequest(const StringRequest& req);
-std::vector<std::string> GetVectorFromTarget(const std::string_view& target);
+std::vector<std::string> GetVectorFromTarget(const std::string& target);
 
 using namespace std::literals;
 

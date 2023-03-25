@@ -11,7 +11,7 @@ namespace http_handler {
 bool IsApiRequest(const StringRequest &req)
 {
     logger::LogJsonAndMessage({}, "in IsApiRequest");
-    auto splittedRequest = GetVectorFromTarget(std::string_view(req.target().data(), req.target().size()));
+    auto splittedRequest = GetVectorFromTarget(std::string(req.target().data(), req.target().size()));
     logger::LogJsonAndMessage({}, "after get splitted request");
 
     if (!splittedRequest.empty() && splittedRequest.front() == "api") {
@@ -20,11 +20,11 @@ bool IsApiRequest(const StringRequest &req)
     return false;
 }
 
-std::vector<std::string> GetVectorFromTarget(const std::string_view& target)
+std::vector<std::string> GetVectorFromTarget(const std::string& target)
 {
     std::vector<std::string> result;
     boost::json::object val;
-    val["target"] = std::string(target);
+    val["target"] = target;
     logger::LogJsonAndMessage(val, "in GetVectorFromTarget");
     try {
         if (target.size() > 1) {
