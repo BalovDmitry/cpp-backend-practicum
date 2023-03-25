@@ -37,30 +37,20 @@ public:
 
     template <typename Body, typename Allocator, typename Send>
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
-        logger::LogJsonAndMessage({}, "before is api request check");
         if (IsApiRequest(req)) {
-            logger::LogJsonAndMessage({}, "after is api request check");
             // return net::dispatch(strand_, [self = shared_from_this(), send]{
             //     // Этот assert не выстрелит, так как лямбда-функция будет выполняться внутри strand
             //     //assert(self->strand_, running_in_this_thread());
 
             //     send(strategy_->HandleRequest(std::move(req)));
             // }); 
-            //std::lock_guard g(m_);
-            strategy_ = std::make_shared<RequestHandlerStrategyApi>(game_);
-            //SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(game_));
-            //send(strategy_->HandleRequest(std::move(req)));
+            std::lock_guard g(m_);
+            SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(game_));
+            send(strategy_->HandleRequest(std::move(req)));
         } else {
-            logger::LogJsonAndMessage({}, "after is api request check");
-            strategy_ = std::make_shared<RequestHandlerStrategyStaticFile>(basePath_);
-            //SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
-            //send(strategy_->HandleRequest(std::move(req)));
-        }
-
-        if (strategy_) {
+            SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
             send(strategy_->HandleRequest(std::move(req)));
         }
-        //send(strategy_->HandleRequest(std::move(req)));
     }
 
 private:
