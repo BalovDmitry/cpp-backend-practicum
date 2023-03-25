@@ -77,7 +77,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
         
         case RequestType::GET_PLAYERS_ON_MAP: {
             if (req.method() == http::verb::get || req.method() == http::verb::head) {
-                SetResponseDataGet(req, request_type, body, status);
+                //SetResponseDataGet(req, request_type, body, status);
             } else {
                 MakeMethodNotAllowedBody(body, status, "invalidMethod", "Only GET, HEAD methods are expected");
             }
