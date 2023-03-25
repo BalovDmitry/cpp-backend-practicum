@@ -30,7 +30,7 @@ std::vector<std::string> GetVectorFromTarget(std::string_view target)
 {
     std::vector<std::string> result;
     boost::json::object val;
-    val["target"] = target;
+    val["target"] = std::string(target);
     logger::LogJsonAndMessage(val, "in GetVectorFromTarget");
     try {
         if (target.size() > 1) {
