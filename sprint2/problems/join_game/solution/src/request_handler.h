@@ -51,7 +51,8 @@ public:
             SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
             //send(strategy_->HandleRequest(std::move(req)));
         }
-        send(strategy_->HandleRequest(std::move(req)));
+        
+        //send(strategy_->HandleRequest(std::move(req)));
     }
 
 private:
