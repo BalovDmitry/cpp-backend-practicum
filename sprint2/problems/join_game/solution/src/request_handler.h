@@ -25,7 +25,7 @@ namespace net = boost::asio;
 
 using namespace std::literals;
 
-class RequestHandler : public std::enable_shared_from_this<RequestHandler> {
+class RequestHandler {
 public:
     explicit RequestHandler(model::Game& game, const std::filesystem::path& basePath = "/home/")
         : game_{game} {
@@ -51,7 +51,7 @@ public:
             SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
             //send(strategy_->HandleRequest(std::move(req)));
         }
-        
+
         if (strategy_) {
             send(strategy_->HandleRequest(std::move(req)));
         }
