@@ -88,7 +88,7 @@ private:
     bool MakeGetMapListBody(std::string& bodyText, http::status& status);
     bool MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status);
     bool MakeGetPlayersOnMapBody(const StringRequest& req, std::string& bodyText, http::status& status);
-    std::string ReceiveTokenFromRequest(const StringRequest& req);
+    std::string_view ReceiveTokenFromRequest(const StringRequest& req);
 
 private:
     model::Game& game_;
