@@ -54,9 +54,9 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
     };
 
     content_type = ContentType::APP_JSON;
-    if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
-        return text_response(http::status::ok, "players in the end", RequestType::GET_PLAYERS_ON_MAP, ContentType::APP_JSON);
-    }
+    // if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
+    //     return text_response(http::status::ok, "players in the end", RequestType::GET_PLAYERS_ON_MAP, ContentType::APP_JSON);
+    // }
     // if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
     //     return text_response(http::status::ok, "join in the end", RequestType::JOIN_GAME, ContentType::APP_JSON);
     // }
