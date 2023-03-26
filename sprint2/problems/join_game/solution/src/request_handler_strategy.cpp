@@ -54,6 +54,12 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
     };
 
     content_type = ContentType::APP_JSON;
+    // if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
+    //     throw std::invalid_argument("Players in the end!");
+    // }
+    if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "join") {
+        throw std::invalid_argument("Join in the end!");
+    }
     auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())));
     switch (request_type) {
         case RequestType::GET_MAP_BY_ID:
