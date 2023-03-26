@@ -148,12 +148,12 @@ std::string RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringReque
 {
     std::string result;
     try {
-        auto autorization = req.at("autorization");
+        auto autorization = req.at("authorization");
     } catch (...) {
         throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
     }
 
-    auto str = std::string(req.at("autorization").data(), req.at("autorization").size());
+    auto str = std::string(req.at("authorization").data(), req.at("authorization").size());
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
