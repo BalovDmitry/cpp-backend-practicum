@@ -50,9 +50,14 @@ Token PlayerTokens::AddPlayer(Player&& player) {
     //buf << std::setw(32) << std::setfill('0');
 
     std::string token_string;
-    token_string.push_back('0');
+    //token_string.push_back('0');
     token_string += buf.str();
-    token_string.resize(32);
+    if (token_string.size() == 30) {
+        token_string.insert(0, "00");
+    } else if (token_string.size() == 31) {
+        token_string.insert(0, "0");
+    }
+    //token_string.resize(32);
 
     auto result = Token(std::move(token_string));
     //auto result = Token(buf.str());
