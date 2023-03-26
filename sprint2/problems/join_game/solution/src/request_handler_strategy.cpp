@@ -282,7 +282,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     try {
         auto token = ReceiveTokenFromRequest(req);
         
-        //auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
         // const auto map_id = player.GetMapId();
         // const auto& players = game_.GetPlayersOnMap(map_id);
         // for (const auto& player_id : players) {
