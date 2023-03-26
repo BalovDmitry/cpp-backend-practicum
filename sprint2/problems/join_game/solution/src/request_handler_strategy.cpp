@@ -150,10 +150,10 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
     auto autorization = req.at("Autorization");
     auto str = std::string_view(autorization.data(), autorization.size());
     if (str.find("Bearer") != std::string::npos) {
-        auto pos = str.find_last_of(" ");
+        auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
     } else {
-        throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
+        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
 
     return result;
@@ -165,12 +165,12 @@ void RequestHandlerStrategyApi::SetResponseDataPost(std::string_view request, Re
     try {
         boost::json::value val = boost::json::parse(std::string(request));
         if (!val.as_object().contains("userName") || !val.as_object().contains("mapId")) {
-            //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
+            throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
         }
 
         std::string name = val.as_object().at("userName").as_string().c_str();
         if (name.empty()) {
-            //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
+            throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
         }   
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
         auto token = game_.JoinGame(name, model::Map::Id{mapId});
