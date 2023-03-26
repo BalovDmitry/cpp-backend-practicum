@@ -147,8 +147,13 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
 std::string RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
 {
     std::string result;
-    auto autorization = req.at("Autorization");
-    auto str = std::string(autorization.data(), autorization.size());
+    try {
+        auto autorization = req.at("autorization");
+    } catch (...) {
+        throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
+    }
+
+    auto str = std::string(req.at("autorization").data(), req.at("autorization").size());
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
