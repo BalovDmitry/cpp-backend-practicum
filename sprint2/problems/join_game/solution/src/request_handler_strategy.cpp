@@ -54,12 +54,6 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
     };
 
     content_type = ContentType::APP_JSON;
-    // if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
-    //     return text_response(http::status::ok, "players in the end", RequestType::GET_PLAYERS_ON_MAP, ContentType::APP_JSON);
-    // }
-    // if (GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())).back() == "players") {
-    //     return text_response(http::status::ok, "join in the end", RequestType::JOIN_GAME, ContentType::APP_JSON);
-    // }
     auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())));
     switch (request_type) {
         case RequestType::GET_MAP_BY_ID:
@@ -147,17 +141,21 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
 std::string RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
 {
     std::string result;
-    try {
-        auto autorization = req.at("authorization");
-    } catch (...) {
-        throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
-    }
 
+    auto it = req.find("authorization");
+    if (it == req.end()) {
+        throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
+    }
+    
     auto str = std::string(req.at("authorization").data(), req.at("authorization").size());
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
     } else {
+        throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
+    }
+
+    if (result.empty()) {
         throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
 
@@ -286,7 +284,6 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
 
     try {
         auto token = ReceiveTokenFromRequest(req);
-        //model::Token token("value");
         auto player = game_.FindPlayerByToken(model::Token(token));
         const auto map_id = player.GetMapId();
         const auto& players = game_.GetPlayersOnMap(map_id);
