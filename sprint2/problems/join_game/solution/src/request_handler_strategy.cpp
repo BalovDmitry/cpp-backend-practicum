@@ -280,9 +280,9 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     boost::json::object res;
 
     try {
-        auto token = ReceiveTokenFromRequest(req);
-        
-        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        //auto token = ReceiveTokenFromRequest(req);
+        model::Token token("value");
+        auto player = game_.FindPlayerByToken(model::Token(*token));
         const auto map_id = player.GetMapId();
         const auto& players = game_.GetPlayersOnMap(map_id);
         for (const auto& player_id : players) {
