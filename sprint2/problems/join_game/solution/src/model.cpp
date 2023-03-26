@@ -47,12 +47,15 @@ Token PlayerTokens::AddPlayer(Player&& player) {
     auto first_part = generator1_();
     auto second_part = generator2_();
     buf << std::hex << first_part << second_part;
+    //buf << std::setw(32) << std::setfill('0');
+
     std::string token_string;
     token_string.push_back('0');
     token_string += buf.str();
     token_string.resize(32);
 
     auto result = Token(std::move(token_string));
+    //auto result = Token(buf.str());
     
     tokenToPlayer_.emplace(result, player.GetId());
     players_.emplace_back(std::move(player));

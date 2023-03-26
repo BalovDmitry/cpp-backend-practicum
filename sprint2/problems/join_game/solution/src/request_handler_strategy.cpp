@@ -280,16 +280,16 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     boost::json::object res;
 
     try {
-        //auto token = ReceiveTokenFromRequest(req);
-        model::Token token("value");
-        auto player = game_.FindPlayerByToken(model::Token(*token));
+        auto token = ReceiveTokenFromRequest(req);
+        //model::Token token("value");
+        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
         const auto map_id = player.GetMapId();
         const auto& players = game_.GetPlayersOnMap(map_id);
         for (const auto& player_id : players) {
-        //     const auto& current_player = game_.FindPlayerById(player_id);
-        //     boost::json::object name_obj;
-        //     name_obj["name"] = current_player.GetName();
-        //     res[std::to_string(current_player.GetId())] = name_obj;
+            const auto& current_player = game_.FindPlayerById(player_id);
+            boost::json::object name_obj;
+            name_obj["name"] = current_player.GetName();
+            res[std::to_string(current_player.GetId())] = name_obj;
         }
         status = http::status::ok;
     } catch (std::exception& e) {
