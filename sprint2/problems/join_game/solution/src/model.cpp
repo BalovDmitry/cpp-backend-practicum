@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <iomanip>
 
 namespace model {
 using namespace std::literals;
@@ -42,12 +43,10 @@ void Game::AddMap(Map map) {
 
 Token PlayerTokens::AddPlayer(Player&& player) {
     std::stringstream buf;
-    while (buf.str().length() != 32) {
-        auto first_part = generator1_();
-        auto second_part = generator2_();
-        buf << '0';
-        buf << std::hex << first_part << second_part;
-    }
+    
+    auto first_part = generator1_();
+    auto second_part = generator2_();
+    buf << std::setw(32) << std::setfill('0') << std::hex << first_part << second_part;
 
     auto result = Token(buf.str());
 
