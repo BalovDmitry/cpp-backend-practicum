@@ -153,7 +153,7 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
     } else {
-        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
+        throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
 
     return result;
@@ -280,16 +280,17 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     boost::json::object res;
 
     try {
-        auto token = ReceiveTokenFromRequest(req);
-        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
-        const auto map_id = player.GetMapId();
-        const auto& players = game_.GetPlayersOnMap(map_id);
-        for (const auto& player_id : players) {
-            const auto& current_player = game_.FindPlayerById(player_id);
-            boost::json::object name_obj;
-            name_obj["name"] = current_player.GetName();
-            res[std::to_string(current_player.GetId())] = name_obj;
-        }
+        //auto token = ReceiveTokenFromRequest(req);
+        
+        //auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        // const auto map_id = player.GetMapId();
+        // const auto& players = game_.GetPlayersOnMap(map_id);
+        // for (const auto& player_id : players) {
+        //     const auto& current_player = game_.FindPlayerById(player_id);
+        //     boost::json::object name_obj;
+        //     name_obj["name"] = current_player.GetName();
+        //     res[std::to_string(current_player.GetId())] = name_obj;
+        // }
         status = http::status::ok;
     } catch (std::exception& e) {
         std::string message;
