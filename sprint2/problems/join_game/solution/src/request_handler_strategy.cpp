@@ -107,8 +107,8 @@ StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status
     } else if (status == http::status::method_not_allowed && request_type == RequestType::GET_PLAYERS_ON_MAP) {
         response.set(http::field::allow, "GET, HEAD");
     }
-    response.set(http::field::content_type, content_type);
-    response.body() = body;
+    response.set(http::field::content_type, std::string(content_type));
+    response.body() = std::string(body);
     response.content_length(body.size());
     response.keep_alive(keep_alive);
     response.set(http::field::cache_control, "no-cache");
