@@ -45,6 +45,7 @@ Token PlayerTokens::AddPlayer(Player&& player) {
     while (buf.str().length() != 32) {
         auto first_part = generator1_();
         auto second_part = generator2_();
+        buf << '0';
         buf << std::hex << first_part << second_part;
     }
 
