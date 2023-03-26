@@ -41,13 +41,15 @@ void Game::AddMap(Map map) {
 }
 
 Token PlayerTokens::AddPlayer(Player&& player) {
-    auto first_part = generator1_();
-    auto second_part = generator2_();
-
     std::stringstream buf;
-    buf << std::hex << first_part << second_part;
+    while (buf.str().length() != 32) {
+        auto first_part = generator1_();
+        auto second_part = generator2_();
+        buf << std::hex << first_part << second_part;
+    }
 
     auto result = Token(buf.str());
+
     tokenToPlayer_.emplace(result, player.GetId());
     players_.emplace_back(std::move(player));
     tokens_.push_back(result);
