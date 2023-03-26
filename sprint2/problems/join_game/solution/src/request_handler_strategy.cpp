@@ -144,11 +144,11 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
     }
 }
 
-std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
+std::string RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
 {
-    std::string_view result;
+    std::string result;
     auto autorization = req.at("Autorization");
-    auto str = std::string_view(autorization.data(), autorization.size());
+    auto str = std::string(autorization.data(), autorization.size());
     if (str.find("Bearer") != std::string::npos) {
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
@@ -282,7 +282,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     try {
         auto token = ReceiveTokenFromRequest(req);
         //model::Token token("value");
-        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        auto player = game_.FindPlayerByToken(model::Token(token));
         const auto map_id = player.GetMapId();
         const auto& players = game_.GetPlayersOnMap(map_id);
         for (const auto& player_id : players) {
