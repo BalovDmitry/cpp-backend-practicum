@@ -47,29 +47,28 @@ Token PlayerTokens::AddPlayer(Player&& player) {
     auto first_part = generator1_();
     auto second_part = generator2_();
     buf << std::hex << first_part << second_part;
-    //buf << std::setw(32) << std::setfill('0');
 
     std::string token_string;
-    //token_string.push_back('0');
     token_string += buf.str();
     if (token_string.size() == 30) {
         token_string.insert(0, "00");
     } else if (token_string.size() == 31) {
         token_string.insert(0, "0");
     }
-    //token_string.resize(32);
 
     auto result = Token(std::move(token_string));
-    //auto result = Token(buf.str());
     
     tokenToPlayer_.emplace(result, player.GetId());
     players_.emplace_back(std::move(player));
     tokens_.push_back(result);
-    //char c[] = "07ef299345002dec6fee245de1601857";
     return result;
 }
 
 const Player& PlayerTokens::FindPlayerByToken(const Token& token) const {
+    if ((*token).size() != 32) {
+        throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_TOKEN));
+    }
+
     if (tokenToPlayer_.contains(token)) {
         auto id = tokenToPlayer_.at(token);
         return players_[id];
