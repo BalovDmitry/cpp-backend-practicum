@@ -121,6 +121,18 @@ const Player &Game::FindPlayerById(uint32_t id)
     return player_tokens_.FindPlayerById(id);
 }
 
+SessionPtr Game::FindSession(Map::Id id)
+{
+    if (!map_id_to_session_.contains(id)) {
+        if (auto map = FindMap(id)) {
+            map_id_to_session_[id] = std::make_shared<GameSession>(const_cast<Map&>(*map));
+        } else {
+            throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_ARGUMENT_MAP));
+        }
+    }
+    return map_id_to_session_.at(id);
+}
+
 const std::unordered_set<uint32_t> &Game::GetPlayersOnMap(Map::Id id)
 {
     if (!map_id_to_player_id_.contains(id)) {

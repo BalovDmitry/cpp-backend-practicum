@@ -250,6 +250,9 @@ private:
     }()};
 };
 
+
+using SessionPtr = std::shared_ptr<GameSession>;
+
 class Game {
 public:
     using Maps = std::vector<Map>;
@@ -270,22 +273,25 @@ public:
     Token JoinGame(const std::string &name, const Map::Id& id);
     const Player& FindPlayerByToken(Token token);
     const Player& FindPlayerById(uint32_t id);
+    SessionPtr FindSession(Map::Id id);
     const std::unordered_set<uint32_t>& GetPlayersOnMap(Map::Id id);
     
 private:
     using MapIdHasher = util::TaggedHasher<Map::Id>;
     using MapIdToIndex = std::unordered_map<Map::Id, size_t, MapIdHasher>;
-    using MapidToPlayers = std::unordered_map<Map::Id, std::unordered_set<uint32_t> , MapIdHasher>;
+    using MapIdToPlayers = std::unordered_map<Map::Id, std::unordered_set<uint32_t> , MapIdHasher>;
+    using MapIdToSession = std::unordered_map<Map::Id, SessionPtr , MapIdHasher>;
 
     uint32_t current_id_ = 0;
 
     std::vector<Map> maps_;
-    std::vector<GameSession> sessions_;
+    //std::vector<GameSession> sessions_;
 
     std::unordered_map<std::string, uint32_t> name_to_id_;
 
     MapIdToIndex map_id_to_index_;
-    MapidToPlayers map_id_to_player_id_;
+    MapIdToPlayers map_id_to_player_id_;
+    MapIdToSession map_id_to_session_;
     PlayerTokens player_tokens_;
 };
 
