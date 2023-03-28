@@ -1,5 +1,7 @@
 #include "model_map.h"
 
+#include <stdexcept>
+
 namespace model {
 
 void Map::AddOffice(Office office) {
