@@ -344,6 +344,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         // Just to ensure that token is valid
         game_.FindPlayerByToken(model::Token(std::string(token)));
         
+        boost::json::object players_obj;
         for (const auto& player : game_.GetPlayers()) {
             boost::json::object temp;
 
@@ -351,8 +352,11 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
             temp["pos"] = boost::json::array({ dog->GetPosition().x, dog->GetPosition().y });
             temp["speed"] = boost::json::array({ dog->GetVelocity().v_x, dog->GetVelocity().v_y });
             temp["dir"] = dog->GetDirectionString();
-            res[std::to_string(player.GetId())] = temp;
+
+            players_obj[std::to_string(player.GetId())] = temp;
         }
+        
+        res["players"] = players_obj;
         status = http::status::ok;
     } catch (std::exception& e) {
         std::string message;
