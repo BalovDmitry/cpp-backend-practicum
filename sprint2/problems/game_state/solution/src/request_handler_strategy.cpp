@@ -76,7 +76,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
         }
 
         case RequestType::GET_GAME_STATE: {
-            if (req.method() == http::verb::get) {
+            if (req.method() == http::verb::get || req.method() == http::verb::head) {
                 SetResponseDataGet(req, request_type, body, status);
             } else {
                 MakeMethodNotAllowedBody(body, status, "invalidMethod", "Invalid method");
