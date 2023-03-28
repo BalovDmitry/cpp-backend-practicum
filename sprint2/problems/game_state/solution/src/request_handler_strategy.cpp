@@ -107,7 +107,7 @@ StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status
     StringResponse response(status, http_version);
     if (status == http::status::method_not_allowed && request_type == RequestType::JOIN_GAME) {
         response.set(http::field::allow, "POST");
-    } else if (status == http::status::method_not_allowed && request_type == RequestType::GET_PLAYERS_ON_MAP) {
+    } else if (status == http::status::method_not_allowed && (request_type == RequestType::GET_PLAYERS_ON_MAP || request_type == RequestType::GET_GAME_STATE)) {
         response.set(http::field::allow, "GET, HEAD");
     }
     response.set(http::field::content_type, std::string(content_type));
@@ -355,7 +355,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
 
             players_obj[std::to_string(player.GetId())] = temp;
         }
-        
+
         res["players"] = players_obj;
         status = http::status::ok;
     } catch (std::exception& e) {
