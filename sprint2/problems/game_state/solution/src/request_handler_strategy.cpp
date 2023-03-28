@@ -79,7 +79,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
             if (req.method() == http::verb::get) {
                 SetResponseDataGet(req, request_type, body, status);
             } else {
-                MakeBadRequestBody(body, status, "invalidMethod", "Invalid method");
+                MakeMethodNotAllowedBody(body, status, "invalidMethod", "Invalid method");
             }
             break;
         }
