@@ -37,7 +37,7 @@ protected:
     bool MakeBadRequestBody(
         std::string& body, 
         http::status& status,
-        const std::string& code = "methodNotAllowed",
+        const std::string& code = "badRequest",
         const std::string& message = "Method not allowed");
     bool MakeMethodNotAllowedBody(
         std::string& body, 
