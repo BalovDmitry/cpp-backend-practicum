@@ -103,7 +103,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
         }
 
         default: {
-            MakeMethodNotAllowedBody(body, status);
+            MakeBadRequestBody(body, status);
             break;
         }
     }
