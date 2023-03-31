@@ -9,7 +9,8 @@ std::string Dog::GetDirectionString() const
         case Direction::WEST: return "L";
         case Direction::NORTH: return "U";
         case Direction::SOUTH: return "D";
-        case Direction::NO_DIRECTION: return "";
+        case Direction::NO_DIRECTION:
+        default: return "";
     }
 }
 
