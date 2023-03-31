@@ -107,9 +107,11 @@ private:
     // Post responses
     bool MakeJoinGameBody(std::string_view request, std::string& body, http::status& status);
     bool MakeMovePlayerBody(const StringRequest& req, std::string& body, http::status& status);
+    bool MakeUpdateTimeBody(const StringRequest& req, std::string& body, http::status& status);
 
     std::string_view ReceiveTokenFromRequest(const StringRequest& req);
     model::Direction ReceiveDirectionFromRequest(const StringRequest& req);
+    int ReceiveTimeFromRequest(const StringRequest& req);
 
 private:
     model::Game& game_;

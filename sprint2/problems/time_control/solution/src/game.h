@@ -32,9 +32,10 @@ public:
     const Player& FindPlayerByToken(Token token);
     const Player& FindPlayerById(uint32_t id);
     SessionPtr FindSession(Map::Id id);
-    const std::unordered_set<uint32_t>& GetPlayersOnMap(Map::Id id);
 
+    const std::unordered_set<uint32_t>& GetPlayersOnMap(Map::Id id);
     const auto& GetPlayers() const { return player_tokens_.GetPlayers(); }
+    auto& GetMapToSession() { return map_id_to_session_; }
     
 private:
     uint32_t current_id_ = 0;

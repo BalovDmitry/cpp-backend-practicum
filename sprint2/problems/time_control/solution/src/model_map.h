@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <utility>
 
 namespace model {
 
@@ -76,12 +77,14 @@ public:
 
     Road(HorizontalTag, Point start, Coord end_x) noexcept
         : start_{start}
-        , end_{end_x, start.y} {
+        , end_{end_x, start.y} 
+        , id_(counter_++) {
     }
 
     Road(VerticalTag, Point start, Coord end_y) noexcept
         : start_{start}
-        , end_{start.x, end_y} {
+        , end_{start.x, end_y}
+        , id_(counter_++) {
     }
 
     bool IsHorizontal() const noexcept {
@@ -100,9 +103,16 @@ public:
         return end_;
     }
 
+    uint32_t GetId() const noexcept {
+        return id_;
+    }
+
 private:
     Point start_;
     Point end_;
+    uint32_t id_ = 0;
+
+    static uint32_t counter_;
 };
 
 RoadBoarders CalculateBoarders(const Road& road);
@@ -192,9 +202,6 @@ public:
         buildings_.emplace_back(building);
     }
 
-    void AddOffice(Office office);
-    std::optional<Road> FindRoadByPosition(const Position& position);
-
     void SetSpeed(double speed) {
         speed_ = speed;
     }
@@ -202,6 +209,12 @@ public:
     double GetSpeed() const {
         return speed_;
     }
+
+    void AddOffice(Office office);
+    Position CalculatePositionOnRoad(const Road& road, const Position& calculated_pos);
+    std::pair<Position, Speed> CalculatePositionAndSpeedOnRoad(const Road& current_road, const Position& calculated_pos, const Speed& initial_speed);
+    std::optional<Road> FindRoadByPosition(const Position& position);
+    std::optional<Road> FindRoadByPositionExceptRoadId(const Position& position, int excepted_id);
 
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;

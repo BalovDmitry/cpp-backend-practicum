@@ -167,6 +167,11 @@ void RequestHandlerStrategyApi::SetResponseDataPost(const StringRequest& req, Re
             break;
         }
 
+        case RequestType::UPDATE_TIME: {
+            MakeUpdateTimeBody(req, body, status);
+            break;
+        }
+
         case RequestType::UNKNOWN: {
             MakeBadRequestBody(body, status);
             break;
@@ -264,6 +269,12 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
     } else {
         throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_DIRECTION));
     }
+}
+
+int RequestHandlerStrategyApi::ReceiveTimeFromRequest(const StringRequest &req)
+{
+    boost::json::value val = boost::json::parse(std::string(req.body()));
+    return val.as_object().at("timeDelta").as_int64();
 }
 
 // Get responses
@@ -472,6 +483,25 @@ bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std
         res = json_helper::CreateErrorValue(code, message);
     }
     
+    body += boost::json::serialize(res);
+
+    return true;
+}
+
+bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std::string &body, http::status &status)
+{
+    boost::json::object res;
+
+    try {
+        auto time = ReceiveTimeFromRequest(req);
+        for (auto& [map, session] : game_.GetMapToSession()) {
+            session->UpdateTime(time);
+        }
+        status = http::status::ok;
+    } catch(std::exception& e) {
+        res = json_helper::CreateErrorValue(ErrorMessages::INVALID_ARGUMENT_PARSE, e.what());
+        status = http::status::bad_request;
+    }
     body += boost::json::serialize(res);
 
     return true;

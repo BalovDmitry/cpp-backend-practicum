@@ -29,6 +29,7 @@ public:
     // Update state
     DogPtr AddDog(Position spawn_point, const std::string& name);
     void UpdateTime(double time_delta);
+    void UpdateDogPosition(DogPtr dog, double time_delta);
 
 private:
     std::unordered_map<std::string, DogPtr> name_to_dog_;

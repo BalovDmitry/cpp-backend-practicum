@@ -20,4 +20,6 @@ enum class Direction {
     NO_DIRECTION
 };
 
+double CalculateDistance(const Position& pos1, const Position& pos2);
+
 }
