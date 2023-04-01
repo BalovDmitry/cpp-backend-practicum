@@ -78,14 +78,12 @@ public:
 
     Road(HorizontalTag, Point start, Coord end_x) noexcept
         : start_{start}
-        , end_{end_x, start.y} 
-        , id_(counter_++) {
+        , end_{end_x, start.y} {
     }
 
     Road(VerticalTag, Point start, Coord end_y) noexcept
         : start_{start}
-        , end_{start.x, end_y}
-        , id_(counter_++) {
+        , end_{start.x, end_y} {
     }
 
     bool IsHorizontal() const noexcept {
@@ -108,12 +106,14 @@ public:
         return id_;
     }
 
+    void SetId(uint32_t id) {
+        id_ = id;
+    } 
+
 private:
     Point start_;
     Point end_;
     uint32_t id_ = 0;
-
-    static uint32_t counter_;
 };
 
 RoadBoarders CalculateBoarders(const Road& road);
@@ -196,6 +196,11 @@ public:
 
     void AddRoad(const Road& road) {
         roads_.emplace_back(road);
+
+        // Looks like bad code ;(((
+        roads_.back().SetId(roads_.size() - 1);
+        std::cout << "Road id: " << roads_.back().GetId() << std::endl;
+
         road_boraders_.emplace_back(CalculateBoarders(road));
     }
 

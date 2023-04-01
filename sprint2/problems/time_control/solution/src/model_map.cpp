@@ -5,8 +5,6 @@
 
 namespace model {
 
-uint32_t Road::counter_ = 0;
-
 RoadBoarders CalculateBoarders(const Road& road) {
     Position point_begin, point_end;
 
@@ -15,11 +13,11 @@ RoadBoarders CalculateBoarders(const Road& road) {
     point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + 0.4;
     point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + 0.4; 
 
-    // std::cout << "Road: " << road.GetId() << std::endl;
-    // std::cout << "start x: " << road.GetStart().x << ", start y: " << road.GetStart().y << std::endl;
-    // std::cout << "end x: " << road.GetEnd().x << ", end y: " << road.GetEnd().y << std::endl;
-    // std::cout << "boarders start x: " << point_begin.x << ", boarders start y: " << point_begin.y << std::endl;
-    // std::cout << "boarders end x: " << point_end.x << ", boarders end y: " << point_end.y << std::endl;
+    //std::cout << "Road: " << road.GetId() << std::endl;
+    std::cout << "start x: " << road.GetStart().x << ", start y: " << road.GetStart().y << std::endl;
+    std::cout << "end x: " << road.GetEnd().x << ", end y: " << road.GetEnd().y << std::endl;
+    std::cout << "boarders start x: " << point_begin.x << ", boarders start y: " << point_begin.y << std::endl;
+    std::cout << "boarders end x: " << point_end.x << ", boarders end y: " << point_end.y << std::endl;
 
     return { point_begin, point_end };
 }
