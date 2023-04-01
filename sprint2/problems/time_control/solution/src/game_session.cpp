@@ -56,15 +56,16 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
     if (distance_on_current_road > distance_on_other_road) {
         dog->SetPosition(calculated_pos_on_current_road);
         dog->SetSpeed(calculated_speed_on_current_road);
-    } else if (distance_on_current_road > distance_on_other_road) {
+    } else /*if (distance_on_current_road > distance_on_other_road) */ {
         dog->SetPosition(calculated_pos_on_other_road);
         dog->SetSpeed(calculated_speed_on_other_road);
-    } else {
-        dog->SetPosition(calculated_pos_on_current_road);
-        double max_speed_v_x = std::max(std::abs(calculated_speed_on_current_road.v_x), std::abs(calculated_speed_on_other_road.v_x));
-        double max_speed_v_y = std::max(std::abs(calculated_speed_on_current_road.v_y), std::abs(calculated_speed_on_other_road.v_y));
-        dog->SetSpeed( { max_speed_v_x, max_speed_v_y } );
     }
+    // } else {
+    //     dog->SetPosition(calculated_pos_on_current_road);
+    //     double max_speed_v_x = std::max(std::abs(calculated_speed_on_current_road.v_x), std::abs(calculated_speed_on_other_road.v_x));
+    //     double max_speed_v_y = std::max(std::abs(calculated_speed_on_current_road.v_y), std::abs(calculated_speed_on_other_road.v_y));
+    //     dog->SetSpeed( { max_speed_v_x, max_speed_v_y } );
+    // }
 
     std::cout << "Final position: " << "x: " << dog->GetPosition().x << ", y: " << dog->GetPosition().y << std::endl;
 
