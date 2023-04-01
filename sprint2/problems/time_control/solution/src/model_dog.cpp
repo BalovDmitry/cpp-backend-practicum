@@ -39,6 +39,7 @@ void Dog::SetSpeedByDirection()
 
         case Direction::NO_DIRECTION: {
             SetSpeed({0, 0});
+            throw std::invalid_argument("No direction");
             break;
         }
 
