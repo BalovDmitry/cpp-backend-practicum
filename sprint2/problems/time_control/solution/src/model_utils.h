@@ -21,5 +21,6 @@ enum class Direction {
 };
 
 double CalculateDistance(const Position& pos1, const Position& pos2);
+double CalculateAbsSpeed(const Speed& speed);
 
 }
