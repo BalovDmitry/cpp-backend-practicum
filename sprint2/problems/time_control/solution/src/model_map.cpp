@@ -10,8 +10,8 @@ uint32_t Road::counter_ = 0;
 RoadBoarders CalculateBoarders(const Road& road) {
     Position point_begin, point_end;
 
-    point_begin.x = std::max(0.0, std::min(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x)) - 0.4);
-    point_begin.y = std::max(0.0, std::min(static_cast<double>(road.GetStart().y) , static_cast<double>(road.GetEnd().y))  - 0.4);
+    point_begin.x = std::min(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x) - 0.4);
+    point_begin.y = std::min(static_cast<double>(road.GetStart().y) , static_cast<double>(road.GetEnd().y)  - 0.4);
     point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + 0.4;
     point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + 0.4; 
 
