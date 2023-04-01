@@ -10,10 +10,16 @@ uint32_t Road::counter_ = 0;
 RoadBoarders CalculateBoarders(const Road& road) {
     Position point_begin, point_end;
 
-    point_begin.x = std::max(0.0, static_cast<double>(road.GetStart().x) - 0.4);
-    point_begin.y = std::max(0.0, static_cast<double>(road.GetStart().y) - 0.4);
-    point_end.x = static_cast<double>(road.GetEnd().x) + 0.4;
-    point_end.y = static_cast<double>(road.GetEnd().y) + 0.4; 
+    point_begin.x = std::max(0.0, std::min(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x)) - 0.4);
+    point_begin.y = std::max(0.0, std::min(static_cast<double>(road.GetStart().y) , static_cast<double>(road.GetEnd().y))  - 0.4);
+    point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + 0.4;
+    point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + 0.4; 
+
+    // std::cout << "Road: " << road.GetId() << std::endl;
+    // std::cout << "start x: " << road.GetStart().x << ", start y: " << road.GetStart().y << std::endl;
+    // std::cout << "end x: " << road.GetEnd().x << ", end y: " << road.GetEnd().y << std::endl;
+    // std::cout << "boarders start x: " << point_begin.x << ", boarders start y: " << point_begin.y << std::endl;
+    // std::cout << "boarders end x: " << point_end.x << ", boarders end y: " << point_end.y << std::endl;
 
     return { point_begin, point_end };
 }
@@ -76,9 +82,11 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
         if (calculated_pos.x <= left_boarder) {
             result_pos.x = left_boarder;
             result_speed.v_x = 0;
+            result_speed.v_y = 0;
         } else if (calculated_pos.x >= right_boarder) {
             result_pos.x = right_boarder;
             result_speed.v_x = 0;
+            result_speed.v_y = 0;
         } else {
             result_pos.x = calculated_pos.x;
         }
@@ -88,9 +96,11 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
         double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
         if (calculated_pos.y >= upper_boarder) {
             result_pos.y = upper_boarder;
+            result_speed.v_x = 0;
             result_speed.v_y = 0;
         } else if (calculated_pos.y <= lower_boarder) {
             result_pos.y = lower_boarder;
+            result_speed.v_x = 0;
             result_speed.v_y = 0;
         } else {
             result_pos.y = calculated_pos.y;

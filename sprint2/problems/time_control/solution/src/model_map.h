@@ -9,6 +9,7 @@
 #include <vector>
 #include <optional>
 #include <utility>
+#include <iostream>
 
 namespace model {
 

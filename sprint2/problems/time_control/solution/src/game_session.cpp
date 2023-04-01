@@ -31,8 +31,8 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
     Position calculated_pos_on_other_road = dog->GetPosition();
     Speed calculated_speed_on_other_road;
 
-    calculated_pos.x = dog->GetPosition().x + dog->GetSpeed().v_x * time_delta;
-    calculated_pos.y = dog->GetPosition().y + dog->GetSpeed().v_y * time_delta;
+    calculated_pos.x = dog->GetPosition().x + dog->GetSpeed().v_x * time_delta / 1000;
+    calculated_pos.y = dog->GetPosition().y + dog->GetSpeed().v_y * time_delta / 1000;
 
     std::cout << "Calculated position: " << "x: " << calculated_pos.x << ", y: " << calculated_pos.y << std::endl;
 

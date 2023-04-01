@@ -500,9 +500,9 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
         status = http::status::ok;
     } catch(std::exception& e) {
         std::string code;
-        const std::string& what = e.what();
+        //const std::string& what = e.what();
 
-        res = json_helper::CreateErrorValue(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE), what);
+        res = json_helper::CreateErrorValue(std::string(ErrorMessages::INVALID_ARGUMENT), e.what());
         status = http::status::bad_request;
     }
     body += boost::json::serialize(res);
