@@ -11,9 +11,8 @@ public:
     Dog(const std::string& name, Position position, double map_speed, Direction direction)
         : name_(name)
         , position_(position)
-        , map_speed_(map_speed) {
-            SetDirection(direction);
-        }
+        , map_speed_(map_speed)
+        , direction_(direction) {}
 
     // Setters
     void SetDirection(Direction dir) { direction_ = dir; SetSpeedByDirection(); }
