@@ -1,5 +1,7 @@
 #include "model_dog.h"
 
+#include <stdexcept>
+
 namespace model {
 
 std::string Dog::GetDirectionString() const
