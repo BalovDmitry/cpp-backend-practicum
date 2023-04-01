@@ -74,37 +74,39 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     Position result_pos;
     Speed result_speed = initial_speed;
 
-    if (current_road.IsHorizontal()) {
-        double left_boarder = static_cast<double>(std::min(current_road.GetStart().x, current_road.GetEnd().x)) - 0.4;
-        double right_boarder = static_cast<double>(std::max(current_road.GetStart().x, current_road.GetEnd().x)) + 0.4;
-        if (calculated_pos.x <= left_boarder) {
-            result_pos.x = left_boarder;
-            result_speed.v_x = 0;
-            result_speed.v_y = 0;
-        } else if (calculated_pos.x >= right_boarder) {
-            result_pos.x = right_boarder;
-            result_speed.v_x = 0;
-            result_speed.v_y = 0;
-        } else {
-            result_pos.x = calculated_pos.x;
-        }
-        result_pos.y = calculated_pos.y;
+    double left_boarder = static_cast<double>(std::min(current_road.GetStart().x, current_road.GetEnd().x)) - 0.4;
+    double right_boarder = static_cast<double>(std::max(current_road.GetStart().x, current_road.GetEnd().x)) + 0.4;
+    double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + 0.4;
+    double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
+
+    std::cout << "Road: " << current_road.GetId() << std::endl;
+    std::cout << "Left boarder: " << left_boarder << ", right boarder: " << right_boarder << std::endl;
+    std::cout << "Upped boarder: " << upper_boarder << ", lower boarder: " << lower_boarder << std::endl;
+
+    if (calculated_pos.x <= left_boarder) {
+        result_pos.x = left_boarder;
+        result_speed.v_x = 0;
+        //result_speed.v_y = 0;
+    } else if (calculated_pos.x >= right_boarder) {
+        result_pos.x = right_boarder;
+        result_speed.v_x = 0;
+        //result_speed.v_y = 0;
     } else {
-        double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + 0.4;
-        double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
-        if (calculated_pos.y >= upper_boarder) {
-            result_pos.y = upper_boarder;
-            result_speed.v_x = 0;
-            result_speed.v_y = 0;
-        } else if (calculated_pos.y <= lower_boarder) {
-            result_pos.y = lower_boarder;
-            result_speed.v_x = 0;
-            result_speed.v_y = 0;
-        } else {
-            result_pos.y = calculated_pos.y;
-        }
         result_pos.x = calculated_pos.x;
     }
+
+    if (calculated_pos.y >= upper_boarder) {
+        result_pos.y = upper_boarder;
+        //result_speed.v_x = 0;
+        result_speed.v_y = 0;
+    } else if (calculated_pos.y <= lower_boarder) {
+        result_pos.y = lower_boarder;
+        //result_speed.v_x = 0;
+        result_speed.v_y = 0;
+    } else {
+        result_pos.y = calculated_pos.y;
+    }
+    
     return std::make_pair<>(result_pos, result_speed);
 }
 
