@@ -42,7 +42,7 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
         calculated_pos_on_current_road = result_on_current_road.first;
         calculated_speed_on_current_road = result_on_current_road.second;
 
-        auto other_road = map_.FindRoadByPositionExceptRoadId(calculated_pos, current_road.value().GetId());
+        auto other_road = map_.FindRoadByPositionExceptRoadId(dog->GetPosition(), current_road.value().GetId());
         if (other_road.has_value()) {
             auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(other_road.value(), calculated_pos, dog->GetSpeed());
             calculated_pos_on_other_road = result_on_other_road.first;
