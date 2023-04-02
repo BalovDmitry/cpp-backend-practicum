@@ -54,6 +54,11 @@ public:
         return *this;
     }
 
+    // void PrintBoarders() const {
+    //     std::cout << "Point begin: " << "x: " << point_begin_.x << ", y: " << point_begin_.y << std::endl;
+    //     std::cout << "Point end: " << "x: " << point_end_.x << ", y: " << point_end_.y << std::endl;
+    // }
+
     bool ContainPosition(const Position& position) {
         return (position.x >= point_begin_.x && position.x <= point_end_.x) 
                 && (position.y >= point_begin_.y && position.y <= point_end_.y);
@@ -202,6 +207,7 @@ public:
         std::cout << "Road id: " << roads_.back().GetId() << std::endl;
 
         road_boraders_.emplace_back(CalculateBoarders(road));
+        //road_boraders_.back().PrintBoarders();
     }
 
     void AddBuilding(const Building& building) {
