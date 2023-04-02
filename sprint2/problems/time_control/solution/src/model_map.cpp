@@ -65,6 +65,39 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     return std::make_pair<>(result_pos, result_speed);
 }
 
+std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const RoadBoarders &boarders, const Position &calculated_pos, const Speed &initial_speed)
+{
+    Position result_pos;
+    Speed result_speed = initial_speed;
+
+    const double left_boarder = boarders.GetStartPoint().x;
+    const double right_boarder = boarders.GetEndPoint().x;
+    const double lower_boarder = boarders.GetStartPoint().y;
+    const double upper_boarder = boarders.GetEndPoint().y;
+
+    if (calculated_pos.x <= left_boarder) {
+        result_pos.x = left_boarder;
+        result_speed.v_x = 0;
+    } else if (calculated_pos.x >= right_boarder) {
+        result_pos.x = right_boarder;
+        result_speed.v_x = 0;
+    } else {
+        result_pos.x = calculated_pos.x;
+    }
+
+    if (calculated_pos.y >= upper_boarder) {
+        result_pos.y = upper_boarder;
+        result_speed.v_y = 0;
+    } else if (calculated_pos.y <= lower_boarder) {
+        result_pos.y = lower_boarder;
+        result_speed.v_y = 0;
+    } else {
+        result_pos.y = calculated_pos.y;
+    }
+    
+    return std::make_pair<>(result_pos, result_speed);
+}
+
 std::optional<Road> Map::FindRoadByPosition(const Position &position)
 {
     for (int i = 0; i < road_boarders_.size(); ++i) {
