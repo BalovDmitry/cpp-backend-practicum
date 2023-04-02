@@ -54,11 +54,6 @@ public:
         return *this;
     }
 
-    // void PrintBoarders() const {
-    //     std::cout << "Point begin: " << "x: " << point_begin_.x << ", y: " << point_begin_.y << std::endl;
-    //     std::cout << "Point end: " << "x: " << point_end_.x << ", y: " << point_end_.y << std::endl;
-    // }
-
     bool ContainPosition(const Position& position) {
         return (position.x >= point_begin_.x && position.x <= point_end_.x) 
                 && (position.y >= point_begin_.y && position.y <= point_end_.y);
@@ -201,13 +196,8 @@ public:
 
     void AddRoad(const Road& road) {
         roads_.emplace_back(road);
-
-        // Looks like bad code ;(((
         roads_.back().SetId(roads_.size() - 1);
-        std::cout << "Road id: " << roads_.back().GetId() << std::endl;
-
-        road_boraders_.emplace_back(CalculateBoarders(road));
-        //road_boraders_.back().PrintBoarders();
+        road_boarders_.emplace_back(CalculateBoarders(road));
     }
 
     void AddBuilding(const Building& building) {
@@ -223,7 +213,6 @@ public:
     }
 
     void AddOffice(Office office);
-    Position CalculatePositionOnRoad(const Road& road, const Position& calculated_pos);
     std::pair<Position, Speed> CalculatePositionAndSpeedOnRoad(const Road& current_road, const Position& calculated_pos, const Speed& initial_speed);
     std::optional<Road> FindRoadByPosition(const Position& position);
     std::optional<Road> FindRoadByPositionExceptRoadId(const Position& position, int excepted_id);
@@ -234,7 +223,7 @@ private:
     Id id_;
     std::string name_;
     Roads roads_;
-    Boarders road_boraders_;
+    Boarders road_boarders_;
     Buildings buildings_;
     double speed_{1.0};
 

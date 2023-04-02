@@ -13,12 +13,6 @@ RoadBoarders CalculateBoarders(const Road& road) {
     point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + 0.4;
     point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + 0.4; 
 
-    //std::cout << "Road: " << road.GetId() << std::endl;
-    std::cout << "start x: " << road.GetStart().x << ", start y: " << road.GetStart().y << std::endl;
-    std::cout << "end x: " << road.GetEnd().x << ", end y: " << road.GetEnd().y << std::endl;
-    std::cout << "boarders start x: " << point_begin.x << ", boarders start y: " << point_begin.y << std::endl;
-    std::cout << "boarders end x: " << point_end.x << ", boarders end y: " << point_end.y << std::endl;
-
     return { point_begin, point_end };
 }
 
@@ -38,37 +32,6 @@ void Map::AddOffice(Office office) {
     }
 }
 
-Position Map::CalculatePositionOnRoad(const Road& current_road, const Position& calculated_pos)
-{
-    Position result;
-
-    if (current_road.IsHorizontal()) {
-        double left_boarder = static_cast<double>(std::min(current_road.GetStart().x, current_road.GetEnd().x)) - 0.4;
-        double right_boarder = static_cast<double>(std::max(current_road.GetStart().x, current_road.GetEnd().x)) + 0.4;
-        if (calculated_pos.x < left_boarder) {
-            result.x = left_boarder;
-        } else if (calculated_pos.x > right_boarder) {
-            result.x = right_boarder;
-        } else {
-            result.x = calculated_pos.x;
-        }
-        result.y = calculated_pos.y;
-    } else {
-        double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + 0.4;
-        double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
-        if (calculated_pos.y > upper_boarder) {
-            result.y = upper_boarder;
-        } else if (calculated_pos.y < lower_boarder) {
-            result.y = lower_boarder;
-        } else {
-            result.y = calculated_pos.y;
-        }
-        result.x = calculated_pos.x;
-    }
-    return result;
-
-}
-
 std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const Position &calculated_pos, const Speed &initial_speed)
 {
     Position result_pos;
@@ -79,29 +42,21 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + 0.4;
     double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
 
-    std::cout << "Road: " << current_road.GetId() << std::endl;
-    std::cout << "Left boarder: " << left_boarder << ", right boarder: " << right_boarder << std::endl;
-    std::cout << "Upped boarder: " << upper_boarder << ", lower boarder: " << lower_boarder << std::endl;
-
     if (calculated_pos.x <= left_boarder) {
         result_pos.x = left_boarder;
         result_speed.v_x = 0;
-        //result_speed.v_y = 0;
     } else if (calculated_pos.x >= right_boarder) {
         result_pos.x = right_boarder;
         result_speed.v_x = 0;
-        //result_speed.v_y = 0;
     } else {
         result_pos.x = calculated_pos.x;
     }
 
     if (calculated_pos.y >= upper_boarder) {
         result_pos.y = upper_boarder;
-        //result_speed.v_x = 0;
         result_speed.v_y = 0;
     } else if (calculated_pos.y <= lower_boarder) {
         result_pos.y = lower_boarder;
-        //result_speed.v_x = 0;
         result_speed.v_y = 0;
     } else {
         result_pos.y = calculated_pos.y;
@@ -112,8 +67,8 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
 
 std::optional<Road> Map::FindRoadByPosition(const Position &position)
 {
-    for (int i = 0; i < road_boraders_.size(); ++i) {
-        if (road_boraders_[i].ContainPosition(position)) {
+    for (int i = 0; i < road_boarders_.size(); ++i) {
+        if (road_boarders_[i].ContainPosition(position)) {
             return roads_[i];
         }
     }
@@ -122,8 +77,8 @@ std::optional<Road> Map::FindRoadByPosition(const Position &position)
 
 std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position, int excepted_id)
 {
-    for (int i = 0; i < road_boraders_.size(); ++i) {
-        if (i != excepted_id && road_boraders_[i].ContainPosition(position)) {
+    for (int i = 0; i < road_boarders_.size(); ++i) {
+        if (i != excepted_id && road_boarders_[i].ContainPosition(position)) {
             return roads_[i];
         }
     }
