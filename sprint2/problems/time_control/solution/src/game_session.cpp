@@ -54,11 +54,11 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
     auto distance_on_other_road = CalculateDistance(calculated_pos_on_other_road, dog->GetPosition());
     
     if (distance_on_current_road > distance_on_other_road) {
-        dog->SetPosition(calculated_pos_on_other_road);
-        dog->SetSpeed(calculated_speed_on_other_road);
-    } else if (distance_on_current_road < distance_on_other_road) {
         dog->SetPosition(calculated_pos_on_current_road);
         dog->SetSpeed(calculated_speed_on_current_road);
+    } else if (distance_on_current_road < distance_on_other_road) {
+        dog->SetPosition(calculated_pos_on_other_road);
+        dog->SetSpeed(calculated_speed_on_other_road);
     } else {
         // dog->SetPosition(calculated_pos_on_current_road);
         // double max_speed_v_x = std::max(std::abs(calculated_speed_on_current_road.v_x), std::abs(calculated_speed_on_other_road.v_x));
