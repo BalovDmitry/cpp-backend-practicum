@@ -71,7 +71,8 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
             dog->SetPosition(calculated_pos_on_other_road);
             dog->SetSpeed(calculated_speed_on_other_road);
         } else {
-            throw std::invalid_argument("Speeds are equal!");
+            dog->SetPosition(calculated_pos_on_other_road);
+            dog->SetSpeed(calculated_speed_on_other_road);
         }
     }
         //throw std::invalid_argument("Distances are equal");
