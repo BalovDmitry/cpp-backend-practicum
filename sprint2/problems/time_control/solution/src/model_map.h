@@ -54,6 +54,14 @@ public:
         return *this;
     }
 
+    const Position& GetStartPoint() const {
+        return point_begin_;
+    }
+
+    const Position& GetEndPoint() const {
+        return point_end_;
+    }
+
     bool ContainPosition(const Position& position) {
         return (position.x >= point_begin_.x && position.x <= point_end_.x) 
                 && (position.y >= point_begin_.y && position.y <= point_end_.y);
@@ -192,6 +200,10 @@ public:
 
     const Offices& GetOffices() const noexcept {
         return offices_;
+    }
+
+    const Boarders& GetRoadBoarders() const noexcept {
+        return road_boarders_;
     }
 
     void AddRoad(const Road& road) {
