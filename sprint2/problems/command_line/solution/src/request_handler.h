@@ -8,6 +8,7 @@
 #include "game.h"
 #include "request_handler_strategy.h"
 #include "request_handler_helper.h"
+#include "command_line_parser.h"
 
 #include <boost/asio/strand.hpp>
 #include <boost/json/parse.hpp>
@@ -28,10 +29,10 @@ using namespace std::literals;
 
 class RequestHandler : public std::enable_shared_from_this<RequestHandler> {
 public:
-    explicit RequestHandler(model::Game& game, net::io_context& ioc, const std::filesystem::path& basePath = "/home/")
+    explicit RequestHandler(model::Game& game, net::io_context& ioc, const command_line::Args& args)
         : game_{game} 
         , strand_(net::make_strand(ioc)) {
-        basePath_ = fs::weakly_canonical(basePath);
+        basePath_ = fs::weakly_canonical(args.source_dir);
     }
 
     RequestHandler(const RequestHandler&) = delete;
