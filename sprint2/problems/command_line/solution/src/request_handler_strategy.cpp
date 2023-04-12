@@ -299,9 +299,9 @@ std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(cons
 
 void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta)
 {
-    std::cout << "Update time in sessions: " << delta.count() << std::endl;
+    //std::cout << "Update time in sessions: " << delta.count() << std::endl;
     auto t = game_.GetMapToSession();
-    std::cout << "Size: " << t.size() << ", players count: " << game_.GetPlayers().size() << std::endl;
+    //std::cout << "Size: " << t.size() << ", players count: " << game_.GetPlayers().size() << std::endl;
     for (auto& [map, session] : game_.GetMapToSession()) {
         session->UpdateTime(delta);
     }
