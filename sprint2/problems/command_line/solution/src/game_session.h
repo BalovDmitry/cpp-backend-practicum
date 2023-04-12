@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <chrono>
 
 #include "model_dog.h"
 #include "model_map.h"
@@ -28,8 +29,8 @@ public:
 
     // Update state
     DogPtr AddDog(Position spawn_point, const std::string& name);
-    void UpdateTime(double time_delta);
-    void UpdateDogPosition(DogPtr dog, double time_delta);
+    void UpdateTime(std::chrono::milliseconds delta);
+    void UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta);
 
 private:
     std::unordered_map<std::string, DogPtr> name_to_dog_;

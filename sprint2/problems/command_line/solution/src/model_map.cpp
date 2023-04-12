@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <random>
+#include <cstdlib>
 
 namespace model {
 
@@ -116,6 +118,14 @@ std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position
         }
     }
     return std::optional<Road>();
+}
+
+Position Map::GetRandomPosition() const
+{
+    int road_id = rand()%(roads_.size());
+    
+    std::cout << "Overall roads: " << roads_.size() << ", random road id: " << road_id << std::endl;
+    return Position();
 }
 
 } 

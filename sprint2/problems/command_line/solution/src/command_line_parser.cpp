@@ -37,10 +37,6 @@ std::optional<Args> ParseCommandLine(int argc, const char *const argv[])
         throw std::runtime_error("Static files directory isn't set!");
     }
 
-    if (vm.contains("tick-period")) {
-        args.debug_mode = false;
-    }
-
     return args;
 }
 

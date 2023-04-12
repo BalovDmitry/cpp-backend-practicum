@@ -31,8 +31,11 @@ class RequestHandler : public std::enable_shared_from_this<RequestHandler> {
 public:
     explicit RequestHandler(model::Game& game, net::io_context& ioc, const command_line::Args& args)
         : game_{game} 
-        , strand_(net::make_strand(ioc)) {
-        basePath_ = fs::weakly_canonical(args.source_dir);
+        , strand_(net::make_strand(ioc)) 
+        , args_(args) {
+        basePath_ = fs::weakly_canonical(args_.source_dir);
+        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_, strand_, args_.randomize_spawn_point, args_.tick_period);
+
     }
 
     RequestHandler(const RequestHandler&) = delete;
@@ -41,11 +44,11 @@ public:
     template <typename Body, typename Allocator, typename Send>
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
         if (IsApiRequest(req)) {
-            
             return net::dispatch(strand_, [self = this->shared_from_this(), req = std::move(req), send = std::move(send)] {
                 // Этот assert не выстрелит, так как лямбда-функция будет выполняться внутри strand
                 //assert(self->strand_, running_in_this_thread());
-                self->SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(self->game_));
+                //self->SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(self->game_, self->strand_, self->args_.randomize_spawn_point, self->args_.tick_period));
+                self->SetHandleStrategy(self->strategy_api_);
                 send(self->strategy_->HandleRequest(std::decay_t<decltype(req)>(req)));
             }); 
         } else {
@@ -59,8 +62,11 @@ private:
 
 private:
     model::Game& game_;
+    const command_line::Args& args_;
     std::filesystem::path basePath_;
     std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
+    std::shared_ptr<RequestHandlerStrategyApi> strategy_api_;
+    
     net::strand<net::io_context::executor_type> strand_;
 };
 

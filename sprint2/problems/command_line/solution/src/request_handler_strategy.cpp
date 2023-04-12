@@ -47,11 +47,31 @@ bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText,
 
 //! API HANDLER METHODS
 
-StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req, http::status &status, std::string& body, std::string_view &content_type)
+RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game, Strand &strand, bool randomize_spawn_point, int tick_period)
+    : game_(game) 
+    , randomize_spawn_point_(randomize_spawn_point)
+    , strand_(strand)
+    , tick_period_(tick_period) {
+        is_debug_mode_ = tick_period_.count() ? false : true;
+        std::cout << "Api handler ctor!" << std::endl;
+}
+
+StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req, http::status &status, std::string &body, std::string_view &content_type)
 {
     const auto text_response = [this, &req](http::status status, std::string_view text, RequestType type, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), type, content_type);
     };
+
+    if (!is_debug_mode_ && !ticker_started_) {
+        auto self = this->shared_from_this();
+        ticker_ = std::make_shared<Ticker>(strand_, tick_period_, 
+                    [self = this->shared_from_this()] (std::chrono::milliseconds delta) {
+                        self->UpdateTimeInSessions(delta);
+                    });
+        ticker_->Start();
+        std::cout << "Ticker started!" << std::endl;
+        ticker_started_ = true;
+    }
 
     content_type = ContentType::APP_JSON;
     auto request_type = GetRequestType(GetVectorFromTarget(std::string_view(req.target().data(), req.target().size())));
@@ -271,10 +291,20 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
     }
 }
 
-int RequestHandlerStrategyApi::ReceiveTimeFromRequest(const StringRequest &req)
-{
+std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(const StringRequest& req) {
     boost::json::value val = boost::json::parse(std::string(req.body()));
-    return val.as_object().at("timeDelta").as_int64();
+    auto time_as_int = val.as_object().at("timeDelta").as_int64();
+    return std::chrono::milliseconds(time_as_int);
+}
+
+void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta)
+{
+    std::cout << "Update time in sessions: " << delta.count() << std::endl;
+    auto t = game_.GetMapToSession();
+    std::cout << "Size: " << t.size() << ", players count: " << game_.GetPlayers().size() << std::endl;
+    for (auto& [map, session] : game_.GetMapToSession()) {
+        session->UpdateTime(delta);
+    }
 }
 
 // Get responses
@@ -419,7 +449,7 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
             throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
         }   
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
-        auto token = game_.JoinGame(name, model::Map::Id{mapId});
+        auto token = game_.JoinGame(name, model::Map::Id{mapId}, randomize_spawn_point_);
         auto player = game_.FindPlayerByToken(token);
         res["authToken"] = *token;
         res["playerId"] = player.GetId();
@@ -493,16 +523,27 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
     boost::json::object res;
 
     try {
+        if (!is_debug_mode_) {
+            throw std::invalid_argument(std::string(ErrorMessages::INVALID_ENDPOINT));
+        }
         auto time = ReceiveTimeFromRequest(req);
         for (auto& [map, session] : game_.GetMapToSession()) {
             session->UpdateTime(time);
         }
         status = http::status::ok;
     } catch(std::exception& e) {
+        std::string message;
         std::string code;
-        //const std::string& what = e.what();
-
-        res = json_helper::CreateErrorValue(std::string(ErrorMessages::INVALID_ARGUMENT), e.what());
+        const std::string& what = e.what();
+        
+        if (what == ErrorMessages::INVALID_ENDPOINT) {
+            code = "badRequest";
+            message = "Invalid endpoint";
+        } else {
+            code = ErrorMessages::INVALID_ARGUMENT;
+            message = what;
+        }
+        res = json_helper::CreateErrorValue(code, message);
         status = http::status::bad_request;
     }
     body += boost::json::serialize(res);

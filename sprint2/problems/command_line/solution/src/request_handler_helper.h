@@ -66,6 +66,7 @@ struct ErrorMessages {
     constexpr static std::string_view INVALID_ARGUMENT_MAP = "invalidArgumentMap"sv;
     constexpr static std::string_view INVALID_ARGUMENT_PARSE = "invalidArgumentParse"sv;
     constexpr static std::string_view INVALID_ARGUMENT_DIRECTION = "invalidArgumentDirection"sv;
+    constexpr static std::string_view INVALID_ENDPOINT = "invalidEndpoint"sv;
     constexpr static std::string_view INVALID_TOKEN = "invalidToken"sv;
     constexpr static std::string_view UNKNOWN_TOKEN = "unknownToken"sv;
 };

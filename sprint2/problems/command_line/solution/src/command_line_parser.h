@@ -7,14 +7,12 @@
 
 namespace fs = std::filesystem;
 
-namespace command_line
-{
+namespace command_line {
 
 struct Args {
 
-    double tick_period = 0;
+    int tick_period = 0;
     bool randomize_spawn_point = false;
-    bool debug_mode = true;
     fs::path config_file;
     fs::path source_dir;
 };

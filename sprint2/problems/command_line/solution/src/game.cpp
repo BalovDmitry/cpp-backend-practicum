@@ -35,7 +35,7 @@ const Map* Game::FindMap(const Map::Id& id) const noexcept {
     return nullptr;
 }
 
-Token Game::JoinGame(const std::string &name, const Map::Id &id)
+Token Game::JoinGame(const std::string &name, const Map::Id &id, bool randomize_spawn_point)
 {
     auto map = FindMap(id);
     if (!map) {
@@ -47,8 +47,9 @@ Token Game::JoinGame(const std::string &name, const Map::Id &id)
         name_to_id_[name] = player_id;
         map_id_to_player_id_[id].insert(player_id);
         auto session = FindSession(id);
+        auto start_position = randomize_spawn_point ? FindMap(id)->GetRandomPosition() : Position{0.0, 0.0};
         auto dog = session->AddDog({0.0, 0.0}, name);
-
+        
         return player_tokens_.AddPlayer({ name, player_id, session, dog });
     } else {
         return player_tokens_.FindTokenByPlayerId(name_to_id_.at(name));

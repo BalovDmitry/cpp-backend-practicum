@@ -8,17 +8,18 @@
 #include "http_server.h"
 #include "request_handler_helper.h"
 #include "model_utils.h"
+#include "ticker.h"
 
 namespace http_handler {
 
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace sys = boost::system;
+namespace net = boost::asio;
 
-// Запрос, тело которого представлено в виде строки
 using StringRequest = http::request<http::string_body>;
-// Ответ, тело которого представлено в виде строки
 using StringResponse = http::response<http::string_body>;
+using Strand = net::strand<net::io_context::executor_type>;
 
 using namespace std::literals;
 
@@ -47,10 +48,9 @@ protected:
         const std::string& message = "Method not allowed");
 };
 
-class RequestHandlerStrategyApi : public RequestHandlerStrategyIntf {
+class RequestHandlerStrategyApi : public RequestHandlerStrategyIntf, public std::enable_shared_from_this<RequestHandlerStrategyApi> {
 public:
-    RequestHandlerStrategyApi(model::Game& game)
-        : game_(game) {}
+    RequestHandlerStrategyApi(model::Game& game, Strand& strand, bool randomize_spawn_point = false, int tick_period = 0);
 
     struct RequestTypeSize {
         RequestTypeSize() = delete;
@@ -111,10 +111,20 @@ private:
 
     std::string_view ReceiveTokenFromRequest(const StringRequest& req);
     model::Direction ReceiveDirectionFromRequest(const StringRequest& req);
-    int ReceiveTimeFromRequest(const StringRequest& req);
+    std::chrono::milliseconds ReceiveTimeFromRequest(const StringRequest& req);
+
+private:
+    void UpdateTimeInSessions(std::chrono::milliseconds delta = 1000ms);
 
 private:
     model::Game& game_;
+    Strand& strand_;
+    std::chrono::milliseconds tick_period_;
+    net::steady_timer timer_{strand_};
+    std::shared_ptr<Ticker> ticker_;
+    bool ticker_started_;
+    bool is_debug_mode_;
+    bool randomize_spawn_point_;
 };
 
 class RequestHandlerStrategyStaticFile : public RequestHandlerStrategyIntf {

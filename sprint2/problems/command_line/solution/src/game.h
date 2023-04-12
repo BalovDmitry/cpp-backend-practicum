@@ -28,7 +28,7 @@ public:
     const Maps& GetMaps() const noexcept;
     const Map* FindMap(const Map::Id& id) const noexcept;
 
-    Token JoinGame(const std::string &name, const Map::Id& id);
+    Token JoinGame(const std::string &name, const Map::Id& id, bool randomize_spawn_point = false);
     const Player& FindPlayerByToken(Token token);
     const Player& FindPlayerById(uint32_t id);
     SessionPtr FindSession(Map::Id id);

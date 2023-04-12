@@ -12,14 +12,14 @@ DogPtr GameSession::AddDog(Position spawn_point, const std::string& name) {
     return name_to_dog_.at(name);
 }
 
-void GameSession::UpdateTime(double time_delta)
+void GameSession::UpdateTime(std::chrono::milliseconds delta)
 {
     for (auto&[name, dog] : name_to_dog_) {
-        UpdateDogPosition(dog, time_delta);
+        UpdateDogPosition(dog, delta);
     }
 }
 
-void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
+void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta)
 {
     Position calculated_pos;
 
@@ -29,8 +29,8 @@ void GameSession::UpdateDogPosition(DogPtr dog, double time_delta)
     Position calculated_pos_on_other_road = dog->GetPosition();
     Speed calculated_speed_on_other_road;
 
-    calculated_pos.x = dog->GetPosition().x + dog->GetSpeed().v_x * time_delta / 1000;
-    calculated_pos.y = dog->GetPosition().y + dog->GetSpeed().v_y * time_delta / 1000;
+    calculated_pos.x = dog->GetPosition().x + dog->GetSpeed().v_x * delta.count() / 1000;
+    calculated_pos.y = dog->GetPosition().y + dog->GetSpeed().v_y * delta.count() / 1000;
 
     auto current_road = map_.FindRoadByPosition(dog->GetPosition());
     if (current_road.has_value()) {
