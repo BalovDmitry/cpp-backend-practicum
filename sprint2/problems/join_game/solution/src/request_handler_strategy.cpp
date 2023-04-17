@@ -40,6 +40,7 @@ bool RequestHandlerStrategyIntf::MakeBadRequestBody(std::string &bodyText, http:
 
 bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText, http::status &status, const std::string &code, const std::string &message)
 {
+    std::cout << "Method not allowed!" << std::endl;
     bodyText += boost::json::serialize(json_helper::CreateErrorValue(code, message));
     status = http::status::method_not_allowed;
     return true;
@@ -325,11 +326,13 @@ StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest
     };
 
     if (req.method() == http::verb::get) {
-        auto splittedRequest = GetVectorFromTarget(req.target());
-        SetResponseData(splittedRequest, body, status, content_type);
+        //auto splittedRequest = GetVectorFromTarget(req.target());
+        //SetResponseData(splittedRequest, body, status, content_type);
+        SetResponseData(std::string_view(req.target()), body, status, content_type);
     } else if (req.method() == http::verb::head) {
         //!TODO: create body for HEAD
     } else {
+        std::cout << "Method not allowed!" << std::endl;
         MakeMethodNotAllowedBody(body, status);
     }
 
@@ -346,6 +349,34 @@ StringResponse RequestHandlerStrategyStaticFile::MakeStringResponse(http::status
     return response;
 }
 
+void RequestHandlerStrategyStaticFile::SetResponseData(std::string_view request, std::string& body, http::status& status, std::string_view& content_type) {  
+    auto decoded_path = path_helper::GetDecodedPath(request);
+    auto abs_path = path_helper::GetAbsPath(basePath_, decoded_path);
+
+    std::cout << "Req target: " << request << std::endl;
+    // std::cout << "Base path: " << basePath_ << std::endl;
+    // std::cout << "Decoded path: " << decoded_path << std::endl;
+    std::cout << "Abs path: " << abs_path << std::endl;
+    std::ifstream fstream(abs_path);
+    if (fstream) {
+        if (!path_helper::IsSubPath(abs_path, basePath_)) {
+            MakeBadRequestBody(body, status);
+            content_type = ContentType::TEXT_PLAIN;
+            return;
+        }
+
+        std::stringstream buffer;
+        buffer << fstream.rdbuf();
+        body += buffer.str();
+        content_type = GetContentType(GetVectorFromTarget(request));
+        status = http::status::ok;
+    }  else {
+        std::cout << "Abs path: " << abs_path << " doesn't exist!" << std::endl;
+        MakeFileNotFoundBody(body, status);
+        content_type = ContentType::TEXT_PLAIN;
+    }
+}
+
 void RequestHandlerStrategyStaticFile::SetResponseData(const std::vector<std::string> &splittedRequest, std::string &bodyText, http::status &status, std::string_view &contentType)
 {
     auto relPath = path_helper::GetRelPathFromRequest(splittedRequest);
@@ -353,18 +384,20 @@ void RequestHandlerStrategyStaticFile::SetResponseData(const std::vector<std::st
 
     std::ifstream fStream(absPath);
     if (fStream) {
-        if (!path_helper::IsSubPath(absPath, basePath_)) {
-            MakeBadRequestBody(bodyText, status);
-            contentType = ContentType::TEXT_PLAIN;
-            return;
-        }
-
+        // if (!path_helper::IsSubPath(absPath, basePath_)) {
+        //     MakeBadRequestBody(bodyText, status);
+        //     contentType = ContentType::TEXT_PLAIN;
+        //     return;
+        // }
+        std::cout << "Abs path: " << absPath << " exists!" << std::endl;
+        std::cout << "Rel path: " << relPath << std::endl;
         std::stringstream buffer;
         buffer << fStream.rdbuf();
         bodyText += buffer.str();
         contentType = GetContentType(splittedRequest);
         status = http::status::ok;
     } else {
+        std::cout << "Abs path: " << absPath << " doesn't exist!" << std::endl;
         MakeFileNotFoundBody(bodyText, status);
         contentType = ContentType::TEXT_PLAIN;
     }
