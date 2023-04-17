@@ -38,21 +38,54 @@ StringResponse MakeStringResponse(http::status status, std::string_view body, un
 }
 
 StringResponse HandleRequest(StringRequest&& req) {
-    // Подставьте сюда код из синхронной версии HTTP-сервера
-    return MakeStringResponse(http::status::ok, "OK"sv, req.version(), req.keep_alive());
+     const auto text_response = [&req](http::status status, std::string_view text) {
+        return MakeStringResponse(status, text, req.version(), req.keep_alive());
+    };
+
+    http::status status;
+    std::string bodyText;
+
+    if (req.method() == http::verb::get) {
+        status = http::status::ok;
+        bodyText += "Hello";
+        if (!req.target().empty()) {
+            bodyText += ", ";
+            bodyText += std::string_view(req.target().data() + 1, req.target().size() - 1);
+        }
+    } else if (req.method() == http::verb::head) {
+        status = http::status::ok;
+    } else {
+        status = http::status::method_not_allowed;
+        bodyText += "Invalid method";
+
+    }
+
+    return text_response(status, bodyText);
 }
 
 // Запускает функцию fn на n потоках, включая текущий
 template <typename Fn>
 void RunWorkers(unsigned n, const Fn& fn) {
     n = std::max(1u, n);
-    std::vector<std::jthread> workers;
+
+    #ifdef __clang__
+        std::vector<std::thread> workers;
+    #else
+        std::vector<std::jthread> workers;
+    #endif
+
     workers.reserve(n - 1);
     // Запускаем n-1 рабочих потоков, выполняющих функцию fn
     while (--n) {
         workers.emplace_back(fn);
     }
     fn();
+
+    #ifdef __clang__
+        for (auto& worker : workers) {
+            worker.join();
+        }
+    #endif
 }
 
 }  // namespace
@@ -66,14 +99,20 @@ int main() {
     net::signal_set signals(ioc, SIGINT, SIGTERM);
     signals.async_wait([&ioc](const sys::error_code& ec, [[maybe_unused]] int signal_number) {
         if (!ec) {
+            std::cout << "Signal "sv << signal_number << " received"sv << std::endl;
             ioc.stop();
         }
     });
 
-    const auto address = net::ip::make_address("0.0.0.0");
+    net::steady_timer t{ioc, 30s};
+    t.async_wait([](sys::error_code ec) {
+        std::cout << "Timer expired"s << std::endl;
+    });
+
+    const auto address = net::ip::make_address("127.0.0.1");
     constexpr net::ip::port_type port = 8080;
     http_server::ServeHttp(ioc, {address, port}, [](auto&& req, auto&& sender) {
-        // sender(HandleRequest(std::forward<decltype(req)>(req)));
+        sender(HandleRequest(std::forward<decltype(req)>(req)));
     });
 
     // Эта надпись сообщает тестам о том, что сервер запущен и готов обрабатывать запросы
@@ -82,4 +121,5 @@ int main() {
     RunWorkers(num_threads, [&ioc] {
         ioc.run();
     });
+    std::cout << "Shutting down"sv << std::endl;
 }

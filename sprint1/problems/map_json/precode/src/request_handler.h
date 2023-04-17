@@ -1,10 +1,37 @@
 #pragma once
+
+// boost.beast будет использовать std::string_view вместо boost::string_view
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+
 #include "http_server.h"
 #include "model.h"
+
+#include <vector>
+#include <string>
 
 namespace http_handler {
 namespace beast = boost::beast;
 namespace http = beast::http;
+
+// Запрос, тело которого представлено в виде строки
+using StringRequest = http::request<http::string_body>;
+// Ответ, тело которого представлено в виде строки
+using StringResponse = http::response<http::string_body>;
+
+using namespace std::literals;
+
+struct ContentType {
+    ContentType() = delete;
+    constexpr static std::string_view TEXT_HTML = "text/html"sv;
+    constexpr static std::string_view APP_JSON = "application/json"sv;
+    // При необходимости внутрь ContentType можно добавить и другие типы контента
+};
+
+enum class RequestType {
+    GET_MAP_BY_ID,
+    GET_MAP_LIST,
+    UNKNOWN
+};
 
 class RequestHandler {
 public:
@@ -17,8 +44,27 @@ public:
 
     template <typename Body, typename Allocator, typename Send>
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
-        // Обработать запрос request и отправить ответ, используя send
+        send(HandleRequest(std::move(req)));
+
     }
+
+private:
+    StringResponse HandleRequest(StringRequest&& req);
+    StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
+                                    bool keep_alive,
+                                    std::string_view content_type = ContentType::APP_JSON);
+    std::vector<std::string> GetVectorFromTarget(std::string_view target);
+    bool CheckRequestCorrectness(const std::vector<std::string>& splittedRequest);
+    RequestType GetRequestType(const std::vector<std::string>& splittedRequest);
+    void MakeBodyText(const std::vector<std::string>& splittedRequest, 
+        RequestType requestType, 
+        std::string& bodyText, 
+        http::status& status);
+
+    bool MakeGetMapListBody(std::string& bodyText, http::status& status);
+    bool MakeGetMapByIdBody(model::Map::Id id, std::string& bodyText, http::status& status);
+    bool MakeBadRequestBody(std::string& bodyText, http::status& status);
+    bool MakeMethodNotAllowedBody(std::string& bodyText, http::status& status);
 
 private:
     model::Game& game_;
