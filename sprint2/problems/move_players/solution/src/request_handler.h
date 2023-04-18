@@ -29,7 +29,9 @@ class RequestHandler {
 public:
     explicit RequestHandler(model::Game& game, const std::filesystem::path& basePath = "/home/")
         : game_{game} {
-        basePath_ = fs::weakly_canonical(basePath);
+        //basePath_ = fs::weakly_canonical(basePath);
+        strategy_file_ = std::make_shared<RequestHandlerStrategyStaticFile>(fs::weakly_canonical(basePath));
+        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_);
     }
 
     RequestHandler(const RequestHandler&) = delete;
@@ -45,10 +47,11 @@ public:
             //     send(strategy_->HandleRequest(std::move(req)));
             // }); 
             std::lock_guard g(m_);
-            SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(game_));
+            SetHandleStrategy(strategy_api_);
             send(strategy_->HandleRequest(std::move(req)));
         } else {
-            SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
+            //SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
+            SetHandleStrategy(strategy_file_);
             send(strategy_->HandleRequest(std::move(req)));
         }
     }
@@ -60,7 +63,8 @@ private:
     model::Game& game_;
     std::filesystem::path basePath_;
     std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
-    
+    std::shared_ptr<RequestHandlerStrategyStaticFile> strategy_file_;
+    std::shared_ptr<RequestHandlerStrategyApi> strategy_api_;
     std::mutex m_;
     //net::strand strand_;
 };

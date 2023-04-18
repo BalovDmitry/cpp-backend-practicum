@@ -15,7 +15,7 @@ public:
     void SetPosition(Position pos) { position_.x = pos.x; position_.y = pos.y; };
     void SetSpeed(Speed speed) { speed_.v_x = speed.v_x; speed_.v_y = speed.v_y; }
     void SetSpeed(double speed) { speed_.v_x = speed; speed_.v_y = speed; }
-    void SetDirection(Direction dir) { direction_ = dir; }
+    void SetDirection(Direction dir) { if (dir != Direction::NO_DIRECTION) direction_ = dir; }
 
     // Getters
     const Position& GetPosition() const { return position_; }

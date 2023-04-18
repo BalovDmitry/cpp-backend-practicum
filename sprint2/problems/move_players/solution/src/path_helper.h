@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <cassert>
 #include <vector>
 #include <string>
 
@@ -14,5 +13,7 @@ namespace path_helper {
 bool IsSubPath(fs::path path, fs::path base);
 fs::path GetAbsPath(const fs::path& basePath, const fs::path& relPath);
 fs::path GetRelPathFromRequest(const std::vector<std::string>& splittedRequest);
+fs::path GetDecodedPath(std::string_view path);
+std::string UrlDecode(const std::string_view& value);
 
 }

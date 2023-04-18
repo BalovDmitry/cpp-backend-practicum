@@ -26,7 +26,7 @@ public:
     DogPtr AddDog(Position spawn_point, const std::string& name) {
         auto dog = std::make_shared<Dog>(name);
         dog->SetPosition(spawn_point);
-        dog->SetSpeed(map_.GetSpeed());
+        dog->SetSpeed({ 0, 0 });
         name_to_dog_[name] = dog;
         return name_to_dog_.at(name);
     }
