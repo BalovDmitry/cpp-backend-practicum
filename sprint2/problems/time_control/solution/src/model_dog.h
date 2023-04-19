@@ -15,7 +15,7 @@ public:
         , direction_(direction) {}
 
     // Setters
-    void SetDirection(Direction dir) { direction_ = dir; SetSpeedByDirection(); }
+    void SetDirection(Direction dir);
     void SetPosition(Position pos) { position_.x = pos.x; position_.y = pos.y; };
     void SetSpeed(Speed speed) { speed_.v_x = speed.v_x; speed_.v_y = speed.v_y; }
 
@@ -36,7 +36,7 @@ private:
     std::string name_;
 
     Position position_;
-    Speed speed_;
+    Speed speed_{0.0, 0.0};
     Direction direction_ = Direction::NO_DIRECTION;
 };
 
