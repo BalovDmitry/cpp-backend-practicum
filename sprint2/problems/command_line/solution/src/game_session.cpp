@@ -7,13 +7,14 @@
 namespace model {
 
 DogPtr GameSession::AddDog(Position spawn_point, const std::string& name) {
-    auto dog = std::make_shared<Dog>(name, spawn_point, map_.GetSpeed(), Direction::NORTH);
+    auto dog = std::make_shared<Dog>(name, spawn_point, GetMapSpeed(), Direction::NORTH);
     name_to_dog_[name] = dog;
     return name_to_dog_.at(name);
 }
 
 void GameSession::UpdateTime(std::chrono::milliseconds delta)
 {
+    std::cout << "On map: " << map_.GetName() << std::endl;
     for (auto&[name, dog] : name_to_dog_) {
         UpdateDogPosition(dog, delta);
     }
@@ -34,14 +35,12 @@ void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta)
 
     auto current_road = map_.FindRoadByPosition(dog->GetPosition());
     if (current_road.has_value()) {
-        //auto result_on_current_road = map_.CalculatePositionAndSpeedOnRoad(current_road.value(), calculated_pos, dog->GetSpeed());
         auto result_on_current_road = map_.CalculatePositionAndSpeedOnRoad(current_road.value(), map_.GetRoadBoarders().at(current_road.value().GetId()), calculated_pos, dog->GetSpeed());
         calculated_pos_on_current_road = result_on_current_road.first;
         calculated_speed_on_current_road = result_on_current_road.second;
 
         auto other_road = map_.FindRoadByPositionExceptRoadId(dog->GetPosition(), current_road.value().GetId());
         if (other_road.has_value()) {
-            //auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(other_road.value(), calculated_pos, dog->GetSpeed());
             auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(other_road.value(), map_.GetRoadBoarders().at(other_road.value().GetId()), calculated_pos, dog->GetSpeed());
             calculated_pos_on_other_road = result_on_other_road.first;
             calculated_speed_on_other_road = result_on_other_road.second;

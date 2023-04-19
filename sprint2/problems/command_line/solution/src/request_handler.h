@@ -33,9 +33,9 @@ public:
         : game_{game} 
         , strand_(net::make_strand(ioc)) 
         , args_(args) {
-        basePath_ = fs::weakly_canonical(args_.source_dir);
-        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_, strand_, args_.randomize_spawn_point, args_.tick_period);
 
+        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_, strand_, args_.randomize_spawn_point, args_.tick_period);
+        strategy_static_ = std::make_shared<RequestHandlerStrategyStaticFile>(fs::weakly_canonical(args_.source_dir));
     }
 
     RequestHandler(const RequestHandler&) = delete;
@@ -52,7 +52,7 @@ public:
                 send(self->strategy_->HandleRequest(std::decay_t<decltype(req)>(req)));
             }); 
         } else {
-            SetHandleStrategy(std::make_shared<RequestHandlerStrategyStaticFile>(basePath_));
+            SetHandleStrategy(strategy_static_);
             send(strategy_->HandleRequest(std::move(req)));
         }
     }
@@ -63,11 +63,11 @@ private:
 private:
     model::Game& game_;
     const command_line::Args& args_;
-    std::filesystem::path basePath_;
+    net::strand<net::io_context::executor_type> strand_;
+    
     std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
     std::shared_ptr<RequestHandlerStrategyApi> strategy_api_;
-    
-    net::strand<net::io_context::executor_type> strand_;
+    std::shared_ptr<RequestHandlerStrategyStaticFile> strategy_static_;
 };
 
 

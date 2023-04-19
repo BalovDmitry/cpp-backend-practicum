@@ -129,8 +129,8 @@ private:
 
 class RequestHandlerStrategyStaticFile : public RequestHandlerStrategyIntf {
 public:
-    RequestHandlerStrategyStaticFile(const std::filesystem::path& basePath)
-        : basePath_(basePath) {}
+    RequestHandlerStrategyStaticFile(const std::filesystem::path& base_path)
+        : base_path_(base_path) {}
 
 protected:
     StringResponse HandleRequestImpl(
@@ -143,17 +143,19 @@ private:
     StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
                                 bool keep_alive,
                                 std::string_view content_type);
+    
     void SetResponseData(
-        const std::vector<std::string>& splittedRequest,
-        std::string& bodyText,
+        const std::string_view& request,
+        std::string& body,
         http::status& status,
-        std::string_view& contentType);
+        std::string_view& content_type);
+    std::string_view GetContentType(const std::string_view &request);
+
     bool MakeFileNotFoundBody(std::string& bodyText, http::status& status);
-    std::string_view GetContentType(const std::vector<std::string>& splittedRequest);
     std::string DetectFileExtension(const std::string& fileName);
 
 private:
-    std::filesystem::path basePath_;
+    std::filesystem::path base_path_;
 };
 
 }

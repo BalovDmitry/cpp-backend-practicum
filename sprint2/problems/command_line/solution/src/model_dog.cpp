@@ -3,9 +3,13 @@
 #include <stdexcept>
 
 namespace model {
+void Dog::SetDirection(Direction dir) {
+    if (dir != Direction::NO_DIRECTION) {
+        direction_ = dir; 
+    }
+}
 
-std::string Dog::GetDirectionString() const
-{
+std::string Dog::GetDirectionString() const {
     switch (direction_) {
         case Direction::EAST: return "R";
         case Direction::WEST: return "L";
@@ -16,9 +20,8 @@ std::string Dog::GetDirectionString() const
     }
 }
 
-void Dog::SetSpeedByDirection()
-{
-    switch (direction_) {
+void Dog::SetSpeedByDirection(Direction dir) {
+    switch (dir) {
         case Direction::EAST: {
             SetSpeed({map_speed_, 0});
             break;
@@ -41,7 +44,6 @@ void Dog::SetSpeedByDirection()
 
         case Direction::NO_DIRECTION: {
             SetSpeed({0, 0});
-            throw std::invalid_argument("No direction");
             break;
         }
 
