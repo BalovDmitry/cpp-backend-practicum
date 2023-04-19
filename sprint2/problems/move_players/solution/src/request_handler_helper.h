@@ -45,6 +45,7 @@ static const std::unordered_map<std::string, std::string_view> ExtensionToConten
     , { "css", ContentType::TEXT_CSS }
     , { "plain", ContentType::TEXT_PLAIN }
     , { "javascript", ContentType::TEXT_JS }
+    , { "js", ContentType::TEXT_JS }
     , { "png", ContentType::IMAGE_PNG }
     , { "jpg", ContentType::IMAGE_JPEG }
     , { "jpe", ContentType::IMAGE_JPEG }

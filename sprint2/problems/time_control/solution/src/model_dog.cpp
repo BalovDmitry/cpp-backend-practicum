@@ -3,6 +3,13 @@
 #include <stdexcept>
 
 namespace model {
+void Dog::SetDirection(Direction dir)
+{
+    if (dir != Direction::NO_DIRECTION) {
+        direction_ = dir; 
+        SetSpeedByDirection(); 
+    }
+}
 
 std::string Dog::GetDirectionString() const
 {

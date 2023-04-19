@@ -103,6 +103,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest&& req,
         }
 
         default: {
+            std::cout << "Default case" << std::endl;
             MakeBadRequestBody(body, status);
             break;
         }
@@ -151,6 +152,7 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
         }
 
         case RequestType::UNKNOWN: {
+            std::cout << "Unknown request type" << std::endl;
             MakeBadRequestBody(body, status);
             break;
         }
@@ -174,6 +176,7 @@ void RequestHandlerStrategyApi::SetResponseDataPost(const StringRequest& req, Re
         }
 
         case RequestType::UNKNOWN: {
+            std::cout << "Unknown set response data post" << std::endl;
             MakeBadRequestBody(body, status);
             break;
         }
@@ -365,6 +368,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
             const auto& dog = player.GetDog();
             temp["pos"] = boost::json::array({ dog->GetPosition().x, dog->GetPosition().y });
             temp["speed"] = boost::json::array({ dog->GetSpeed().v_x, dog->GetSpeed().v_y });
+            //temp["speed"] = boost::json::array({ 0, 0 });
             temp["dir"] = dog->GetDirectionString();
 
             players_obj[std::to_string(player.GetId())] = temp;
@@ -414,7 +418,6 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
         auto token = game_.JoinGame(name, model::Map::Id{mapId});
         auto player = game_.FindPlayerByToken(token);
         res["authToken"] = *token;
-        std::cout << "Token length: " << res.at("authToken").as_string().size() << std::endl;
         res["playerId"] = player.GetId();
         status = http::status::ok;
 
@@ -489,11 +492,11 @@ StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), content_type);
     };
 
-    if (req.method() == http::verb::get) {
-        auto splittedRequest = GetVectorFromTarget(req.target());
-        SetResponseData(splittedRequest, body, status, content_type);
-    } else if (req.method() == http::verb::head) {
-        //!TODO: create body for HEAD
+    if (req.method() == http::verb::get || req.method() == http::verb::head) {
+        // auto splittedRequest = GetVectorFromTarget(req.target());
+        // SetResponseData(splittedRequest, body, status, content_type);
+
+        SetResponseData(std::string_view(req.target()), body, status, content_type);
     } else {
         MakeMethodNotAllowedBody(body, status);
     }
@@ -501,8 +504,7 @@ StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest
     return text_response(status, body, content_type);
 }
 
-StringResponse RequestHandlerStrategyStaticFile::MakeStringResponse(http::status status, std::string_view body, unsigned http_version, bool keep_alive, std::string_view content_type)
-{
+StringResponse RequestHandlerStrategyStaticFile::MakeStringResponse(http::status status, std::string_view body, unsigned http_version, bool keep_alive, std::string_view content_type) {
     StringResponse response(status, http_version);
     response.set(http::field::content_type, content_type);
     response.body() = body;
@@ -511,29 +513,58 @@ StringResponse RequestHandlerStrategyStaticFile::MakeStringResponse(http::status
     return response;
 }
 
-void RequestHandlerStrategyStaticFile::SetResponseData(const std::vector<std::string> &splittedRequest, std::string &bodyText, http::status &status, std::string_view &contentType)
-{
-    auto relPath = path_helper::GetRelPathFromRequest(splittedRequest);
-    auto absPath = path_helper::GetAbsPath(basePath_, relPath);
+void RequestHandlerStrategyStaticFile::SetResponseData(const std::string_view &request, std::string &body, http::status &status, std::string_view &content_type) {
+    auto decoded_path = path_helper::GetDecodedPath(request);
+    auto abs_path = path_helper::GetAbsPath(basePath_, decoded_path);
 
-    std::ifstream fStream(absPath);
-    if (fStream) {
-        if (!path_helper::IsSubPath(absPath, basePath_)) {
-            MakeBadRequestBody(bodyText, status);
-            contentType = ContentType::TEXT_PLAIN;
+    //std::cout << "Req target: " << request << std::endl;
+    // std::cout << "Base path: " << basePath_ << std::endl;
+    // std::cout << "Decoded path: " << decoded_path << std::endl;
+    //std::cout << "Abs path: " << abs_path << std::endl;
+    std::ifstream fstream(abs_path);
+    if (fstream) {
+        if (!path_helper::IsSubPath(abs_path, basePath_)) {
+            std::cout << "Abs path: " << abs_path <<  " is not a subpath of base:" << basePath_ << std::endl;
+            std::cout << "Decoded path: " << decoded_path << std::endl;
+            MakeBadRequestBody(body, status);
+            content_type = ContentType::TEXT_PLAIN;
             return;
         }
 
         std::stringstream buffer;
-        buffer << fStream.rdbuf();
-        bodyText += buffer.str();
-        contentType = GetContentType(splittedRequest);
+        buffer << fstream.rdbuf();
+        body += buffer.str();
+        content_type = GetContentType(request);
         status = http::status::ok;
-    } else {
-        MakeFileNotFoundBody(bodyText, status);
-        contentType = ContentType::TEXT_PLAIN;
+    }  else {
+        std::cout << "Abs path: " << abs_path << " doesn't exist!" << std::endl;
+        MakeFileNotFoundBody(body, status);
+        content_type = ContentType::TEXT_PLAIN;
     }
 }
+
+// void RequestHandlerStrategyStaticFile::SetResponseData(const std::vector<std::string> &splittedRequest, std::string &bodyText, http::status &status, std::string_view &contentType) {
+//     auto relPath = path_helper::GetRelPathFromRequest(splittedRequest);
+//     auto absPath = path_helper::GetAbsPath(basePath_, relPath);
+
+//     std::ifstream fStream(absPath);
+//     if (fStream) {
+//         if (!path_helper::IsSubPath(absPath, basePath_)) {
+//             MakeBadRequestBody(bodyText, status);
+//             contentType = ContentType::TEXT_PLAIN;
+//             return;
+//         }
+
+//         std::stringstream buffer;
+//         buffer << fStream.rdbuf();
+//         bodyText += buffer.str();
+//         contentType = GetContentType(splittedRequest);
+//         status = http::status::ok;
+//     } else {
+//         MakeFileNotFoundBody(bodyText, status);
+//         contentType = ContentType::TEXT_PLAIN;
+//     }
+// }
 
 bool RequestHandlerStrategyStaticFile::MakeFileNotFoundBody(std::string &bodyText, http::status &status)
 {
@@ -542,15 +573,16 @@ bool RequestHandlerStrategyStaticFile::MakeFileNotFoundBody(std::string &bodyTex
     return true;
 }
 
-std::string_view RequestHandlerStrategyStaticFile::GetContentType(const std::vector<std::string> &splittedRequest)
-{
+std::string_view RequestHandlerStrategyStaticFile::GetContentType(const std::string_view &request) {
     std::string_view result = ContentType::UNKNOWN;
 
-    if (splittedRequest.empty()) {
+    auto splitted_request = GetVectorFromTarget(request);
+
+    if (splitted_request.empty()) {
         return ContentType::TEXT_HTML;
     }
 
-    auto ext = DetectFileExtension(splittedRequest.back());
+    auto ext = DetectFileExtension(splitted_request.back());
     if (ExtensionToContentType.contains(ext)) {
         result = ExtensionToContentType.at(ext);
     } else {
@@ -559,6 +591,24 @@ std::string_view RequestHandlerStrategyStaticFile::GetContentType(const std::vec
 
     return result;
 }
+
+// std::string_view RequestHandlerStrategyStaticFile::GetContentType(const std::vector<std::string> &splittedRequest)
+// {
+//     std::string_view result = ContentType::UNKNOWN;
+
+//     if (splittedRequest.empty()) {
+//         return ContentType::TEXT_HTML;
+//     }
+
+//     auto ext = DetectFileExtension(splittedRequest.back());
+//     if (ExtensionToContentType.contains(ext)) {
+//         result = ExtensionToContentType.at(ext);
+//     } else {
+//         result = ContentType::UNKNOWN;
+//     }
+
+//     return result;
+// }
 
 std::string RequestHandlerStrategyStaticFile::DetectFileExtension(const std::string &fileName)
 {

@@ -3,12 +3,14 @@
 #include <boost/asio/io_context.hpp>
 #include <iostream>
 #include <thread>
+#include <boost/asio/signal_set.hpp>
 
 #include "json_loader.h"
 #include "request_handler.h"
 
 using namespace std::literals;
 namespace net = boost::asio;
+namespace sys = http_server::sys;
 
 namespace {
 
@@ -16,13 +18,25 @@ namespace {
 template <typename Fn>
 void RunWorkers(unsigned n, const Fn& fn) {
     n = std::max(1u, n);
-    std::vector<std::jthread> workers;
+
+    #ifdef __clang__
+        std::vector<std::thread> workers;
+    #else
+        std::vector<std::jthread> workers;
+    #endif
+
     workers.reserve(n - 1);
     // Запускаем n-1 рабочих потоков, выполняющих функцию fn
     while (--n) {
         workers.emplace_back(fn);
     }
     fn();
+
+    #ifdef __clang__
+        for (auto& worker : workers) {
+            worker.join();
+        }
+    #endif
 }
 
 }  // namespace
@@ -34,6 +48,8 @@ int main(int argc, const char* argv[]) {
     }
     try {
         // 1. Загружаем карту из файла и построить модель игры
+        //std::string path = "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint1/problems/map_json/precode/data/config.json";
+        //model::Game game = json_loader::LoadGame(path);
         model::Game game = json_loader::LoadGame(argv[1]);
 
         // 2. Инициализируем io_context
@@ -41,16 +57,25 @@ int main(int argc, const char* argv[]) {
         net::io_context ioc(num_threads);
 
         // 3. Добавляем асинхронный обработчик сигналов SIGINT и SIGTERM
+            // Подписываемся на сигналы и при их получении завершаем работу сервера
+        net::signal_set signals(ioc, SIGINT, SIGTERM);
+        signals.async_wait([&ioc](const sys::error_code& ec, [[maybe_unused]] int signal_number) {
+            if (!ec) {
+                std::cout << "Signal "sv << signal_number << " received"sv << std::endl;
+                ioc.stop();
+            }
+        });
 
         // 4. Создаём обработчик HTTP-запросов и связываем его с моделью игры
         http_handler::RequestHandler handler{game};
 
         // 5. Запустить обработчик HTTP-запросов, делегируя их обработчику запросов
-        /*
+        const auto address = net::ip::make_address("127.0.0.1");
+        constexpr net::ip::port_type port = 8080;
         http_server::ServeHttp(ioc, {address, port}, [&handler](auto&& req, auto&& send) {
             handler(std::forward<decltype(req)>(req), std::forward<decltype(send)>(send));
         });
-        */
+        
 
         // Эта надпись сообщает тестам о том, что сервер запущен и готов обрабатывать запросы
         std::cout << "Server has started..."sv << std::endl;

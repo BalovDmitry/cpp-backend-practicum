@@ -110,6 +110,13 @@ private:
     StringResponse MakeStringResponse(http::status status, std::string_view body, unsigned http_version,
                                 bool keep_alive,
                                 std::string_view content_type);
+    
+    void SetResponseData(
+        std::string_view request,
+        std::string& body,
+        http::status& status,
+        std::string_view& content_type);
+
     void SetResponseData(
         const std::vector<std::string>& splittedRequest,
         std::string& bodyText,
