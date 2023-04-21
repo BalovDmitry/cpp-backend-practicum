@@ -4,6 +4,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <exception>
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
 
@@ -69,6 +70,48 @@ struct ErrorMessages {
     constexpr static std::string_view INVALID_ENDPOINT = "invalidEndpoint"sv;
     constexpr static std::string_view INVALID_TOKEN = "invalidToken"sv;
     constexpr static std::string_view UNKNOWN_TOKEN = "unknownToken"sv;
+};
+
+// Custom exceptions
+
+class InvalidArgumentException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidArgument"; }
+};
+
+class InvalidNameException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidArgumentName"; }
+};
+
+class InvalidMapException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidArgumentMap"; }
+};
+
+class ParseException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidArgumentParse"; }
+};
+
+class InvalidDirectionException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidArgumentDirection"; }
+};
+
+class InvalidEndpointException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidEndpoint"; }
+};
+
+class InvalidTokenException : public std::exception {
+public:
+    const char* what() const noexcept override { return "invalidToken"; }
+};
+
+class UnknownTokenException : public std::exception {
+public:
+    const char* what() const noexcept override { return "unknownToken"; }
 };
 
 }
