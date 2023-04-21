@@ -13,8 +13,7 @@ namespace http_handler {
 
 //! INTERFACE METHODS
 
-StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
-{   
+StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req) {   
     auto start = std::chrono::high_resolution_clock::now();
     
     http::status status;
@@ -31,15 +30,13 @@ StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req)
     return response;
 }
 
-bool RequestHandlerStrategyIntf::MakeBadRequestBody(std::string &bodyText, http::status &status, const std::string &code, const std::string &message)
-{
+bool RequestHandlerStrategyIntf::MakeBadRequestBody(std::string &bodyText, http::status &status, const std::string &code, const std::string &message) {
     bodyText += boost::json::serialize(json_helper::CreateErrorValue(code, message));
     status = http::status::bad_request;
     return true;
 }
 
-bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText, http::status &status, const std::string &code, const std::string &message)
-{
+bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText, http::status &status, const std::string &code, const std::string &message) {
     bodyText += boost::json::serialize(json_helper::CreateErrorValue(code, message));
     status = http::status::method_not_allowed;
     return true;
@@ -52,24 +49,21 @@ RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game, Strand &
     , randomize_spawn_point_(randomize_spawn_point)
     , strand_(strand)
     , tick_period_(tick_period) {
-        is_debug_mode_ = tick_period_.count() ? false : true;
-        std::cout << "Api handler ctor!" << std::endl;
+    
+    is_debug_mode_ = tick_period_.count() ? false : true;
 }
 
-StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req, http::status &status, std::string &body, std::string_view &content_type)
-{
+StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req, http::status &status, std::string &body, std::string_view &content_type) {
     const auto text_response = [this, &req](http::status status, std::string_view text, RequestType type, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), type, content_type);
     };
 
     if (!is_debug_mode_ && !ticker_started_) {
-        auto self = this->shared_from_this();
         ticker_ = std::make_shared<Ticker>(strand_, tick_period_, 
                     [self = this->shared_from_this()] (std::chrono::milliseconds delta) {
                         self->UpdateTimeInSessions(delta);
                     });
         ticker_->Start();
-        std::cout << "Ticker started!" << std::endl;
         ticker_started_ = true;
     }
 
@@ -124,8 +118,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req,
     return text_response(status, body, request_type, content_type);
 }
 
-StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status, std::string_view body, unsigned http_version, bool keep_alive, RequestType request_type, std::string_view content_type)
-{
+StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status, std::string_view body, unsigned http_version, bool keep_alive, RequestType request_type, std::string_view content_type) {
     StringResponse response(status, http_version);
     if (status == http::status::method_not_allowed && request_type == RequestType::JOIN_GAME) {
         response.set(http::field::allow, "POST");
@@ -140,8 +133,7 @@ StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status
     return response;
 }
 
-void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, RequestType request_type, std::string &body, http::status &status)
-{
+void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, RequestType request_type, std::string &body, http::status &status) {
     switch (request_type) {
         case RequestType::GET_MAP_LIST: {
             MakeGetMapListBody(body, status);
@@ -173,8 +165,7 @@ void RequestHandlerStrategyApi::SetResponseDataGet(const StringRequest& req, Req
     }
 }
 
-void RequestHandlerStrategyApi::SetResponseDataPost(const StringRequest& req, RequestType requestType, std::string &body, http::status &status)
-{
+void RequestHandlerStrategyApi::SetResponseDataPost(const StringRequest& req, RequestType requestType, std::string &body, http::status &status) {
     switch (requestType) {
         case RequestType::JOIN_GAME: {
             MakeJoinGameBody(req.body(), body, status);
@@ -201,8 +192,7 @@ void RequestHandlerStrategyApi::SetResponseDataPost(const StringRequest& req, Re
     }
 }
 
-RequestHandlerStrategyApi::RequestType RequestHandlerStrategyApi::GetRequestType(const std::vector<std::string> &splittedRequest)
-{
+RequestHandlerStrategyApi::RequestType RequestHandlerStrategyApi::GetRequestType(const std::vector<std::string> &splittedRequest) {
     RequestType result = RequestType::UNKNOWN;
     bool is_req_correct = CheckRequestCorrectness(splittedRequest);
 
@@ -227,8 +217,7 @@ RequestHandlerStrategyApi::RequestType RequestHandlerStrategyApi::GetRequestType
     return result;
 }
 
-bool RequestHandlerStrategyApi::CheckRequestCorrectness(const std::vector<std::string> &splittedRequest)
-{
+bool RequestHandlerStrategyApi::CheckRequestCorrectness(const std::vector<std::string> &splittedRequest) {
     if ((splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID 
         || splittedRequest.size() == RequestTypeSize::GET_MAP_LIST
         || splittedRequest.size() == RequestTypeSize::GET_PLAYERS_ON_MAP
@@ -244,8 +233,7 @@ bool RequestHandlerStrategyApi::CheckRequestCorrectness(const std::vector<std::s
     return false;
 }
 
-std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req)
-{
+std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req) {
     std::string_view result;
 
     auto it = req.find("authorization");
@@ -268,8 +256,7 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
     return result;
 }
 
-model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const StringRequest &req)
-{
+model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const StringRequest &req) {
     using namespace model;
 
     boost::json::value val = boost::json::parse(std::string(req.body()));
@@ -296,11 +283,7 @@ std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(cons
     return std::chrono::milliseconds(time_as_int);
 }
 
-void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta)
-{
-    //std::cout << "Update time in sessions: " << delta.count() << std::endl;
-    auto t = game_.GetMapToSession();
-    //std::cout << "Size: " << t.size() << ", players count: " << game_.GetPlayers().size() << std::endl;
+void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta) {
     for (auto& [map, session] : game_.GetMapToSession()) {
         session->UpdateTime(delta);
     }
@@ -308,8 +291,7 @@ void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds d
 
 // Get responses
 
-bool RequestHandlerStrategyApi::MakeGetMapListBody(std::string &bodyText, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeGetMapListBody(std::string &bodyText, http::status &status) {
     boost::json::array jsonList; 
     for (const auto& map : game_.GetMaps()) {
         boost::json::object val;
@@ -324,8 +306,7 @@ bool RequestHandlerStrategyApi::MakeGetMapListBody(std::string &bodyText, http::
     return true;
 }
 
-bool RequestHandlerStrategyApi::MakeGetMapByIdBody(model::Map::Id id, std::string &bodyText, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeGetMapByIdBody(model::Map::Id id, std::string &bodyText, http::status &status) {
     boost::json::object val;
     
     auto map = game_.FindMap(id);
@@ -347,8 +328,7 @@ bool RequestHandlerStrategyApi::MakeGetMapByIdBody(model::Map::Id id, std::strin
     return true;
 }
 
-bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req, std::string& body, http::status& status)
-{
+bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req, std::string& body, http::status& status) {
     boost::json::object res;
 
     try {
@@ -386,8 +366,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     return true;
 }
 
-bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, std::string &body, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, std::string &body, http::status &status) {
     boost::json::object res;
 
     try {
@@ -434,8 +413,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
 
 // Post responses
 
-bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::string &body, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::string &body, http::status &status) {
     boost::json::object res;
 
     try {
@@ -483,8 +461,7 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
     return true;
 }
 
-bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std::string &body, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std::string &body, http::status &status) {
     using namespace model;
 
     boost::json::object res;
@@ -523,8 +500,7 @@ bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std
     return true;
 }
 
-bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std::string &body, http::status &status)
-{
+bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std::string &body, http::status &status) {
     boost::json::object res;
 
     try {
@@ -558,8 +534,7 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
 
 //! STATIC FILE HANDLER METHODS
 
-StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest&& req, http::status &status, std::string& body, std::string_view &content_type)
-{
+StringResponse RequestHandlerStrategyStaticFile::HandleRequestImpl(StringRequest&& req, http::status &status, std::string& body, std::string_view &content_type) {
     const auto text_response = [this, &req](http::status status, std::string_view text, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), content_type);
     };

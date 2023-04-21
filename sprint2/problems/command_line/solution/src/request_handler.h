@@ -50,6 +50,7 @@ public:
                 //self->SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(self->game_, self->strand_, self->args_.randomize_spawn_point, self->args_.tick_period));
                 self->SetHandleStrategy(self->strategy_api_);
                 send(self->strategy_->HandleRequest(std::decay_t<decltype(req)>(req)));
+                return std::string();
             }); 
         } else {
             SetHandleStrategy(strategy_static_);
@@ -64,7 +65,7 @@ private:
     model::Game& game_;
     const command_line::Args& args_;
     net::strand<net::io_context::executor_type> strand_;
-    
+
     std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
     std::shared_ptr<RequestHandlerStrategyApi> strategy_api_;
     std::shared_ptr<RequestHandlerStrategyStaticFile> strategy_static_;
