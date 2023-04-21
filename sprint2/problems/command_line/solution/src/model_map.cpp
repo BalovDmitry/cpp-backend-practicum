@@ -34,8 +34,7 @@ void Map::AddOffice(Office office) {
     }
 }
 
-std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const Position &calculated_pos, const Speed &initial_speed)
-{
+std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const Position &calculated_pos, const Speed &initial_speed) {
     Position result_pos;
     Speed result_speed = initial_speed;
 
@@ -67,8 +66,7 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     return std::make_pair<>(result_pos, result_speed);
 }
 
-std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const RoadBoarders &boarders, const Position &calculated_pos, const Speed &initial_speed)
-{
+std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &current_road, const RoadBoarders &boarders, const Position &calculated_pos, const Speed &initial_speed) {
     Position result_pos;
     Speed result_speed = initial_speed;
 
@@ -100,8 +98,7 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     return std::make_pair<>(result_pos, result_speed);
 }
 
-std::optional<Road> Map::FindRoadByPosition(const Position &position)
-{
+std::optional<Road> Map::FindRoadByPosition(const Position &position) {
     for (int i = 0; i < road_boarders_.size(); ++i) {
         if (road_boarders_[i].ContainPosition(position)) {
             return roads_[i];
@@ -110,8 +107,7 @@ std::optional<Road> Map::FindRoadByPosition(const Position &position)
     return std::optional<Road>();
 }
 
-std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position, int excepted_id)
-{
+std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position, int excepted_id) {
     for (int i = 0; i < road_boarders_.size(); ++i) {
         if (i != excepted_id && road_boarders_[i].ContainPosition(position)) {
             return roads_[i];
@@ -120,12 +116,21 @@ std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position
     return std::optional<Road>();
 }
 
-Position Map::GetRandomPosition() const
-{
+Position Map::GetRandomPosition() const {
     int road_id = rand()%(roads_.size());
+    auto boarders = road_boarders_[road_id];
     
-    std::cout << "Overall roads: " << roads_.size() << ", random road id: " << road_id << std::endl;
-    return Position();
+    double random = ((double) rand()) / (double) RAND_MAX;
+    double diff_x = boarders.GetEndPoint().x - boarders.GetStartPoint().x;
+    double diff_y = boarders.GetEndPoint().y - boarders.GetStartPoint().y;
+
+    double r_x = random * diff_x;
+    double r_y = random * diff_y;
+
+    double pos_x = boarders.GetStartPoint().x + r_x;
+    double pos_y = boarders.GetStartPoint().y + r_y;
+
+    return { pos_x, pos_y };
 }
 
 } 

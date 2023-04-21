@@ -45,30 +45,26 @@ public:
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
         if (IsApiRequest(req)) {
             return net::dispatch(strand_, [self = this->shared_from_this(), req = std::move(req), send = std::move(send)] {
-                // Этот assert не выстрелит, так как лямбда-функция будет выполняться внутри strand
-                //assert(self->strand_, running_in_this_thread());
-                //self->SetHandleStrategy(std::make_shared<RequestHandlerStrategyApi>(self->game_, self->strand_, self->args_.randomize_spawn_point, self->args_.tick_period));
-                self->SetHandleStrategy(self->strategy_api_);
-                send(self->strategy_->HandleRequest(std::decay_t<decltype(req)>(req)));
-                return std::string();
+                //self->SetHandleStrategy(self->strategy_api_);
+                send(self->strategy_api_->HandleRequest(std::decay_t<decltype(req)>(req)));
             }); 
         } else {
-            SetHandleStrategy(strategy_static_);
-            send(strategy_->HandleRequest(std::move(req)));
+            //SetHandleStrategy(strategy_static_);
+            send(strategy_static_->HandleRequest(std::move(req)));
         }
     }
 
-private:
-    void SetHandleStrategy(std::shared_ptr<RequestHandlerStrategyIntf> strategy) { strategy_ = strategy; }
+// private:
+//     void SetHandleStrategy(std::shared_ptr<RequestHandlerStrategyIntf> strategy) { strategy_ = strategy; }
 
 private:
     model::Game& game_;
     const command_line::Args& args_;
     net::strand<net::io_context::executor_type> strand_;
 
-    std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
-    std::shared_ptr<RequestHandlerStrategyApi> strategy_api_;
-    std::shared_ptr<RequestHandlerStrategyStaticFile> strategy_static_;
+    //std::shared_ptr<RequestHandlerStrategyIntf> strategy_;
+    std::shared_ptr<RequestHandlerStrategyIntf> strategy_api_;
+    std::shared_ptr<RequestHandlerStrategyIntf> strategy_static_;
 };
 
 

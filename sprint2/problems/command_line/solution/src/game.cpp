@@ -46,7 +46,8 @@ Token Game::JoinGame(const std::string &name, const Map::Id &map_id, bool random
         return player_tokens_.FindTokenByPlayerId(id.value());
     } else {
         const auto player_id = current_id_++;
-        auto dog = session->AddDog({0.0, 0.0}, name, player_id);
+        Position start_pos = randomize_spawn_point ? map->GetRandomPosition() : Position{ 0.0, 0.0 };
+        auto dog = session->AddDog(start_pos, name, player_id);
         return player_tokens_.AddPlayer({ name, player_id, map_id, dog });
     }
 }
