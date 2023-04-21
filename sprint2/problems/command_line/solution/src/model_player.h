@@ -14,24 +14,23 @@ using DogPtr = std::shared_ptr<Dog>;
 
 class Player {
 public:
-    Player(const std::string& name, u_int32_t id, SessionPtr session, DogPtr dog)
+    Player(const std::string& name, uint32_t id, model::Map::Id map_id, DogPtr dog)
         : name_(name)
-        , session_(session) 
+        , map_id_(map_id) 
         , dog_(dog) 
-        , id_(id) {
-        }
+        , id_(id) {}
 
     // Getters
-    const uint32_t GetId() const { return id_; }
+    uint32_t GetId() const { return id_; }
     const std::string& GetName() const { return name_; }
-    const auto& GetMapId() const { return session_->GetMapId(); }
+    const auto& GetMapId() const { return map_id_; }
     DogPtr GetDog() { return dog_; }
     const DogPtr GetDog() const { return dog_; }
 
 private:
-    u_int32_t id_;
+    uint32_t id_;
     std::string name_;
-    SessionPtr session_;
+    model::Map::Id map_id_;
     DogPtr dog_;
 };
 

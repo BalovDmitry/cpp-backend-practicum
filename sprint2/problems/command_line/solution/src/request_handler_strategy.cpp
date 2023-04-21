@@ -352,16 +352,17 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
     boost::json::object res;
 
     try {
-        auto token = ReceiveTokenFromRequest(req);
-        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        const auto token = ReceiveTokenFromRequest(req);
+        const auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
         const auto map_id = player.GetMapId();
-        const auto& players = game_.GetPlayersOnMap(map_id);
-        for (const auto& player_id : players) {
-            const auto& current_player = game_.FindPlayerById(player_id);
+        const auto session = game_.FindSession(map_id);
+
+        for (const auto&[name, id] : session->GetPlayers()) {
             boost::json::object name_obj;
-            name_obj["name"] = current_player.GetName();
-            res[std::to_string(current_player.GetId())] = name_obj;
+            name_obj["name"] = name;
+            res[std::to_string(id)] = name_obj;
         }
+
         status = http::status::ok;
     } catch (std::exception& e) {
         std::string message;
@@ -448,6 +449,8 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
             throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
         }   
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
+
+
         auto token = game_.JoinGame(name, model::Map::Id{mapId}, randomize_spawn_point_);
         auto player = game_.FindPlayerByToken(token);
         res["authToken"] = *token;

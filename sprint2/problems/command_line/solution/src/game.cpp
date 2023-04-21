@@ -35,39 +35,31 @@ const Map* Game::FindMap(const Map::Id& id) const noexcept {
     return nullptr;
 }
 
-Token Game::JoinGame(const std::string &name, const Map::Id &id, bool randomize_spawn_point)
-{
-    auto map = FindMap(id);
+Token Game::JoinGame(const std::string &name, const Map::Id &map_id, bool randomize_spawn_point) {
+    auto map = FindMap(map_id);
     if (!map) {
         throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_ARGUMENT_MAP));
     }
 
-    if (!name_to_id_.contains(name)) {
-        const auto player_id = current_id_++;
-        name_to_id_[name] = player_id;
-        map_id_to_player_id_[id].insert(player_id);
-        auto session = FindSession(id);
-        auto start_position = randomize_spawn_point ? FindMap(id)->GetRandomPosition() : Position{0.0, 0.0};
-        auto dog = session->AddDog({0.0, 0.0}, name);
-        
-        return player_tokens_.AddPlayer({ name, player_id, session, dog });
+    auto session = FindSession(map_id);
+    if (auto id = session->GetPlayerIdByName(name)) {
+        return player_tokens_.FindTokenByPlayerId(id.value());
     } else {
-        return player_tokens_.FindTokenByPlayerId(name_to_id_.at(name));
+        const auto player_id = current_id_++;
+        auto dog = session->AddDog({0.0, 0.0}, name, player_id);
+        return player_tokens_.AddPlayer({ name, player_id, map_id, dog });
     }
 }
 
-const Player &Game::FindPlayerByToken(Token token)
-{
+const Player &Game::FindPlayerByToken(Token token) {
     return player_tokens_.FindPlayerByToken(token);
 }
 
-const Player &Game::FindPlayerById(uint32_t id)
-{
+const Player &Game::FindPlayerById(uint32_t id) {
     return player_tokens_.FindPlayerById(id);
 }
 
-SessionPtr Game::FindSession(Map::Id id)
-{
+SessionPtr Game::FindSession(Map::Id id) {
     if (!map_id_to_session_.contains(id)) {
         if (auto map = FindMap(id)) {
             map_id_to_session_[id] = std::make_shared<GameSession>(const_cast<Map&>(*map));
@@ -76,14 +68,6 @@ SessionPtr Game::FindSession(Map::Id id)
         }
     }
     return map_id_to_session_.at(id);
-}
-
-const std::unordered_set<uint32_t> &Game::GetPlayersOnMap(Map::Id id)
-{
-    if (!map_id_to_player_id_.contains(id)) {
-        throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_ARGUMENT_MAP));
-    }
-    return map_id_to_player_id_.at(id);
 }
 
 }  // namespace model

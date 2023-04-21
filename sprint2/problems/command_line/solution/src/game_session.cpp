@@ -6,22 +6,27 @@
 
 namespace model {
 
-DogPtr GameSession::AddDog(Position spawn_point, const std::string& name) {
+std::optional<uint32_t> GameSession::GetPlayerIdByName(const std::string &name) {
+    if (HasPlayerWithName(name)) {
+        return name_to_id_.at(name);
+    }
+    return std::nullopt;
+}
+
+DogPtr GameSession::AddDog(Position spawn_point, const std::string& name, uint32_t id) {
     auto dog = std::make_shared<Dog>(name, spawn_point, GetMapSpeed(), Direction::NORTH);
     name_to_dog_[name] = dog;
+    name_to_id_[name] = id;
     return name_to_dog_.at(name);
 }
 
-void GameSession::UpdateTime(std::chrono::milliseconds delta)
-{
-    std::cout << "On map: " << map_.GetName() << std::endl;
+void GameSession::UpdateTime(std::chrono::milliseconds delta) {
     for (auto&[name, dog] : name_to_dog_) {
         UpdateDogPosition(dog, delta);
     }
 }
 
-void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta)
-{
+void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta) {
     Position calculated_pos;
 
     Position calculated_pos_on_current_road = dog->GetPosition();
