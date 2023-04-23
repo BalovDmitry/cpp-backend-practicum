@@ -60,58 +60,79 @@ static const std::unordered_map<std::string, std::string_view> ExtensionToConten
     , { "mp3", ContentType::AUDIO_MPEG }
 };
 
-struct ErrorMessages {
-    ErrorMessages() = delete;
-    constexpr static std::string_view INVALID_ARGUMENT = "invalidArgument"sv;
-    constexpr static std::string_view INVALID_ARGUMENT_NAME = "invalidArgumentName"sv;
-    constexpr static std::string_view INVALID_ARGUMENT_MAP = "invalidArgumentMap"sv;
-    constexpr static std::string_view INVALID_ARGUMENT_PARSE = "invalidArgumentParse"sv;
-    constexpr static std::string_view INVALID_ARGUMENT_DIRECTION = "invalidArgumentDirection"sv;
-    constexpr static std::string_view INVALID_ENDPOINT = "invalidEndpoint"sv;
-    constexpr static std::string_view INVALID_TOKEN = "invalidToken"sv;
-    constexpr static std::string_view UNKNOWN_TOKEN = "unknownToken"sv;
-};
+// struct ErrorMessages {
+//     ErrorMessages() = delete;
+//     constexpr static std::string_view INVALID_ARGUMENT = "invalidArgument"sv;
+//     constexpr static std::string_view INVALID_ARGUMENT_NAME = "invalidArgumentName"sv;
+//     constexpr static std::string_view INVALID_ARGUMENT_MAP = "invalidArgumentMap"sv;
+//     constexpr static std::string_view INVALID_ARGUMENT_PARSE = "invalidArgumentParse"sv;
+//     constexpr static std::string_view INVALID_ARGUMENT_DIRECTION = "invalidArgumentDirection"sv;
+//     constexpr static std::string_view INVALID_ENDPOINT = "invalidEndpoint"sv;
+//     constexpr static std::string_view INVALID_TOKEN = "invalidToken"sv;
+//     constexpr static std::string_view UNKNOWN_TOKEN = "unknownToken"sv;
+// };
 
 // Custom exceptions
 
-class InvalidArgumentException : public std::exception {
+class BaseException : public std::exception {
 public:
-    const char* what() const noexcept override { return "invalidArgument"; }
+    BaseException(const std::string& message, const std::string& code)
+        : message_(message)
+        , code_ (code) {}
+    const std::string& message() const noexcept { return message_; }
+    const std::string& code() const noexcept { return code_; }
+
+private:
+    std::string message_;
+    std::string code_;
 };
 
-class InvalidNameException : public std::exception {
+class InvalidArgumentException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidArgumentName"; }
+    InvalidArgumentException(const std::string& message = "") 
+        : BaseException(message, "invalidArgument") {}
 };
 
-class InvalidMapException : public std::exception {
+class InvalidNameException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidArgumentMap"; }
+    InvalidNameException(const std::string& message = "") 
+        : BaseException(message, "invalidArgumentName") {}
 };
 
-class ParseException : public std::exception {
+class InvalidMapException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidArgumentParse"; }
+    InvalidMapException(const std::string& message = "") 
+        : BaseException(message, "invalidArgumentMap") {}
 };
 
-class InvalidDirectionException : public std::exception {
+class ParseException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidArgumentDirection"; }
+    ParseException(const std::string& message = "") 
+        : BaseException(message, "invalidArgumentParse") {}
 };
 
-class InvalidEndpointException : public std::exception {
+class InvalidDirectionException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidEndpoint"; }
+    InvalidDirectionException(const std::string& message = "") 
+        : BaseException(message, "invalidArgumentDirection") {}
 };
 
-class InvalidTokenException : public std::exception {
+class InvalidEndpointException : public BaseException {
 public:
-    const char* what() const noexcept override { return "invalidToken"; }
+    InvalidEndpointException(const std::string& message = "") 
+        : BaseException(message, "invalidEndpoint") {}
 };
 
-class UnknownTokenException : public std::exception {
+class InvalidTokenException : public BaseException {
 public:
-    const char* what() const noexcept override { return "unknownToken"; }
+    InvalidTokenException(const std::string& message = "") 
+        : BaseException(message, "invalidToken") {}
+};
+
+class UnknownTokenException : public BaseException {
+public:
+    UnknownTokenException(const std::string& message = "") 
+        : BaseException(message, "unknownToken") {}
 };
 
 }

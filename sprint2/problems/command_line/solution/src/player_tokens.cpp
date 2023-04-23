@@ -31,36 +31,37 @@ Token PlayerTokens::AddPlayer(Player&& player) {
 
 const Player& PlayerTokens::FindPlayerByToken(const Token& token) const {
     if ((*token).size() != 32) {
-        throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_TOKEN));
+        throw http_handler::InvalidTokenException("Invalid token size");
+        //throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_TOKEN));
     }
 
     if (tokenToPlayer_.contains(token)) {
         auto id = tokenToPlayer_.at(token);
         return players_[id];
     } else {
-        throw std::invalid_argument(std::string(http_handler::ErrorMessages::UNKNOWN_TOKEN));
+        throw http_handler::UnknownTokenException("Player token has not been found");
+        //throw std::invalid_argument(std::string(http_handler::ErrorMessages::UNKNOWN_TOKEN));
     }
 }
 
-const Player &PlayerTokens::FindPlayerById(uint32_t id)
-{
+const Player &PlayerTokens::FindPlayerById(uint32_t id) {
     if (id >= tokens_.size()) {
-        throw std::invalid_argument("Invalid palyer id!");
+        throw http_handler::InvalidArgumentException("Invalid player id");
+        //throw std::invalid_argument("Invalid palyer id!");
     }
     auto token = tokens_[id];
     return FindPlayerByToken(token);
 }
 
-const Token &PlayerTokens::FindTokenByPlayerId(uint32_t id)
-{
+const Token &PlayerTokens::FindTokenByPlayerId(uint32_t id) {
     if (id >= tokens_.size()) {
-        throw std::invalid_argument("Invalid palyer id!");
+        throw http_handler::InvalidArgumentException("Invalid player id");
+        //throw std::invalid_argument("Invalid palyer id!");
     }
     return tokens_[id];
 }
 
-const std::vector<Player> &PlayerTokens::GetPlayers() const
-{
+const std::vector<Player> &PlayerTokens::GetPlayers() const {
     return players_;
 }
 
