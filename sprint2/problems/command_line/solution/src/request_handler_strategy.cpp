@@ -278,8 +278,8 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
 }
 
 std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(const StringRequest& req) {
-    boost::json::value val = boost::json::parse(std::string(req.body()));
     try {
+        boost::json::value val = boost::json::parse(std::string(req.body()));
         auto time_as_int = val.as_object().at("timeDelta").as_int64();
         return std::chrono::milliseconds(time_as_int);
     } catch (std::exception& e) {
