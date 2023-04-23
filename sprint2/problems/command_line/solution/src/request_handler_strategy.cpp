@@ -239,7 +239,6 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
     auto it = req.find("authorization");
     if (it == req.end()) {
         throw InvalidTokenException("Authorization header is missing");
-        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
     
     auto str = req.at("authorization");
@@ -248,12 +247,10 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
         result = str.substr(pos + 1);
     } else {
         throw InvalidTokenException("Authorization header is missing");
-        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
 
     if (result.empty()) {
         throw InvalidTokenException("Empty token is passed");
-        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_TOKEN));
     }
 
     return result;
@@ -276,9 +273,7 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
     } else if (move_val.empty()) {
         return Direction::NO_DIRECTION;
     } else {
-        //throw InvalidArgumentException("Failed to parse action");
         throw InvalidDirectionException();
-        //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_DIRECTION));
     }
 }
 
@@ -350,19 +345,6 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
 
         status = http::status::ok;
     } catch (const BaseException& e) {
-        // std::string message;
-        // std::string code;
-        // const std::string& what = e.what();
-
-        // if (what == ErrorMessages::INVALID_TOKEN) {
-        //     code = what;
-        //     message = "Authorization header is missing";
-        //     status = http::status::unauthorized;
-        // } else if (what == ErrorMessages::UNKNOWN_TOKEN) {
-        //     code = what;
-        //     message = "Player token has not been found";
-        //     status = http::status::unauthorized;
-        // }
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.what(), e.message());
     }
@@ -396,19 +378,6 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         res["players"] = players_obj;
         status = http::status::ok;
     } catch (const BaseException& e) {
-        // std::string message;
-        // std::string code;
-        // const std::string& what = e.what();
-
-        // if (what == ErrorMessages::INVALID_TOKEN) {
-        //     code = what;
-        //     message = "Authorization header is missing";
-        //     status = http::status::unauthorized;
-        // } else if (what == ErrorMessages::UNKNOWN_TOKEN) {
-        //     code = what;
-        //     message = "Player token has not been found";
-        //     status = http::status::unauthorized;
-        // }
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -427,13 +396,11 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
         boost::json::value val = boost::json::parse(std::string(request));
         if (!val.as_object().contains("userName") || !val.as_object().contains("mapId")) {
             throw ParseException("Join game request parse error");
-            //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_PARSE));
         }
 
         std::string name = val.as_object().at("userName").as_string().c_str();
         if (name.empty()) {
             throw InvalidNameException("Invalid name");
-            //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ARGUMENT_NAME));
         }   
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
 
@@ -447,23 +414,6 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
         status = http::status::not_found;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     } catch (const BaseException& e) {
-        // std::string message;
-        // std::string code;
-        // const std::string& what = e.what();
-
-        // if (what == ErrorMessages::INVALID_ARGUMENT_PARSE) {
-        //     code = "invalidArgument";
-        //     message = "Join game request parse error";
-        //     status = http::status::bad_request;
-        // } else if (what == ErrorMessages::INVALID_ARGUMENT_NAME) {
-        //     code = "invalidArgument";
-        //     message = "Invalid name";
-        //     status = http::status::bad_request;
-        // } else if (what == ErrorMessages::INVALID_ARGUMENT_MAP) {
-        //     code = "mapNotFound";
-        //     message = "Map not found";
-        //     status = http::status::not_found;
-        // }
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -490,22 +440,6 @@ bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std
         MakeBadRequestBody(body, status, "invalidArgument", "Failed to parse action");
         return true;
     } catch (const BaseException& e) {
-        // std::string message;
-        // std::string code;
-        // const std::string& what = e.what();
-
-        // if (what == ErrorMessages::INVALID_TOKEN) {
-        //     code = what;
-        //     message = "Authorization header is missing";
-        //     status = http::status::unauthorized;
-        // } else if (what == ErrorMessages::UNKNOWN_TOKEN) {
-        //     code = what;
-        //     message = "Player token has not been found";
-        //     status = http::status::unauthorized;
-        // } else {
-        //     MakeBadRequestBody(body, status, "invalidArgument", "Failed to parse action");
-        //     return true;
-        // }
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -529,17 +463,6 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
         }
         status = http::status::ok;
     } catch (const BaseException& e) {
-        // std::string message;
-        // std::string code;
-        // const std::string& what = e.what();
-        
-        // if (what == ErrorMessages::INVALID_ENDPOINT) {
-        //     code = "badRequest";
-        //     message = "Invalid endpoint";
-        // } else {
-        //     code = ErrorMessages::INVALID_ARGUMENT;
-        //     message = what;
-        // }
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     } catch (const std::exception& e) {

@@ -66,7 +66,6 @@ SessionPtr Game::FindSession(Map::Id id) {
             map_id_to_session_[id] = std::make_shared<GameSession>(const_cast<Map&>(*map));
         } else {
             throw http_handler::InvalidMapException("Map is not found");
-            //throw std::invalid_argument(std::string(http_handler::ErrorMessages::INVALID_ARGUMENT_MAP));
         }
     }
     return map_id_to_session_.at(id);

@@ -60,18 +60,6 @@ static const std::unordered_map<std::string, std::string_view> ExtensionToConten
     , { "mp3", ContentType::AUDIO_MPEG }
 };
 
-// struct ErrorMessages {
-//     ErrorMessages() = delete;
-//     constexpr static std::string_view INVALID_ARGUMENT = "invalidArgument"sv;
-//     constexpr static std::string_view INVALID_ARGUMENT_NAME = "invalidArgumentName"sv;
-//     constexpr static std::string_view INVALID_ARGUMENT_MAP = "invalidArgumentMap"sv;
-//     constexpr static std::string_view INVALID_ARGUMENT_PARSE = "invalidArgumentParse"sv;
-//     constexpr static std::string_view INVALID_ARGUMENT_DIRECTION = "invalidArgumentDirection"sv;
-//     constexpr static std::string_view INVALID_ENDPOINT = "invalidEndpoint"sv;
-//     constexpr static std::string_view INVALID_TOKEN = "invalidToken"sv;
-//     constexpr static std::string_view UNKNOWN_TOKEN = "unknownToken"sv;
-// };
-
 // Custom exceptions
 
 class BaseException : public std::exception {

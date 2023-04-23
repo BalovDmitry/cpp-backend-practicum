@@ -10,7 +10,6 @@ namespace fs = std::filesystem;
 namespace command_line {
 
 struct Args {
-
     int tick_period = 0;
     bool randomize_spawn_point = false;
     fs::path config_file;

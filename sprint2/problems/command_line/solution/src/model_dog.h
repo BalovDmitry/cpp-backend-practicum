@@ -27,8 +27,6 @@ public:
     const std::string& GetFullName() const { return name_; }
     std::string GetDirectionString() const;
 
-    Position UpdatePosition(double time_delta);
-
 private:
     const double map_speed_;
     std::string name_;
