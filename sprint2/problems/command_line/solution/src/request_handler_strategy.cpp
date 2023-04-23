@@ -279,8 +279,12 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
 
 std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(const StringRequest& req) {
     boost::json::value val = boost::json::parse(std::string(req.body()));
-    auto time_as_int = val.as_object().at("timeDelta").as_int64();
-    return std::chrono::milliseconds(time_as_int);
+    try {
+        auto time_as_int = val.as_object().at("timeDelta").as_int64();
+        return std::chrono::milliseconds(time_as_int);
+    } catch (std::exception& e) {
+        throw InvalidArgumentException(e.what());
+    }
 }
 
 void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta) {
@@ -455,7 +459,6 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
     try {
         if (!is_debug_mode_) {
             throw InvalidEndpointException("Invalid endpoint");
-            //throw std::invalid_argument(std::string(ErrorMessages::INVALID_ENDPOINT));
         }
         auto time = ReceiveTimeFromRequest(req);
         for (auto& [map, session] : game_.GetMapToSession()) {
@@ -465,9 +468,6 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
     } catch (const BaseException& e) {
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
-    } catch (const std::exception& e) {
-        status = http::status::bad_request;
-        res = json_helper::CreateErrorValue("invalidEndpoint", e.what());
     }
     body += boost::json::serialize(res);
 
