@@ -528,7 +528,7 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
             session->UpdateTime(time);
         }
         status = http::status::ok;
-    } catch(const BaseException& e) {
+    } catch (const BaseException& e) {
         // std::string message;
         // std::string code;
         // const std::string& what = e.what();
@@ -542,6 +542,9 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
         // }
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
+    } catch (const std::exception& e) {
+        status = http::status::bad_request;
+        res = json_helper::CreateErrorValue("invalidEndpoint", e.what());
     }
     body += boost::json::serialize(res);
 
