@@ -47,6 +47,7 @@ bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText,
 RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game, Strand &strand, bool randomize_spawn_point, int tick_period)
     : game_(game) 
     , randomize_spawn_point_(randomize_spawn_point)
+    , ticker_started_(false)
     , strand_(strand)
     , tick_period_(tick_period) {
     
