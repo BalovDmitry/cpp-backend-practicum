@@ -52,7 +52,7 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
                 throw std::runtime_error("Offices havent'been added!");
             }
 
-            if (!json_helper::AddDogSpeedToMap(currentMap, mapObj)) {
+            if (!json_helper::SetMapDogSpeed(currentMap, mapObj)) {
                 if (val.as_object().contains("defaultDogSpeed")) {
                     currentMap.SetSpeed(val.as_object().at("defaultDogSpeed").as_double());
                 } else {

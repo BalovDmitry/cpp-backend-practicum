@@ -7,13 +7,15 @@
 
 namespace model {
 
+const double ROAD_WIDTH = 0.4;
+
 RoadBoarders CalculateBoarders(const Road& road) {
     Position point_begin, point_end;
 
-    point_begin.x = std::min(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x)) - 0.4;
-    point_begin.y = std::min(static_cast<double>(road.GetStart().y) , static_cast<double>(road.GetEnd().y))  - 0.4;
-    point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + 0.4;
-    point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + 0.4; 
+    point_begin.x = std::min(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x)) - ROAD_WIDTH;
+    point_begin.y = std::min(static_cast<double>(road.GetStart().y) , static_cast<double>(road.GetEnd().y))  - ROAD_WIDTH;
+    point_end.x = std::max(static_cast<double>(road.GetStart().x), static_cast<double>(road.GetEnd().x))  + ROAD_WIDTH;
+    point_end.y = std::max(static_cast<double>(road.GetStart().y), static_cast<double>(road.GetEnd().y)) + ROAD_WIDTH; 
 
     return { point_begin, point_end };
 }
@@ -38,10 +40,10 @@ std::pair<Position, Speed> Map::CalculatePositionAndSpeedOnRoad(const Road &curr
     Position result_pos;
     Speed result_speed = initial_speed;
 
-    double left_boarder = static_cast<double>(std::min(current_road.GetStart().x, current_road.GetEnd().x)) - 0.4;
-    double right_boarder = static_cast<double>(std::max(current_road.GetStart().x, current_road.GetEnd().x)) + 0.4;
-    double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + 0.4;
-    double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - 0.4;
+    double left_boarder = static_cast<double>(std::min(current_road.GetStart().x, current_road.GetEnd().x)) - ROAD_WIDTH;
+    double right_boarder = static_cast<double>(std::max(current_road.GetStart().x, current_road.GetEnd().x)) + ROAD_WIDTH;
+    double upper_boarder = static_cast<double>(std::max(current_road.GetStart().y, current_road.GetEnd().y)) + ROAD_WIDTH;
+    double lower_boarder = static_cast<double>(std::min(current_road.GetStart().y, current_road.GetEnd().y)) - ROAD_WIDTH;
 
     if (calculated_pos.x <= left_boarder) {
         result_pos.x = left_boarder;

@@ -85,7 +85,7 @@ bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
     return result;
 }
 
-bool AddDogSpeedToMap(model::Map &currentMap, const boost::json::value &mapObj)
+bool SetMapDogSpeed(model::Map &currentMap, const boost::json::value &mapObj)
 {
     bool result = false;
 

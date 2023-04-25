@@ -16,7 +16,7 @@ using tcp = net::ip::tcp;
 bool AddRoadsToMap(model::Map& currentMap, const boost::json::value& mapObj);
 bool AddBuildingsToMap(model::Map& currentMap, const boost::json::value& mapObj);
 bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj);
-bool AddDogSpeedToMap(model::Map& currentMap, const boost::json::value& mapObj);
+bool SetMapDogSpeed(model::Map& currentMap, const boost::json::value& mapObj);
 
 boost::json::array CreateRoadsArray(const model::Map& map);
 boost::json::array CreateBuildingsArray(const model::Map& map);
