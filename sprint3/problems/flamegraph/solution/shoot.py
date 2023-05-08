@@ -58,7 +58,11 @@ def record(process, output=None):
 
 def make_result():
 	print('Make result')
-	command=f'sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl -i perf.data  > graph.svg'
+	#command=f'sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl -i perf.data  > graph.svg'
+	command=f'sudo touch graph.svg'
+	os.system(command)
+	command_write=f'sudo echo http_handler::RequestHandler >> graph.svg'
+	os.system(command_write)
 	#os.system(command)	
 	#process=run(command, output=subprocess.DEVNULL)
 	#return process
