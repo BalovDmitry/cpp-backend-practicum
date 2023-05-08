@@ -50,16 +50,18 @@ def make_shots():
 def record(process, output=None):
 	pid = process.pid
 	print("Start recording")
-	list = ['perf', 'record', '-p', pid, '-o', 'perf.data', 'sleep', '5']
+	list = ['perf', 'record', '-p', pid, '-o', 'perf.data']
 	command = ' '.join(map(str, list))
-	process = subprocess.Popen(shlex.split(command), stdout=output, stderr=subprocess.DEVNULL)
+	process = run(command, None)
+	#process = subprocess.Popen(shlex.split(command), stdout=output, stderr=subprocess.DEVNULL)
 	return process
 
 def make_result():
 	print('Make result')
-	command=f'sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl perf.data  > graph.svg'
-	process=run(command, output=subprocess.DEVNULL)
-	return process
+	command=f'sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl -i perf.data  > graph.svg'
+	os.system(command)	
+	#process=run(command, output=subprocess.DEVNULL)
+	#return process
 
 server = run(start_server())
 record(server)
@@ -67,5 +69,6 @@ make_shots()
 stop(server)
 time.sleep(5)
 print('Job done')
-result=make_result()
-stop(result)
+make_result()
+time.sleep(2)
+#stop(result)
