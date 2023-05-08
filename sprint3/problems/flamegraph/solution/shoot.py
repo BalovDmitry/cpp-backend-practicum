@@ -59,7 +59,7 @@ def record(process, output=None):
 def make_result():
 	print('Make result')
 	command=f'sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl -i perf.data  > graph.svg'
-	os.system(command)	
+	#os.system(command)	
 	#process=run(command, output=subprocess.DEVNULL)
 	#return process
 
