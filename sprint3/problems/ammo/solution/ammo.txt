@@ -4,5 +4,3 @@
 /api/v1/maps 
 /api/v1/maps/map1
 /api/v1/maps/town
-/api/v1/game.html
-/api/v1/index.html
