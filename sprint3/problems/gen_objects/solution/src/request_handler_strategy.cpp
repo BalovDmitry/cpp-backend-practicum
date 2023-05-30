@@ -129,7 +129,11 @@ StringResponse RequestHandlerStrategyApi::MakeStringResponse(http::status status
     StringResponse response(status, http_version);
     if (status == http::status::method_not_allowed && request_type == RequestType::JOIN_GAME) {
         response.set(http::field::allow, "POST");
-    } else if (status == http::status::method_not_allowed && (request_type == RequestType::GET_PLAYERS_ON_MAP || request_type == RequestType::GET_GAME_STATE)) {
+    } else if (status == http::status::method_not_allowed && 
+        (request_type == RequestType::GET_PLAYERS_ON_MAP || 
+        request_type == RequestType::GET_GAME_STATE ||
+        request_type == RequestType::GET_MAP_LIST ||
+        request_type == RequestType::GET_MAP_BY_ID)) {
         response.set(http::field::allow, "GET, HEAD");
     }
     response.set(http::field::content_type, std::string(content_type));
@@ -204,9 +208,9 @@ RequestHandlerStrategyApi::RequestType RequestHandlerStrategyApi::GetRequestType
     bool is_req_correct = CheckRequestCorrectness(splittedRequest);
 
     if (is_req_correct) {
-        if (splittedRequest.size() == RequestTypeSize::GET_MAP_LIST) {
+        if (splittedRequest.size() == RequestTypeSize::GET_MAP_LIST && splittedRequest.back() == "maps") {
             result = RequestType::GET_MAP_LIST;
-        } else if (splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID && (splittedRequest.back().starts_with("map") || splittedRequest.back() == "town")) {
+        } else if (splittedRequest.size() == RequestTypeSize::GET_MAP_BY_ID && splittedRequest[2] == "maps") {
             result = RequestType::GET_MAP_BY_ID;
         } else if (splittedRequest.size() == RequestTypeSize::GET_PLAYERS_ON_MAP && splittedRequest.back() == "players") {
             result = RequestType::GET_PLAYERS_ON_MAP;
