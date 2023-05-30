@@ -82,7 +82,7 @@ StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req,
             if (req.method() == http::verb::get || req.method() == http::verb::head) {
                 SetResponseDataGet(req, request_type, body, status);
             } else {
-                MakeMethodNotAllowedBody(body, status);
+                MakeMethodNotAllowedBody(body, status, "invalidMethod", "Only GET, HEAD methods are expected");
             }
             break;
         }
