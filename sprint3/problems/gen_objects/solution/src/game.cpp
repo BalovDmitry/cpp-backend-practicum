@@ -1,6 +1,6 @@
 #include "game.h"
 #include "logger.h"
-#include "request_handler_helper.h"
+#include "game_server_exceptions.h"
 
 #include <stdexcept>
 #include <sstream>
@@ -38,7 +38,7 @@ const Map* Game::FindMap(const Map::Id& id) const noexcept {
 Token Game::JoinGame(const std::string &name, const Map::Id &map_id, bool randomize_spawn_point) {
     auto map = FindMap(map_id);
     if (!map) {
-        throw http_handler::InvalidMapException("Map is not found");
+        throw server_exceptions::InvalidMapException("Map is not found");
     }
 
     auto session = FindSession(map_id);
@@ -65,7 +65,7 @@ SessionPtr Game::FindSession(Map::Id id) {
         if (auto map = FindMap(id)) {
             map_id_to_session_[id] = std::make_shared<GameSession>(const_cast<Map&>(*map));
         } else {
-            throw http_handler::InvalidMapException("Map is not found");
+            throw server_exceptions::InvalidMapException("Map is not found");
         }
     }
     return map_id_to_session_.at(id);

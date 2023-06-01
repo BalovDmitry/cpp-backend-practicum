@@ -16,14 +16,14 @@ using DogPtr = std::shared_ptr<Dog>;
 
 class GameSession {
 public:
-    GameSession(model::Map& map)
-        : map_(map)
-        , loot_size_(model::ExtraData::GetInstance().GetLootByMapId(map_.GetId()).size()) {
-            
+    GameSession(model::Map& map, unsigned loot_size = 0)
+        : map_(map) {
+        
+        loot_size_ = model::ExtraData::GetInstance().GetLootByMapId(map.GetId()).size();
         using namespace std::chrono_literals;
         loot_generator_ = std::make_shared<loot_gen::LootGenerator>(
-        model::ExtraData::GetInstance().GetLootGeneratorData().period * 1ms, 
-        model::ExtraData::GetInstance().GetLootGeneratorData().probability);
+            model::ExtraData::GetInstance().GetLootGeneratorData().period * 1ms, 
+            model::ExtraData::GetInstance().GetLootGeneratorData().probability);
     }
 
     GameSession(const GameSession& session) = default;
@@ -61,7 +61,7 @@ private:
     // Fields for loot
     std::shared_ptr<loot_gen::LootGenerator> loot_generator_;
     unsigned loot_count_ = 0;
-    const unsigned loot_size_;
+    unsigned loot_size_ = 0;
     boost::json::object loot_object_;
 };
 

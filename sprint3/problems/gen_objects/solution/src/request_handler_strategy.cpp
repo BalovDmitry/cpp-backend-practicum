@@ -2,6 +2,7 @@
 #include "json_helper.h"
 #include "logger.h"
 #include "extra_data.h"
+#include "game_server_exceptions.h"
 
 #include <boost/json/serialize.hpp>
 #include <fstream>
@@ -249,7 +250,7 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
 
     auto it = req.find("authorization");
     if (it == req.end()) {
-        throw InvalidTokenException("Authorization header is missing");
+        throw server_exceptions::InvalidTokenException("Authorization header is missing");
     }
     
     auto str = req.at("authorization");
@@ -257,11 +258,11 @@ std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const String
         auto pos = str.find_last_of(' ');
         result = str.substr(pos + 1);
     } else {
-        throw InvalidTokenException("Authorization header is missing");
+        throw server_exceptions::InvalidTokenException("Authorization header is missing");
     }
 
     if (result.empty()) {
-        throw InvalidTokenException("Empty token is passed");
+        throw server_exceptions::InvalidTokenException("Empty token is passed");
     }
 
     return result;
@@ -284,7 +285,7 @@ model::Direction RequestHandlerStrategyApi::ReceiveDirectionFromRequest(const St
     } else if (move_val.empty()) {
         return Direction::NO_DIRECTION;
     } else {
-        throw InvalidDirectionException();
+        throw server_exceptions::InvalidDirectionException();
     }
 }
 
@@ -294,7 +295,7 @@ std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(cons
         auto time_as_int = val.as_object().at("timeDelta").as_int64();
         return std::chrono::milliseconds(time_as_int);
     } catch (std::exception& e) {
-        throw InvalidArgumentException(e.what());
+        throw server_exceptions::InvalidArgumentException(e.what());
     }
 }
 
@@ -360,7 +361,7 @@ bool RequestHandlerStrategyApi::MakeGetPlayersOnMapBody(const StringRequest& req
         }
 
         status = http::status::ok;
-    } catch (const BaseException& e) {
+    } catch (const server_exceptions::BaseException& e) {
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.what(), e.message());
     }
@@ -405,7 +406,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         res["lostObjects"] = game_.FindSession(player.GetMapId())->GetLootObject();
 
         status = http::status::ok;
-    } catch (const BaseException& e) {
+    } catch (const server_exceptions::BaseException& e) {
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -423,12 +424,12 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
     try {
         boost::json::value val = boost::json::parse(std::string(request));
         if (!val.as_object().contains("userName") || !val.as_object().contains("mapId")) {
-            throw ParseException("Join game request parse error");
+            throw server_exceptions::ParseException("Join game request parse error");
         }
 
         std::string name = val.as_object().at("userName").as_string().c_str();
         if (name.empty()) {
-            throw InvalidNameException("Invalid name");
+            throw server_exceptions::InvalidNameException("Invalid name");
         }   
         std::string mapId = val.as_object().at("mapId").as_string().c_str();
 
@@ -438,10 +439,10 @@ bool RequestHandlerStrategyApi::MakeJoinGameBody(std::string_view request, std::
         res["playerId"] = player.GetId();
         status = http::status::ok;
 
-    } catch (const InvalidMapException& e) {
+    } catch (const server_exceptions::InvalidMapException& e) {
         status = http::status::not_found;
         res = json_helper::CreateErrorValue(e.code(), e.message());
-    } catch (const BaseException& e) {
+    } catch (const server_exceptions::BaseException& e) {
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -464,10 +465,10 @@ bool RequestHandlerStrategyApi::MakeMovePlayerBody(const StringRequest& req, std
         player.GetDog()->SetSpeedByDirection(direction);
         
         status = http::status::ok;
-    } catch (const InvalidDirectionException& e) {
+    } catch (const server_exceptions::InvalidDirectionException& e) {
         MakeBadRequestBody(body, status, "invalidArgument", "Failed to parse action");
         return true;
-    } catch (const BaseException& e) {
+    } catch (const server_exceptions::BaseException& e) {
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }
@@ -482,14 +483,14 @@ bool RequestHandlerStrategyApi::MakeUpdateTimeBody(const StringRequest &req, std
 
     try {
         if (!is_debug_mode_) {
-            throw InvalidEndpointException("Invalid endpoint");
+            throw server_exceptions::InvalidEndpointException("Invalid endpoint");
         }
         auto time = ReceiveTimeFromRequest(req);
         for (auto& [map, session] : game_.GetMapToSession()) {
             session->UpdateTime(time);
         }
         status = http::status::ok;
-    } catch (const BaseException& e) {
+    } catch (const server_exceptions::BaseException& e) {
         status = http::status::bad_request;
         res = json_helper::CreateErrorValue(e.code(), e.message());
     }

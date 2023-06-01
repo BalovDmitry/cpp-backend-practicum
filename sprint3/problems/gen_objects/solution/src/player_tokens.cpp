@@ -1,5 +1,6 @@
 #include "player_tokens.h"
-#include "request_handler_helper.h"
+#include "game_server_exceptions.h"
+//#include "request_handler_helper.h"
 
 #include <sstream>
 #include <iostream>
@@ -34,20 +35,20 @@ Token PlayerTokens::AddPlayer(Player&& player) {
 
 const Player& PlayerTokens::FindPlayerByToken(const Token& token) const {
     if ((*token).size() != 32) {
-        throw http_handler::InvalidTokenException("Invalid token size");
+        throw server_exceptions::InvalidTokenException("Invalid token size");
     }
 
     if (tokenToPlayer_.contains(token)) {
         auto id = tokenToPlayer_.at(token);
         return players_[id];
     } else {
-        throw http_handler::UnknownTokenException("Player token has not been found");
+        throw server_exceptions::UnknownTokenException("Player token has not been found");
     }
 }
 
 const Player &PlayerTokens::FindPlayerById(uint32_t id) {
     if (id >= tokens_.size()) {
-        throw http_handler::InvalidArgumentException("Invalid player id");
+        throw server_exceptions::InvalidArgumentException("Invalid player id");
     }
     auto token = tokens_[id];
     return FindPlayerByToken(token);
@@ -55,7 +56,7 @@ const Player &PlayerTokens::FindPlayerById(uint32_t id) {
 
 const Token &PlayerTokens::FindTokenByPlayerId(uint32_t id) {
     if (id >= tokens_.size()) {
-        throw http_handler::InvalidArgumentException("Invalid player id");
+        throw server_exceptions::InvalidArgumentException("Invalid player id");
     }
     return tokens_[id];
 }

@@ -3,7 +3,7 @@
 #include <boost/json/parse.hpp>
 
 #include "model_map.h"
-#include "request_handler_helper.h"
+#include "game_server_exceptions.h"
 
 namespace model {
 
@@ -27,7 +27,7 @@ public:
         if (map_to_loot_.contains(id)) {
             return map_to_loot_.at(id);
         }
-        throw http_handler::InvalidMapException();
+        throw server_exceptions::InvalidMapException();
     }
 
     const auto& GetLootGeneratorData() const {
