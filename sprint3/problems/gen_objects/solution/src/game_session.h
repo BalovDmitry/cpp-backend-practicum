@@ -16,10 +16,16 @@ using DogPtr = std::shared_ptr<Dog>;
 
 class GameSession {
 public:
-    GameSession(model::Map& map, unsigned loot_size = 0)
+    GameSession(model::Map& map, std::optional<unsigned> loot_size = std::nullopt)
         : map_(map) {
         
-        loot_size_ = model::ExtraData::GetInstance().GetLootByMapId(map.GetId()).size();
+        // Option for testing
+        if (loot_size.has_value()) {
+            loot_size_ = loot_size.value();
+        } else {
+            loot_size_ = model::ExtraData::GetInstance().GetLootByMapId(map.GetId()).size();
+        }
+
         using namespace std::chrono_literals;
         loot_generator_ = std::make_shared<loot_gen::LootGenerator>(
             model::ExtraData::GetInstance().GetLootGeneratorData().period * 1ms, 
@@ -43,6 +49,9 @@ public:
     unsigned GetLootCount() const { return loot_count_; }
     const auto& GetLootObject() const { return loot_object_; }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
+
+    // Setters
+    void SetLootGeneratorData(std::chrono::milliseconds base_interval, double probability);
 
     // Update state
     DogPtr AddDog(Position spawn_point, const std::string& name, uint32_t id);

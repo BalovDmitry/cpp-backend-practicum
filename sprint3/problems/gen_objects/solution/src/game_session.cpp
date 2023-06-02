@@ -15,6 +15,10 @@ std::optional<uint32_t> GameSession::GetPlayerIdByName(const std::string &name) 
     return std::nullopt;
 }
 
+void GameSession::SetLootGeneratorData(std::chrono::milliseconds base_interval, double probability) {
+    loot_generator_ = std::make_shared<loot_gen::LootGenerator>(base_interval, probability);
+}
+
 DogPtr GameSession::AddDog(Position spawn_point, const std::string& name, uint32_t id) {
     auto dog = std::make_shared<Dog>(name, spawn_point, GetMapSpeed(), Direction::NORTH);
     name_to_dog_[name] = dog;
