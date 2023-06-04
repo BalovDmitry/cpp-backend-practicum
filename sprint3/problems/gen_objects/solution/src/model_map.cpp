@@ -117,20 +117,24 @@ std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position
 }
 
 Position Map::GetRandomPosition() const {
-    int road_id = rand()%(roads_.size());
-    auto boarders = road_boarders_[road_id];
-    
-    double random = ((double) rand()) / (double) RAND_MAX;
-    double diff_x = boarders.GetEndPoint().x - boarders.GetStartPoint().x;
-    double diff_y = boarders.GetEndPoint().y - boarders.GetStartPoint().y;
+    try {
+        int road_id = rand()%(roads_.size());
+        auto boarders = road_boarders_.at(road_id);
+        
+        double random = ((double) rand()) / (double) RAND_MAX;
+        double diff_x = boarders.GetEndPoint().x - boarders.GetStartPoint().x;
+        double diff_y = boarders.GetEndPoint().y - boarders.GetStartPoint().y;
 
-    double r_x = random * diff_x;
-    double r_y = random * diff_y;
+        double r_x = random * diff_x;
+        double r_y = random * diff_y;
 
-    double pos_x = boarders.GetStartPoint().x + r_x;
-    double pos_y = boarders.GetStartPoint().y + r_y;
+        double pos_x = boarders.GetStartPoint().x + r_x;
+        double pos_y = boarders.GetStartPoint().y + r_y;
 
-    return { pos_x, pos_y };
+        return { pos_x, pos_y };
+    } catch (...) {
+        return {0.0, 0.0};
+    }
 }
 
 } 

@@ -26,10 +26,7 @@ public:
             loot_size_ = model::ExtraData::GetInstance().GetLootByMapId(map.GetId()).size();
         }
 
-        using namespace std::chrono_literals;
-        loot_generator_ = std::make_shared<loot_gen::LootGenerator>(
-            model::ExtraData::GetInstance().GetLootGeneratorData().period * 1ms, 
-            model::ExtraData::GetInstance().GetLootGeneratorData().probability);
+        SetLootGeneratorData(model::ExtraData::GetInstance().GetLootGeneratorData().period, model::ExtraData::GetInstance().GetLootGeneratorData().probability);
     }
 
     GameSession(const GameSession& session) = default;
@@ -51,7 +48,7 @@ public:
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
     // Setters
-    void SetLootGeneratorData(std::chrono::milliseconds base_interval, double probability);
+    void SetLootGeneratorData(double base_interval, double probability);
 
     // Update state
     DogPtr AddDog(Position spawn_point, const std::string& name, uint32_t id);
