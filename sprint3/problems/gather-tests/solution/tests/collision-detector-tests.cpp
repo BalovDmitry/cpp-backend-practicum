@@ -117,8 +117,7 @@ SCENARIO("Find gather events test") {
             provider->PushGatherer(std::move(gatherer));
 
             THEN("there is no collisions") {
-                auto result = FindGatherEvents(*provider);
-                CHECK(result.empty());
+                CHECK(FindGatherEvents(*provider).empty());
             }
         }
 
@@ -136,8 +135,7 @@ SCENARIO("Find gather events test") {
             provider->PushGatherer(std::move(gatherer));
 
             THEN("there is no collisions") {
-                auto result = FindGatherEvents(*provider);
-                CHECK(result.empty());
+                CHECK(FindGatherEvents(*provider).empty());
             }
         }
 
@@ -155,8 +153,7 @@ SCENARIO("Find gather events test") {
             provider->PushGatherer(std::move(gatherer));
 
             THEN("there is no collisions") {
-                auto result = FindGatherEvents(*provider);
-                CHECK(result.empty());
+                CHECK(FindGatherEvents(*provider).empty());
             }
         }
 
@@ -179,18 +176,197 @@ SCENARIO("Find gather events test") {
                                 .time = 0.5};
             expected.emplace_back(std::move(evt));
             THEN("there is a collision") {
-                // auto collect_res = TryCollectPoint(provider->GetGatherer(0).start_pos, provider->GetGatherer(0).end_pos, provider->GetItem(0).position);
-                // std::cout << "sq distance: " << collect_res.sq_distance << ", proj ratio: " << collect_res.proj_ratio << std::endl;
-                // if (collect_res.IsCollected(provider->GetGatherer(0).width + provider->GetItem(0).width)) {
-                //     std::cout << "collected" << std::endl;
-                // }
-                // CHECK_THAT(collect_res.proj_ratio, WithinAbs(0.5, 1e-10));
-                // CHECK_THAT(collect_res.sq_distance, WithinAbs(4, 1e-10));
-
-                auto result = FindGatherEvents(*provider);
-                REQUIRE(!result.empty());
-                CHECK_THAT(result, ContainsEqualGatheringEvents(std::move(expected)));
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
             }
+        }
+
+        WHEN("one gatherer and one item is on his way and one is out his way") {
+            Item item1;
+            item1.position = geom::Point2D(10.0, 5.0);
+            item1.width = 1.0;
+
+            Item item2;
+            item2.position = geom::Point2D(2.0, 5.0);
+            item2.width = 1.0;
+
+            Gatherer gatherer;
+            gatherer.start_pos = geom::Point2D(0.0, 0.0);
+            gatherer.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer.width = 2.0;
+
+            provider->PushItem(std::move(item1));
+            provider->PushItem(std::move(item2));
+            provider->PushGatherer(std::move(gatherer));
+            
+            GatheringEvent evt{.item_id = 1,
+                                .gatherer_id = 0,
+                                .sq_distance = 4,
+                                .time = 0.5};
+            expected.emplace_back(std::move(evt));
+            
+            THEN("there is only one collision") {
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
+            }
+        }
+
+        WHEN("one gatherer and three items are on his way") {
+            Item item1;
+            item1.position = geom::Point2D(1.0, 1.0);
+            item1.width = 1.0;
+
+            Item item2;
+            item2.position = geom::Point2D(1.5, 5.0);
+            item2.width = 1.0;
+
+            Item item3;
+            item3.position = geom::Point2D(1.5, 10.0);
+            item3.width = 1.0;
+
+            Gatherer gatherer;
+            gatherer.start_pos = geom::Point2D(0.0, 0.0);
+            gatherer.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer.width = 2.0;
+
+            provider->PushItem(std::move(item1));
+            provider->PushItem(std::move(item2));
+            provider->PushItem(std::move(item3));
+            provider->PushGatherer(std::move(gatherer));
+            
+            GatheringEvent evt1{.item_id = 0,
+                                .gatherer_id = 0,
+                                .sq_distance = 1,
+                                .time = 0.1};
+            
+            GatheringEvent evt2{.item_id = 1,
+                                .gatherer_id = 0,
+                                .sq_distance = 2.25,
+                                .time = 0.5};
+
+            GatheringEvent evt3{.item_id = 2,
+                                .gatherer_id = 0,
+                                .sq_distance = 2.25,
+                                .time = 1};
+            expected.emplace_back(std::move(evt1));
+            expected.emplace_back(std::move(evt2));
+            expected.emplace_back(std::move(evt3));
+            
+            THEN("there are 3 collisions") {
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
+            }
+        }
+
+        WHEN("two gatherers and one item is out them way") {
+            Item item;
+            item.position = geom::Point2D(4.0, 5.0);
+            item.width = 1.0;
+
+            Gatherer gatherer1;
+            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
+            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.width = 2.0;      
+
+            Gatherer gatherer2;
+            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
+            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.width = 2.0;
+
+            THEN("there is no collisions") {
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
+            }
+        }
+
+        WHEN("two gatherers and one item is on them way") {
+            Item item;
+            item.position = geom::Point2D(2.0, 5.0);
+            item.width = 1.0;
+
+            Gatherer gatherer1;
+            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
+            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.width = 2.0;      
+
+            Gatherer gatherer2;
+            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
+            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.width = 2.0;
+
+            provider->PushItem(std::move(item));
+            provider->PushGatherer(std::move(gatherer1));
+            provider->PushGatherer(std::move(gatherer2));
+
+            GatheringEvent evt1{.item_id = 0,
+                                .gatherer_id = 0,
+                                .sq_distance = 4,
+                                .time = 0.5};
+            
+            GatheringEvent evt2{.item_id = 0,
+                                .gatherer_id = 1,
+                                .sq_distance = 4,
+                                .time = 0.75};
+
+            expected.emplace_back(std::move(evt1));
+            expected.emplace_back(std::move(evt2));
+
+            THEN("there are two collisions") {
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
+            }
+        }
+
+        WHEN("two gatherers and two items on them way") {
+            Item item1;
+            item1.position = geom::Point2D(2.0, 5.0);
+            item1.width = 1.0;
+
+            Item item2;
+            item2.position = geom::Point2D(1.0, 6.0);
+            item2.width = 1.0;
+
+            Gatherer gatherer1;
+            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
+            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.width = 2.0;      
+
+            Gatherer gatherer2;
+            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
+            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.width = 2.0;
+
+            provider->PushItem(std::move(item1));
+            provider->PushItem(std::move(item2));
+            provider->PushGatherer(std::move(gatherer1));
+            provider->PushGatherer(std::move(gatherer2));
+
+            GatheringEvent evt1{.item_id = 0,
+                                .gatherer_id = 0,
+                                .sq_distance = 4,
+                                .time = 0.5};
+            
+            GatheringEvent evt2{.item_id = 1,
+                                .gatherer_id = 0,
+                                .sq_distance = 1,
+                                .time = 0.6};
+
+            GatheringEvent evt3{.item_id = 0,
+                                .gatherer_id = 1,
+                                .sq_distance = 4,
+                                .time = 0.75};
+            
+            GatheringEvent evt4{.item_id = 1,
+                                .gatherer_id = 1,
+                                .sq_distance = 1,
+                                .time = 1};
+
+            expected.emplace_back(std::move(evt1));
+            expected.emplace_back(std::move(evt2));
+            expected.emplace_back(std::move(evt3));
+            expected.emplace_back(std::move(evt4));
+
+            THEN("there are four collisions") {
+                // auto collect_res = TryCollectPoint(provider->GetGatherer(1).start_pos, provider->GetGatherer(1).end_pos, provider->GetItem(1).position);
+                // std::cout << "sq distance: " << collect_res.sq_distance << ", proj ratio: " << collect_res.proj_ratio << std::endl;
+                CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
+            }
+            
         }
 
     }
