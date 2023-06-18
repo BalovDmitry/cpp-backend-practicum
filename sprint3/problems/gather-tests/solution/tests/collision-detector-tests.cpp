@@ -362,8 +362,6 @@ SCENARIO("Find gather events test") {
             expected.emplace_back(std::move(evt4));
 
             THEN("there are four collisions") {
-                // auto collect_res = TryCollectPoint(provider->GetGatherer(1).start_pos, provider->GetGatherer(1).end_pos, provider->GetItem(1).position);
-                // std::cout << "sq distance: " << collect_res.sq_distance << ", proj ratio: " << collect_res.proj_ratio << std::endl;
                 CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
             }
             
