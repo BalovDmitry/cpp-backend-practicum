@@ -46,6 +46,7 @@ add_library(
     src/geom.h
     src/collision_detector.h
     src/collision_detector.cpp
+    src/model_loot_item.h
 )
 target_include_directories(model_lib PUBLIC CONAN_PKG::boost)
 target_link_libraries(model_lib PUBLIC ${Boost_LIBRARIES} Threads::Threads CONAN_PKG::boost)

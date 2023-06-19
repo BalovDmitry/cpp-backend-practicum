@@ -7,6 +7,7 @@
 
 #include "model_dog.h"
 #include "model_map.h"
+#include "model_loot_item.h"
 #include "extra_data.h"
 #include "loot_generator.h"
 
@@ -45,6 +46,7 @@ public:
     double GetMapSpeed() const { return map_.GetSpeed(); }
     unsigned GetLootCount() const { return loot_count_; }
     const auto& GetLootObject() const { return loot_object_; }
+    const auto& GetAvailableLoot() const { return available_loot_items_; }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
     // Setters
@@ -58,16 +60,19 @@ public:
 
 private:
     bool HasPlayerWithName(const std::string &name) { return name_to_id_.contains(name); }
+    void TryGenerateLoot(std::chrono::milliseconds delta);
 
 private:
     std::unordered_map<std::string, DogPtr> name_to_dog_;
     std::unordered_map<std::string, uint32_t> name_to_id_;
+    std::unordered_map<uint32_t, LootItem> available_loot_items_;
     model::Map& map_;
 
     // Fields for loot
     std::shared_ptr<loot_gen::LootGenerator> loot_generator_;
     unsigned loot_count_ = 0;
     unsigned loot_size_ = 0;
+    unsigned loot_id_ = 0;
     boost::json::object loot_object_;
 };
 
