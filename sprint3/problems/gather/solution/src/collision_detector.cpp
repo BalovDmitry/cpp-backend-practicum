@@ -1,5 +1,7 @@
 #include "collision_detector.h"
 
+#include <cassert>
+
 namespace collision_detector {
 
 CollectionResult TryCollectPoint(geom::Point2D a, geom::Point2D b, geom::Point2D c) {
