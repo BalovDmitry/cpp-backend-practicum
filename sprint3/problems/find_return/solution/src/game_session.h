@@ -34,6 +34,7 @@ public:
     GameSession& operator=(const GameSession& session) {
         name_to_dog_ = session.name_to_dog_;
         name_to_id_ = session.name_to_id_;
+        available_loot_items_ = session.available_loot_items_;
         map_ = session.map_;
         loot_generator_ = session.loot_generator_;
         loot_count_ = session.loot_count_;
@@ -45,7 +46,6 @@ public:
     const auto& GetMapId() const { return map_.GetId(); }
     double GetMapSpeed() const { return map_.GetSpeed(); }
     unsigned GetLootCount() const { return loot_count_; }
-    const auto& GetLootObject() const { return loot_object_; }
     const auto& GetAvailableLoot() const { return available_loot_items_; }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
@@ -73,7 +73,6 @@ private:
     unsigned loot_count_ = 0;
     unsigned loot_size_ = 0;
     unsigned loot_id_ = 0;
-    boost::json::object loot_object_;
 };
 
 }

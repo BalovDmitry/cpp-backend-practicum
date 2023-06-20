@@ -391,21 +391,16 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
 
             players_obj[std::to_string(player.GetId())] = temp;
         }
-        res["players"] = players_obj;
         
-        // boost::json::object lost_objects;
-        // auto loot_size = model::ExtraData::GetInstance().GetLootByMapId(player.GetMapId()).size();
-        // auto map = game_.FindMap(player.GetMapId());
-        // model::Position loot_pos;
-        // unsigned loot_type = 0;
-        // for (int i = 0; i < game_.FindSession(player.GetMapId())->GetLootCount(); ++i) {
-        //     loot_type = rand() % loot_size;
-        //     loot_pos = map->GetRandomPosition();
-        //     lost_objects[std::to_string(i)] = json_helper::CreateLostObjectValue(loot_type, loot_pos);
-        // }
-        res["lostObjects"] = game_.FindSession(player.GetMapId())->GetLootObject();
+        boost::json::object lost_objects_obj;
+        for (const auto& [id, loot_data] : game_.FindSession(player.GetMapId())->GetAvailableLoot()) {
+            lost_objects_obj[std::to_string(id)] = json_helper::CreateLostObjectValue(loot_data.type, loot_data.position);
+        }
 
+        res["players"] = players_obj;
+        res["lostObjects"] = lost_objects_obj;
         status = http::status::ok;
+        
     } catch (const server_exceptions::BaseException& e) {
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());
