@@ -67,6 +67,23 @@ struct GatheringEvent {
     double time;
 };
 
+// Base implementation of provider
+class ItemGathererProviderBase : public ItemGathererProvider {
+public:
+    size_t ItemsCount() const override { return items_.size(); }
+    Item GetItem(size_t idx) const override { return items_.at(idx); }
+    size_t GatherersCount() const override { return gatherers_.size(); }
+    Gatherer GetGatherer(size_t idx) const override { return gatherers_.at(idx); }
+
+public:
+    void PushItem(Item&& item) { items_.emplace_back(item); }
+    void PushGatherer(Gatherer&& gatherer) { gatherers_.emplace_back(gatherer); }
+
+private:
+    std::vector<Item> items_;
+    std::vector<Gatherer> gatherers_;
+};
+
 // Эту функцию вам нужно будет реализовать в соответствующем задании.
 // При проверке ваших тестов она не нужна - функция будет линковаться снаружи.
 std::vector<GatheringEvent> FindGatherEvents(const ItemGathererProvider& provider);
