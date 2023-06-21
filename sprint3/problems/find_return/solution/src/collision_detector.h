@@ -31,11 +31,11 @@ CollectionResult TryCollectPoint(model::Position a, model::Position b, model::Po
 
 struct Item {
     Item() = default;
-    Item(model::Position position, double width, unsigned id) {
+    Item(const model::Position& position, double width, unsigned id) {
         this->position = position;
         this->width = width;
         this->id = id;
-    }
+    };
 
     model::Position position;
     double width;
@@ -43,6 +43,14 @@ struct Item {
 };
 
 struct Gatherer {
+    Gatherer() = default;
+    Gatherer(const model::Position& start_pos, const model::Position& end_pos, double width, unsigned id) {
+        this->start_pos = start_pos;
+        this->end_pos = end_pos;
+        this->width = width;
+        this->id = id;
+    };
+
     model::Position start_pos;
     model::Position end_pos;
     double width;

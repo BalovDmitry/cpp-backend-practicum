@@ -150,7 +150,7 @@ SCENARIO("Find gather events test") {
             gatherer.start_pos = model::Position(0.0, 0.0);
             gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
-
+            gatherer.id = 0;
 
             provider->PushItem(std::move(item));
             provider->PushGatherer(std::move(gatherer));
@@ -179,6 +179,7 @@ SCENARIO("Find gather events test") {
             gatherer.start_pos = model::Position(0.0, 0.0);
             gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
+            gatherer.id = 0;
 
             provider->PushItem(std::move(item1));
             provider->PushItem(std::move(item2));
@@ -215,6 +216,7 @@ SCENARIO("Find gather events test") {
             gatherer.start_pos = model::Position(0.0, 0.0);
             gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
+            gatherer.id = 0;
 
             provider->PushItem(std::move(item1));
             provider->PushItem(std::move(item2));
@@ -253,12 +255,14 @@ SCENARIO("Find gather events test") {
             Gatherer gatherer1;
             gatherer1.start_pos = model::Position(0.0, 0.0);
             gatherer1.end_pos = model::Position(0.0, 10.0);
-            gatherer1.width = 2.0;      
+            gatherer1.width = 2.0; 
+            gatherer1.id = 0;     
 
             Gatherer gatherer2;
             gatherer2.start_pos = model::Position(0.0, 2.0);
             gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
+            gatherer2.id = 1;
 
             THEN("there is no collisions") {
                 CHECK_THAT(FindGatherEvents(*provider), ContainsEqualGatheringEvents(std::move(expected)));
@@ -274,12 +278,14 @@ SCENARIO("Find gather events test") {
             Gatherer gatherer1;
             gatherer1.start_pos = model::Position(0.0, 0.0);
             gatherer1.end_pos = model::Position(0.0, 10.0);
-            gatherer1.width = 2.0;      
+            gatherer1.width = 2.0; 
+            gatherer1.id = 0;     
 
             Gatherer gatherer2;
             gatherer2.start_pos = model::Position(0.0, 2.0);
             gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
+            gatherer2.id = 1;
 
             provider->PushItem(std::move(item));
             provider->PushGatherer(std::move(gatherer1));
@@ -318,11 +324,13 @@ SCENARIO("Find gather events test") {
             gatherer1.start_pos = model::Position(0.0, 0.0);
             gatherer1.end_pos = model::Position(0.0, 10.0);
             gatherer1.width = 2.0;      
+            gatherer1.id = 0;
 
             Gatherer gatherer2;
             gatherer2.start_pos = model::Position(0.0, 2.0);
             gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
+            gatherer2.id = 1;
 
             provider->PushItem(std::move(item1));
             provider->PushItem(std::move(item2));
