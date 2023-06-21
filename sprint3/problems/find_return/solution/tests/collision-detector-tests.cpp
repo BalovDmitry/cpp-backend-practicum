@@ -105,12 +105,12 @@ SCENARIO("Find gather events test") {
 
         WHEN("item is out the gatherer's way(horizontal)") {
             Item item;
-            item.position = geom::Point2D(10.0, 0.0);
+            item.position = model::Position(10.0, 0.0);
             item.width = 2.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(5.0, 0.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(5.0, 0.0);
             gatherer.width = 2.0;
 
             provider->PushItem(std::move(item));
@@ -123,12 +123,12 @@ SCENARIO("Find gather events test") {
 
         WHEN("item is out the gatherer's way(horizontal)") {
             Item item;
-            item.position = geom::Point2D(10.0, 0.0);
+            item.position = model::Position(10.0, 0.0);
             item.width = 2.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(5.0, 0.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(5.0, 0.0);
             gatherer.width = 2.0;
 
             provider->PushItem(std::move(item));
@@ -141,12 +141,12 @@ SCENARIO("Find gather events test") {
 
         WHEN("item is out the gatherer's way(vertical)") {
             Item item;
-            item.position = geom::Point2D(0.0, 10.0);
+            item.position = model::Position(0.0, 10.0);
             item.width = 2.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(0.0, 5.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(0.0, 5.0);
             gatherer.width = 2.0;
 
             provider->PushItem(std::move(item));
@@ -159,12 +159,12 @@ SCENARIO("Find gather events test") {
 
         WHEN("one gatherer and one item on his way") {
             Item item;
-            item.position = geom::Point2D(2.0, 5.0);
+            item.position = model::Position(2.0, 5.0);
             item.width = 1.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
 
 
@@ -182,16 +182,16 @@ SCENARIO("Find gather events test") {
 
         WHEN("one gatherer and one item is on his way and one is out his way") {
             Item item1;
-            item1.position = geom::Point2D(10.0, 5.0);
+            item1.position = model::Position(10.0, 5.0);
             item1.width = 1.0;
 
             Item item2;
-            item2.position = geom::Point2D(2.0, 5.0);
+            item2.position = model::Position(2.0, 5.0);
             item2.width = 1.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
 
             provider->PushItem(std::move(item1));
@@ -211,20 +211,20 @@ SCENARIO("Find gather events test") {
 
         WHEN("one gatherer and three items are on his way") {
             Item item1;
-            item1.position = geom::Point2D(1.0, 1.0);
+            item1.position = model::Position(1.0, 1.0);
             item1.width = 1.0;
 
             Item item2;
-            item2.position = geom::Point2D(1.5, 5.0);
+            item2.position = model::Position(1.5, 5.0);
             item2.width = 1.0;
 
             Item item3;
-            item3.position = geom::Point2D(1.5, 10.0);
+            item3.position = model::Position(1.5, 10.0);
             item3.width = 1.0;
 
             Gatherer gatherer;
-            gatherer.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer.start_pos = model::Position(0.0, 0.0);
+            gatherer.end_pos = model::Position(0.0, 10.0);
             gatherer.width = 2.0;
 
             provider->PushItem(std::move(item1));
@@ -257,17 +257,17 @@ SCENARIO("Find gather events test") {
 
         WHEN("two gatherers and one item is out them way") {
             Item item;
-            item.position = geom::Point2D(4.0, 5.0);
+            item.position = model::Position(4.0, 5.0);
             item.width = 1.0;
 
             Gatherer gatherer1;
-            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.start_pos = model::Position(0.0, 0.0);
+            gatherer1.end_pos = model::Position(0.0, 10.0);
             gatherer1.width = 2.0;      
 
             Gatherer gatherer2;
-            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
-            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.start_pos = model::Position(0.0, 2.0);
+            gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
 
             THEN("there is no collisions") {
@@ -277,17 +277,17 @@ SCENARIO("Find gather events test") {
 
         WHEN("two gatherers and one item is on them way") {
             Item item;
-            item.position = geom::Point2D(2.0, 5.0);
+            item.position = model::Position(2.0, 5.0);
             item.width = 1.0;
 
             Gatherer gatherer1;
-            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.start_pos = model::Position(0.0, 0.0);
+            gatherer1.end_pos = model::Position(0.0, 10.0);
             gatherer1.width = 2.0;      
 
             Gatherer gatherer2;
-            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
-            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.start_pos = model::Position(0.0, 2.0);
+            gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
 
             provider->PushItem(std::move(item));
@@ -314,21 +314,21 @@ SCENARIO("Find gather events test") {
 
         WHEN("two gatherers and two items on them way") {
             Item item1;
-            item1.position = geom::Point2D(2.0, 5.0);
+            item1.position = model::Position(2.0, 5.0);
             item1.width = 1.0;
 
             Item item2;
-            item2.position = geom::Point2D(1.0, 6.0);
+            item2.position = model::Position(1.0, 6.0);
             item2.width = 1.0;
 
             Gatherer gatherer1;
-            gatherer1.start_pos = geom::Point2D(0.0, 0.0);
-            gatherer1.end_pos = geom::Point2D(0.0, 10.0);
+            gatherer1.start_pos = model::Position(0.0, 0.0);
+            gatherer1.end_pos = model::Position(0.0, 10.0);
             gatherer1.width = 2.0;      
 
             Gatherer gatherer2;
-            gatherer2.start_pos = geom::Point2D(0.0, 2.0);
-            gatherer2.end_pos = geom::Point2D(0.0, 6.0);
+            gatherer2.start_pos = model::Position(0.0, 2.0);
+            gatherer2.end_pos = model::Position(0.0, 6.0);
             gatherer2.width = 2.0;
 
             provider->PushItem(std::move(item1));

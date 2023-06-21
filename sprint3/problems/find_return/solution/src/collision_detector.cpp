@@ -4,7 +4,7 @@
 
 namespace collision_detector {
 
-CollectionResult TryCollectPoint(geom::Point2D a, geom::Point2D b, geom::Point2D c) {
+CollectionResult TryCollectPoint(model::Position a, model::Position b, model::Position c) {
     // Проверим, что перемещение ненулевое.
     // Тут приходится использовать строгое равенство, а не приближённое,
     // пскольку при сборе заказов придётся учитывать перемещение даже на небольшое
@@ -29,7 +29,7 @@ CollectionResult TryCollectPoint(geom::Point2D a, geom::Point2D b, geom::Point2D
 std::vector<GatheringEvent> FindGatherEvents(const ItemGathererProvider& provider) {
     std::vector<GatheringEvent> detected_events;
 
-    static auto eq_pt = [](geom::Point2D p1, geom::Point2D p2) {
+    static auto eq_pt = [](model::Position p1, model::Position p2) {
         return p1.x == p2.x && p1.y == p2.y;
     };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "geom.h"
+#include "model_utils.h"
 
 #include <algorithm>
 #include <vector>
@@ -26,16 +27,17 @@ struct CollectionResult {
 
 // Движемся из точки a в точку b и пытаемся подобрать точку c.
 // Эта функция реализована в уроке.
-CollectionResult TryCollectPoint(geom::Point2D a, geom::Point2D b, geom::Point2D c);
+CollectionResult TryCollectPoint(model::Position a, model::Position b, model::Position c);
 
 struct Item {
-    geom::Point2D position;
+    model::Position position;
+    //geom::Point2D position;
     double width;
 };
 
 struct Gatherer {
-    geom::Point2D start_pos;
-    geom::Point2D end_pos;
+    model::Position start_pos;
+    model::Position end_pos;
     double width;
 };
 

@@ -17,7 +17,6 @@ std::optional<uint32_t> GameSession::GetPlayerIdByName(const std::string &name) 
 
 void GameSession::SetLootGeneratorData(double base_interval, double probability) {
     using namespace std::chrono_literals;
-    //std::chrono::milliseconds interval = static_cast<long long>(base_interval) * 1ms;
     loot_generator_ = std::make_shared<loot_gen::LootGenerator>(static_cast<long long>(base_interval) * 1ms, probability);
 }
 
