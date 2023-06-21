@@ -1,8 +1,10 @@
 #pragma once
 
 #include "model_utils.h"
+#include "model_loot_item.h"
 
 #include <string>
+#include <unordered_map>
 
 namespace model {
 
@@ -21,6 +23,7 @@ public:
     void SetPosition(Position pos) { position_.x = pos.x; position_.y = pos.y; };
     void SetPrevPosition(Position pos) { prev_position_.x = pos.x; prev_position_.y = pos.y; };
     void SetSpeed(Speed speed) { speed_.v_x = speed.v_x; speed_.v_y = speed.v_y; }
+    void AddLootIntoBag(unsigned id, const LootItem& loot) { bag_[id] = loot; }
 
     // Getters
     const Position& GetPosition() const { return position_; }
@@ -29,6 +32,8 @@ public:
     Direction GetDirection() const { return direction_; }
     const std::string& GetFullName() const { return name_; }
     std::string GetDirectionString() const;
+    size_t GetBagSize() const { return bag_.size(); }
+    const auto& GetBagContent() const { return bag_; }
 
 private:
     const double map_speed_;
@@ -38,6 +43,7 @@ private:
     Position prev_position_;
     Speed speed_{0.0, 0.0};
     Direction direction_ = Direction::NO_DIRECTION;
+    std::unordered_map<unsigned, LootItem> bag_;
 };
 
 }
