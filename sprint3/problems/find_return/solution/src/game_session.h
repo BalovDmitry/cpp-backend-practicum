@@ -10,6 +10,7 @@
 #include "model_loot_item.h"
 #include "extra_data.h"
 #include "loot_generator.h"
+#include "collision_detector.h"
 
 namespace model {
 
@@ -73,6 +74,8 @@ private:
     unsigned loot_count_ = 0;
     unsigned loot_size_ = 0;
     unsigned loot_id_ = 0;
+
+    collision_detector::ItemGathererProviderBase loot_provider_;
 };
 
 }

@@ -51,6 +51,8 @@ void GameSession::TryGenerateLoot(std::chrono::milliseconds delta) {
 void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta) {
     static const int TIME_RATE = 1000;
 
+    dog->SetPrevPosition(dog->GetPosition());
+
     Position calculated_pos;
 
     Position calculated_pos_on_current_road = dog->GetPosition();
