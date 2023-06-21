@@ -30,15 +30,23 @@ struct CollectionResult {
 CollectionResult TryCollectPoint(model::Position a, model::Position b, model::Position c);
 
 struct Item {
+    Item() = default;
+    Item(model::Position position, double width, unsigned id) {
+        this->position = position;
+        this->width = width;
+        this->id = id;
+    }
+
     model::Position position;
-    //geom::Point2D position;
     double width;
+    unsigned id;
 };
 
 struct Gatherer {
     model::Position start_pos;
     model::Position end_pos;
     double width;
+    unsigned id;
 };
 
 class ItemGathererProvider {

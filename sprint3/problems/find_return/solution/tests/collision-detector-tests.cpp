@@ -184,10 +184,12 @@ SCENARIO("Find gather events test") {
             Item item1;
             item1.position = model::Position(10.0, 5.0);
             item1.width = 1.0;
+            item1.id = 0;
 
             Item item2;
             item2.position = model::Position(2.0, 5.0);
             item2.width = 1.0;
+            item2.id = 1;
 
             Gatherer gatherer;
             gatherer.start_pos = model::Position(0.0, 0.0);
@@ -213,14 +215,17 @@ SCENARIO("Find gather events test") {
             Item item1;
             item1.position = model::Position(1.0, 1.0);
             item1.width = 1.0;
+            item1.id = 0;
 
             Item item2;
             item2.position = model::Position(1.5, 5.0);
             item2.width = 1.0;
+            item2.id = 1;
 
             Item item3;
             item3.position = model::Position(1.5, 10.0);
             item3.width = 1.0;
+            item3.id = 2;
 
             Gatherer gatherer;
             gatherer.start_pos = model::Position(0.0, 0.0);
@@ -259,6 +264,7 @@ SCENARIO("Find gather events test") {
             Item item;
             item.position = model::Position(4.0, 5.0);
             item.width = 1.0;
+            item.id = 0;
 
             Gatherer gatherer1;
             gatherer1.start_pos = model::Position(0.0, 0.0);
@@ -279,6 +285,7 @@ SCENARIO("Find gather events test") {
             Item item;
             item.position = model::Position(2.0, 5.0);
             item.width = 1.0;
+            item.id = 0;
 
             Gatherer gatherer1;
             gatherer1.start_pos = model::Position(0.0, 0.0);
@@ -316,10 +323,12 @@ SCENARIO("Find gather events test") {
             Item item1;
             item1.position = model::Position(2.0, 5.0);
             item1.width = 1.0;
+            item1.id = 0;
 
             Item item2;
             item2.position = model::Position(1.0, 6.0);
             item2.width = 1.0;
+            item2.id = 1;
 
             Gatherer gatherer1;
             gatherer1.start_pos = model::Position(0.0, 0.0);
