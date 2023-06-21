@@ -62,6 +62,7 @@ public:
 private:
     bool HasPlayerWithName(const std::string &name) { return name_to_id_.contains(name); }
     void TryGenerateLoot(std::chrono::milliseconds delta);
+    void UpdateLootProvider();
 
 private:
     std::unordered_map<std::string, DogPtr> name_to_dog_;

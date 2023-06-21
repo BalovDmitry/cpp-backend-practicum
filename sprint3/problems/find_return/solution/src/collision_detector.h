@@ -86,6 +86,7 @@ public:
 public:
     void PushItem(Item&& item) { items_.emplace_back(item); }
     void PushGatherer(Gatherer&& gatherer) { gatherers_.emplace_back(gatherer); }
+    void Clear() { items_.clear(); gatherers_.clear(); }
 
 private:
     std::vector<Item> items_;

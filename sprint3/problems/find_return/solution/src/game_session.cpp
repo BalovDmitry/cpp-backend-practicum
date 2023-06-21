@@ -32,6 +32,7 @@ void GameSession::UpdateTime(std::chrono::milliseconds delta) {
         UpdateDogPosition(dog, delta);
     }
     UpdateLostObjects(delta);
+    UpdateLootProvider();
 }
 
 void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {
@@ -45,6 +46,21 @@ void GameSession::TryGenerateLoot(std::chrono::milliseconds delta) {
             available_loot_items_[loot_id_++] = LootItem(rand() % loot_size_, map_.GetRandomPosition());
         }
         loot_count_ = current_loot_count;
+    }
+}
+
+void GameSession::UpdateLootProvider() {
+    // Clear previous data
+    loot_provider_.Clear();
+    
+    // Add new data
+    for (const auto&[name, id] : name_to_id_) {
+        const auto& dog = name_to_dog_.at(name);
+        loot_provider_.PushGatherer(collision_detector::Gatherer(dog->GetPrevPosition(), dog->GetPosition(), PLAYER_WIDTH, id));
+    }
+
+    for (const auto&[id, item] : available_loot_items_) {
+        loot_provider_.PushItem(collision_detector::Item(item.position, LOOT_WIDTH, id));
     }
 }
 
