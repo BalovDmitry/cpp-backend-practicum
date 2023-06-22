@@ -33,6 +33,7 @@ void GameSession::UpdateTime(std::chrono::milliseconds delta) {
     }
     UpdateLostObjects(delta);
     UpdateLootProvider();
+    UpdateCollisions();
 }
 
 void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {
@@ -40,12 +41,12 @@ void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {
 }
 
 void GameSession::TryGenerateLoot(std::chrono::milliseconds delta) {
-    auto current_loot_count = loot_generator_->Generate(delta, loot_count_, id_to_dog_.size());
-    if (current_loot_count > loot_count_) {
-        for (int i = loot_count_; i < current_loot_count; ++i) {
+    auto current_loot_count = available_loot_items_.size();
+    auto calculated_loot_count = loot_generator_->Generate(delta, current_loot_count, id_to_dog_.size());
+    if (calculated_loot_count > current_loot_count) {
+        for (int i = current_loot_count; i < calculated_loot_count; ++i) {
             available_loot_items_[loot_id_++] = LootItem(rand() % loot_size_, map_.GetRandomPosition());
         }
-        loot_count_ = current_loot_count;
     }
 }
 
@@ -65,10 +66,23 @@ void GameSession::UpdateLootProvider() {
 
 void GameSession::UpdateCollisions() {
     auto gather_events = collision_detector::FindGatherEvents(loot_provider_);
+
+    // For debug only
+    // std::cout << "Available items: " << std::endl;
+    // for (const auto& item : available_loot_items_) {
+    //     std::cout << "id: " << item.first << ", x: " << item.second.position.x << ", y: " << item.second.position.y << std::endl;
+    // }
+
     for (const auto& e : gather_events) {
         auto gatherer_id = e.gatherer_id;
         auto item_id = e.item_id;
-        //auto& dog = 
+        auto& dog = id_to_dog_.at(gatherer_id);
+        if (dog->GetBagContent().size() < map_.GetBagCapacity()) {
+            if (available_loot_items_.contains(item_id)) {
+                dog->AddLootIntoBag(item_id, available_loot_items_.at(item_id));
+                available_loot_items_.erase(item_id);
+            }
+        }
     }
 }
 

@@ -28,7 +28,7 @@ StringResponse RequestHandlerStrategyIntf::HandleRequest(StringRequest &&req) {
 
     auto end = std::chrono::high_resolution_clock::now();
     logger::LogJsonAndMessage(json_helper::CreateResponseValue(
-        std::chrono::duration<double, std::milli>(end - start).count(), static_cast<int>(status), std::string(contentType)), "response sent");
+       std::chrono::duration<double, std::milli>(end - start).count(), static_cast<int>(status), std::string(contentType)), "response sent");
 
     return response;
 }
@@ -400,7 +400,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         res["players"] = players_obj;
         res["lostObjects"] = lost_objects_obj;
         status = http::status::ok;
-        
+
     } catch (const server_exceptions::BaseException& e) {
         status = http::status::unauthorized;
         res = json_helper::CreateErrorValue(e.code(), e.message());

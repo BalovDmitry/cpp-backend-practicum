@@ -38,7 +38,6 @@ public:
         available_loot_items_ = session.available_loot_items_;
         map_ = session.map_;
         loot_generator_ = session.loot_generator_;
-        loot_count_ = session.loot_count_;
         return *this;
     }
 
@@ -46,7 +45,6 @@ public:
     const auto& GetPlayers() const { return name_to_id_; }
     const auto& GetMapId() const { return map_.GetId(); }
     double GetMapSpeed() const { return map_.GetSpeed(); }
-    unsigned GetLootCount() const { return loot_count_; }
     const auto& GetAvailableLoot() const { return available_loot_items_; }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
@@ -73,7 +71,6 @@ private:
 
     // Fields for loot
     std::shared_ptr<loot_gen::LootGenerator> loot_generator_;
-    unsigned loot_count_ = 0;
     unsigned loot_size_ = 0;
     unsigned loot_id_ = 0;
 

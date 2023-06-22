@@ -31,13 +31,13 @@ SCENARIO("Lost object generation") {
         WHEN("there is no players on map") {
             THEN("before time updating number of lost objects is equal to zero") {
                 CHECK(session->GetPlayers().size() == 0);
-                REQUIRE(session->GetLootCount() == 0);
+                REQUIRE(session->GetAvailableLoot().size() == 0);
             }
 
             THEN("after time updating number of lost objects is equal to zero") {
                 session->UpdateTime(DELTA);
                 CHECK(session->GetPlayers().size() == 0);
-                REQUIRE(session->GetLootCount() == 0);
+                REQUIRE(session->GetAvailableLoot().size() == 0);
             }
         }
 
@@ -46,14 +46,14 @@ SCENARIO("Lost object generation") {
             
             THEN("before time updating number of lost objects is equal to zero") {
                 CHECK(session->GetPlayers().size() == 1);
-                REQUIRE(session->GetLootCount() == 0);
+                REQUIRE(session->GetAvailableLoot().size() == 0);
             }
             
             THEN("after time updating number of lost objects is not equal to zero") {
                 session->UpdateTime(DELTA);
                 CHECK(session->GetPlayers().size() == 1);
-                REQUIRE(session->GetLootCount() > 0);
-                REQUIRE(session->GetLootCount() <= 1);
+                REQUIRE(session->GetAvailableLoot().size() > 0);
+                REQUIRE(session->GetAvailableLoot().size() <= 1);
             }
         }
 
@@ -64,14 +64,14 @@ SCENARIO("Lost object generation") {
             
             THEN("before time updating number of lost objects is equal to zero") {
                 CHECK(session->GetPlayers().size() == 3);
-                REQUIRE(session->GetLootCount() == 0);
+                REQUIRE(session->GetAvailableLoot().size() == 0);
             }
             
             THEN("after time updating number of lost objects is not equal to zero") {
                 session->UpdateTime(DELTA);
                 CHECK(session->GetPlayers().size() == 3);
-                REQUIRE(session->GetLootCount() > 0);
-                REQUIRE(session->GetLootCount() <= 3);
+                REQUIRE(session->GetAvailableLoot().size() > 0);
+                REQUIRE(session->GetAvailableLoot().size() <= 3);
             }
         }
     }
