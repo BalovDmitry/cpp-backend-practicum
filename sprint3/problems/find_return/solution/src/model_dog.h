@@ -32,7 +32,6 @@ public:
     Direction GetDirection() const { return direction_; }
     const std::string& GetFullName() const { return name_; }
     std::string GetDirectionString() const;
-    size_t GetBagSize() const { return bag_.size(); }
     const auto& GetBagContent() const { return bag_; }
 
 private:
