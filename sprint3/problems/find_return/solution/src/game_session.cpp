@@ -22,13 +22,13 @@ void GameSession::SetLootGeneratorData(double base_interval, double probability)
 
 DogPtr GameSession::AddDog(Position spawn_point, const std::string& name, uint32_t id) {
     auto dog = std::make_shared<Dog>(name, spawn_point, GetMapSpeed(), Direction::NORTH);
-    name_to_dog_[name] = dog;
     name_to_id_[name] = id;
-    return name_to_dog_.at(name);
+    id_to_dog_[id] = dog;
+    return id_to_dog_.at(id);
 }
 
 void GameSession::UpdateTime(std::chrono::milliseconds delta) {
-    for (auto&[name, dog] : name_to_dog_) {
+    for (auto&[id, dog] : id_to_dog_) {
         UpdateDogPosition(dog, delta);
     }
     UpdateLostObjects(delta);
@@ -40,7 +40,7 @@ void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {
 }
 
 void GameSession::TryGenerateLoot(std::chrono::milliseconds delta) {
-    auto current_loot_count = loot_generator_->Generate(delta, loot_count_, name_to_dog_.size());
+    auto current_loot_count = loot_generator_->Generate(delta, loot_count_, id_to_dog_.size());
     if (current_loot_count > loot_count_) {
         for (int i = loot_count_; i < current_loot_count; ++i) {
             available_loot_items_[loot_id_++] = LootItem(rand() % loot_size_, map_.GetRandomPosition());
@@ -54,13 +54,21 @@ void GameSession::UpdateLootProvider() {
     loot_provider_.Clear();
     
     // Add new data
-    for (const auto&[name, id] : name_to_id_) {
-        const auto& dog = name_to_dog_.at(name);
+    for (const auto&[id, dog] : id_to_dog_) {
         loot_provider_.PushGatherer(collision_detector::Gatherer(dog->GetPrevPosition(), dog->GetPosition(), PLAYER_WIDTH, id));
     }
 
     for (const auto&[id, item] : available_loot_items_) {
         loot_provider_.PushItem(collision_detector::Item(item.position, LOOT_WIDTH, id));
+    }
+}
+
+void GameSession::UpdateCollisions() {
+    auto gather_events = collision_detector::FindGatherEvents(loot_provider_);
+    for (const auto& e : gather_events) {
+        auto gatherer_id = e.gatherer_id;
+        auto item_id = e.item_id;
+        //auto& dog = 
     }
 }
 

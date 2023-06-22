@@ -33,8 +33,8 @@ public:
 
     GameSession(const GameSession& session) = default;
     GameSession& operator=(const GameSession& session) {
-        name_to_dog_ = session.name_to_dog_;
         name_to_id_ = session.name_to_id_;
+        id_to_dog_ = session.id_to_dog_;
         available_loot_items_ = session.available_loot_items_;
         map_ = session.map_;
         loot_generator_ = session.loot_generator_;
@@ -63,10 +63,11 @@ private:
     bool HasPlayerWithName(const std::string &name) { return name_to_id_.contains(name); }
     void TryGenerateLoot(std::chrono::milliseconds delta);
     void UpdateLootProvider();
+    void UpdateCollisions();
 
 private:
-    std::unordered_map<std::string, DogPtr> name_to_dog_;
     std::unordered_map<std::string, uint32_t> name_to_id_;
+    std::unordered_map<uint32_t, DogPtr> id_to_dog_;
     std::unordered_map<uint32_t, LootItem> available_loot_items_;
     model::Map& map_;
 
