@@ -5,8 +5,10 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <string>
 #include <optional>
+#include <unordered_map>
 
 #include "model_map.h"
+#include "model_loot_item.h"
 
 namespace json_helper {
 
@@ -30,10 +32,8 @@ boost::json::array CreateOfficesArray(const model::Map& map);
 template<typename CodeType, typename MessageType> 
 boost::json::object CreateErrorValue(CodeType&& code, MessageType&& message) {
     boost::json::object val;
-
     val["code"] = std::forward<CodeType>(code);
     val["message"] = std::forward<MessageType>(message);
-
     return val;
 }
 
@@ -45,5 +45,6 @@ boost::json::object CreateResponseValue(int response_time, int code, const std::
 boost::json::object CreateLostObjectValue(unsigned type, const model::Position& position);
 
 boost::json::array CreateCoordArray(double x, double y);
+boost::json::array CreateBagArray(const std::unordered_map<unsigned, model::LootItem>& bag);
 
 }

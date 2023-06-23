@@ -388,6 +388,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
             temp["pos"] = boost::json::array({ dog->GetPosition().x, dog->GetPosition().y });
             temp["speed"] = boost::json::array({ dog->GetSpeed().v_x, dog->GetSpeed().v_y });
             temp["dir"] = dog->GetDirectionString();
+            temp["bag"] = json_helper::CreateBagArray(dog->GetBagContent());
 
             players_obj[std::to_string(player.GetId())] = temp;
         }

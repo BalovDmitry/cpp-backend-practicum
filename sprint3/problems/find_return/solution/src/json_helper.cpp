@@ -286,4 +286,15 @@ boost::json::array CreateCoordArray(double x, double y) {
     return res;
 }
 
+boost::json::array CreateBagArray(const std::unordered_map<unsigned, model::LootItem>& bag) {
+    boost::json::array res;
+    for (const auto& [id, item] : bag) {
+        boost::json::object temp;
+        temp["id"] = id;
+        temp["type"] = item.type;
+        res.emplace_back(std::move(temp));
+    }
+    return res;
+}
+
 }
