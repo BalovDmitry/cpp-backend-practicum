@@ -8,7 +8,6 @@
   "maps": [
     {
       "dogSpeed": 4.0,
-      "bagCapacity": 5,
       "id": "map1",
       "name": "Map 1",
       "lootTypes": [
