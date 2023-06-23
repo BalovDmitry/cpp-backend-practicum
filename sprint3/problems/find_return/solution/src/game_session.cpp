@@ -43,11 +43,11 @@ void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {
 void GameSession::TryGenerateLoot(std::chrono::milliseconds delta) {
     auto current_loot_count = available_loot_items_.size();
     auto calculated_loot_count = loot_generator_->Generate(delta, current_loot_count, id_to_dog_.size());
-    if (calculated_loot_count > current_loot_count) {
-        for (int i = current_loot_count; i < calculated_loot_count; ++i) {
+    // if (calculated_loot_count > current_loot_count) {
+        for (int i = 0; i < calculated_loot_count; ++i) {
             available_loot_items_[loot_id_++] = LootItem(rand() % loot_size_, map_.GetRandomPosition());
         }
-    }
+    // }
 }
 
 void GameSession::UpdateLootProvider() {
