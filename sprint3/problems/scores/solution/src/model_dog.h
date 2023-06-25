@@ -24,6 +24,7 @@ public:
     void SetPrevPosition(Position pos) { prev_position_.x = pos.x; prev_position_.y = pos.y; };
     void SetSpeed(Speed speed) { speed_.v_x = speed.v_x; speed_.v_y = speed.v_y; }
     void AddLootIntoBag(unsigned id, const LootItem& loot) { bag_[id] = loot; }
+    void RemoveLootFromBag() { bag_.clear(); }
 
     // Getters
     const Position& GetPosition() const { return position_; }

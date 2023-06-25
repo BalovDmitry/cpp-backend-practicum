@@ -47,7 +47,8 @@ std::vector<GatheringEvent> FindGatherEvents(const ItemGathererProvider& provide
                 GatheringEvent evt{.item_id = item.id,
                                    .gatherer_id = gatherer.id,
                                    .sq_distance = collect_result.sq_distance,
-                                   .time = collect_result.proj_ratio};
+                                   .time = collect_result.proj_ratio,
+                                   .is_collision_with_base = item.is_base ? true : false} ;
                 detected_events.push_back(evt);
             }
         }

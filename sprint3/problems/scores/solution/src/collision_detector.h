@@ -31,15 +31,17 @@ CollectionResult TryCollectPoint(model::Position a, model::Position b, model::Po
 
 struct Item {
     Item() = default;
-    Item(const model::Position& position, double width, unsigned id) {
+    Item(const model::Position& position, double width, unsigned id, bool is_base = false) {
         this->position = position;
         this->width = width;
         this->id = id;
+        this->is_base = is_base;
     };
 
     model::Position position;
     double width;
     unsigned id;
+    bool is_base;
 };
 
 struct Gatherer {
@@ -73,6 +75,7 @@ struct GatheringEvent {
     size_t gatherer_id;
     double sq_distance;
     double time;
+    bool is_collision_with_base;
 };
 
 // Base implementation of provider

@@ -58,8 +58,16 @@ void GameSession::UpdateLootProvider() {
         loot_provider_.PushGatherer(collision_detector::Gatherer(dog->GetPrevPosition(), dog->GetPosition(), PLAYER_WIDTH, id));
     }
 
+    // Add loot items
     for (const auto&[id, item] : available_loot_items_) {
         loot_provider_.PushItem(collision_detector::Item(item.position, LOOT_WIDTH, id));
+    }
+
+    // Add office items
+    for (int office_id = 0; office_id < map_.GetOffices().size(); ++office_id) {
+        const auto& office = map_.GetOffices()[office_id];
+        model::Position office_position(office.GetPosition().x, office.GetPosition().y);
+        loot_provider_.PushItem(collision_detector::Item( office_position, OFFICE_WIDTH, office_id, true));
     }
 }
 
@@ -80,6 +88,12 @@ void GameSession::UpdateCollisions() {
         auto gatherer_id = e.gatherer_id;
         auto item_id = e.item_id;
         auto& dog = id_to_dog_.at(gatherer_id);
+
+        if (e.is_collision_with_base) {
+            dog->RemoveLootFromBag();
+            continue;
+        }
+
         if (dog->GetBagContent().size() < map_.GetBagCapacity()) {
             if (available_loot_items_.contains(item_id)) {
                 dog->AddLootIntoBag(item_id, available_loot_items_.at(item_id));

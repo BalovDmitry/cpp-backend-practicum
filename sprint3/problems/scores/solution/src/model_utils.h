@@ -9,6 +9,7 @@ const static size_t DEFAULT_BAG_CAPACITY = 3;
 const static double ROAD_WIDTH = 0.4;
 const static double PLAYER_WIDTH = 0.6;
 const static double LOOT_WIDTH = 0.0;
+const static double OFFICE_WIDTH = 0.5;
 
 struct Position {
     Position() = default;
