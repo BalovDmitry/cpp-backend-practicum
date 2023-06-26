@@ -46,6 +46,7 @@ public:
     const auto& GetMapId() const { return map_.GetId(); }
     double GetMapSpeed() const { return map_.GetSpeed(); }
     const auto& GetAvailableLoot() const { return available_loot_items_; }
+    int GetPlayerScore(uint32_t id);
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
     // Setters

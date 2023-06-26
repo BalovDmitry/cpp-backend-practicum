@@ -8,6 +8,13 @@
 
 namespace model {
 
+int GameSession::GetPlayerScore(uint32_t id) {
+    if (!id_to_score_.contains(id)) {
+        id_to_score_[id] = 0;
+    }
+    return id_to_score_.at(id);
+}
+
 std::optional<uint32_t> GameSession::GetPlayerIdByName(const std::string &name) {
     if (HasPlayerWithName(name)) {
         return name_to_id_.at(name);

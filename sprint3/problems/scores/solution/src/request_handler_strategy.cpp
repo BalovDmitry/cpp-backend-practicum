@@ -378,8 +378,9 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         auto token = ReceiveTokenFromRequest(req);
         
         // Just to ensure that token is valid
-        auto player = game_.FindPlayerByToken(model::Token(std::string(token)));
-        
+        const auto& player = game_.FindPlayerByToken(model::Token(std::string(token)));
+        const auto& session = game_.FindSession(player.GetMapId());
+
         boost::json::object players_obj;
         for (const auto& player : game_.GetPlayers()) {
             boost::json::object temp;
@@ -389,6 +390,7 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
             temp["speed"] = boost::json::array({ dog->GetSpeed().v_x, dog->GetSpeed().v_y });
             temp["dir"] = dog->GetDirectionString();
             temp["bag"] = json_helper::CreateBagArray(dog->GetBagContent());
+            temp["score"] = session->GetPlayerScore(player.GetId());
 
             players_obj[std::to_string(player.GetId())] = temp;
         }
