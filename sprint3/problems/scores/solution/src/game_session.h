@@ -25,7 +25,7 @@ public:
         if (loot_size.has_value()) {
             loot_size_ = loot_size.value();
         } else {
-            loot_size_ = model::ExtraData::GetInstance().GetLootByMapId(map.GetId()).size();
+            loot_size_ = model::ExtraData::GetInstance().GetLootValuesByMapId(map.GetId()).size();
         }
 
         SetLootGeneratorData(model::ExtraData::GetInstance().GetLootGeneratorData().period, model::ExtraData::GetInstance().GetLootGeneratorData().probability);
@@ -62,10 +62,13 @@ private:
     void TryGenerateLoot(std::chrono::milliseconds delta);
     void UpdateLootProvider();
     void UpdateCollisions();
+    bool TryUpdateCollisionsWithOffice(const collision_detector::GatheringEvent& gather_event, unsigned item_id, unsigned gatherer_id);
+    bool TryUpdateCollisionsWithLoot(const collision_detector::GatheringEvent& gather_event, unsigned item_id, unsigned gatherer_id);
 
 private:
     std::unordered_map<std::string, uint32_t> name_to_id_;
     std::unordered_map<uint32_t, DogPtr> id_to_dog_;
+    std::unordered_map<uint32_t, int> id_to_score_;
     std::unordered_map<uint32_t, LootItem> available_loot_items_;
     model::Map& map_;
 

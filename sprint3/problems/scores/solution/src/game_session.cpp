@@ -89,18 +89,41 @@ void GameSession::UpdateCollisions() {
         auto item_id = e.item_id;
         auto& dog = id_to_dog_.at(gatherer_id);
 
-        if (e.is_collision_with_base) {
-            dog->RemoveLootFromBag();
+        if (TryUpdateCollisionsWithOffice(e, item_id, gatherer_id)) {
             continue;
         }
+        TryUpdateCollisionsWithLoot(e, item_id, gatherer_id);
+    }
+}
 
-        if (dog->GetBagContent().size() < map_.GetBagCapacity()) {
-            if (available_loot_items_.contains(item_id)) {
-                dog->AddLootIntoBag(item_id, available_loot_items_.at(item_id));
-                available_loot_items_.erase(item_id);
-            }
+bool GameSession::TryUpdateCollisionsWithOffice(const collision_detector::GatheringEvent& gather_event, unsigned item_id, unsigned gatherer_id) {
+    if (gather_event.is_collision_with_base) {
+        if (!id_to_score_.contains(gatherer_id)) {
+            id_to_score_[gatherer_id] = 0;
+        }
+
+        auto& dog = id_to_dog_.at(gatherer_id);
+        auto& current_score = id_to_score_.at(gatherer_id);
+        for (const auto&[id, loot] : dog->GetBagContent()) {
+            auto loot_value = ExtraData::GetInstance().GetLootValuesByMapId(map_.GetId()).at(loot.type);
+            current_score += loot_value;
+        }
+
+        dog->RemoveLootFromBag();
+        return true;
+    }
+    return false;
+}
+
+bool GameSession::TryUpdateCollisionsWithLoot(const collision_detector::GatheringEvent& gather_event, unsigned item_id, unsigned gatherer_id) {
+    auto& dog = id_to_dog_.at(gatherer_id);
+    if (dog->GetBagContent().size() < map_.GetBagCapacity()) {
+        if (available_loot_items_.contains(item_id)) {
+            dog->AddLootIntoBag(item_id, available_loot_items_.at(item_id));
+            available_loot_items_.erase(item_id);
         }
     }
+    return true;
 }
 
 void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta) {

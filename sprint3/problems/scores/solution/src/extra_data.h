@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/json/parse.hpp>
+#include <vector>
 
 #include "model_map.h"
 #include "game_server_exceptions.h"
@@ -30,6 +31,13 @@ public:
         throw server_exceptions::InvalidMapException();
     }
 
+    decltype(auto) GetLootValuesByMapId(const model::Map::Id& id) const {
+        if (map_to_loot_values_.contains(id)) {
+            return map_to_loot_values_.at(id);
+        }
+        throw server_exceptions::InvalidMapException();
+    }
+
     const auto& GetLootGeneratorData() const {
         return loot_generator_data_;
     }
@@ -44,7 +52,9 @@ private:
     };
 
     using MapIdToLoot = std::unordered_map<model::Map::Id, boost::json::array, util::TaggedHasher<model::Map::Id>>;
+    using MapIdToLootValues = std::unordered_map<model::Map::Id, std::vector<int>, util::TaggedHasher<model::Map::Id>>;
     MapIdToLoot map_to_loot_;
+    MapIdToLootValues map_to_loot_values_;
     LootGeneratorData loot_generator_data_;
 };
 
