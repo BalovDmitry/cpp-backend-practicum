@@ -8,21 +8,46 @@
 
 namespace json_helper {
 
+// Protocol constants
+static const std::string ROADS_STRING = "roads";
+static const std::string BUILDINGS_STRING = "buildings";
+static const std::string OFFICES_STRING = "offices";
+static const std::string LOOT_TYPES_STRING = "lootTypes";
+static const std::string DOG_SPEED_STRING = "dogSpeed";
+static const std::string DEFAULT_DOG_SPEED_STRING = "defaultDogSpeed";
+static const std::string LOOT_GENERATOR_STRING = "lootGeneratorConfig";
+static const std::string BAG_CAPACITY_STRING = "bagCapacity";
+static const std::string DEFAULT_BAG_CAPACITY_STRING = "defaultBagCapacity";
+
+static const std::string POSITION_X = "x";
+static const std::string POSITION_Y = "y";
+static const std::string START_X = "x0";
+static const std::string START_Y = "y0";
+static const std::string END_X = "x1";
+static const std::string END_Y = "y1";
+static const std::string WIDTH = "w";
+static const std::string HEIGTH = "h";
+static const std::string ID = "id";
+static const std::string OFFSET_X = "offsetX";
+static const std::string OFFSET_Y = "offsetY";
+static const std::string PERIOD = "period";
+static const std::string PROBABILITY = "probability";
+
 bool AddRoadsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
     bool result = false;
     try {
-        for (const auto& road : mapObj.at("roads").as_array()) {
+        for (const auto& road : mapObj.at(ROADS_STRING).as_array()) {
             const auto& roadObj = road.as_object();
             
             model::Point start;
-            start.x = roadObj.at("x0").as_int64();
-            start.y = roadObj.at("y0").as_int64();
+            start.x = roadObj.at(START_X).as_int64();
+            start.y = roadObj.at(START_Y).as_int64();
 
-            if (roadObj.contains("x1")) {
-                model::Coord endCoord = roadObj.at("x1").as_int64();
+            if (roadObj.contains(END_X)) {
+                model::Coord endCoord = roadObj.at(END_X).as_int64();
                 currentMap.AddRoad({model::Road::HORIZONTAL, start, endCoord});
             } else {
-                model::Coord endCoord = roadObj.at("y1").as_int64();
+                model::Coord endCoord = roadObj.at(END_Y).as_int64();
                 currentMap.AddRoad({model::Road::VERTICAL, start, endCoord});
             }
         }
@@ -30,6 +55,7 @@ bool AddRoadsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
         result = true;
     } catch (std::exception& e) {
         logger::LogErrorMessage(e.what());
+        throw std::runtime_error("Roads havent'been added!");
     }
 
     return result;
@@ -38,14 +64,14 @@ bool AddRoadsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
 bool AddBuildingsToMap(model::Map& currentMap, const boost::json::value& mapObj) {
     bool result = false;
     try {
-        for (const auto& building : mapObj.at("buildings").as_array()) {
+        for (const auto& building : mapObj.at(BUILDINGS_STRING).as_array()) {
             const auto& buildingObj = building.as_object();
             
             model::Rectangle rectangle;
-            rectangle.position.x = buildingObj.at("x").as_int64();
-            rectangle.position.y = buildingObj.at("y").as_int64();
-            rectangle.size.width = buildingObj.at("w").as_int64();
-            rectangle.size.height = buildingObj.at("h").as_int64();
+            rectangle.position.x = buildingObj.at(POSITION_X).as_int64();
+            rectangle.position.y = buildingObj.at(POSITION_Y).as_int64();
+            rectangle.size.width = buildingObj.at(WIDTH).as_int64();
+            rectangle.size.height = buildingObj.at(HEIGTH).as_int64();
 
             currentMap.AddBuilding(model::Building{std::move(rectangle)});
         }
@@ -53,6 +79,7 @@ bool AddBuildingsToMap(model::Map& currentMap, const boost::json::value& mapObj)
         result = true;
     } catch (std::exception& e) {
         logger::LogErrorMessage(e.what());
+        throw std::runtime_error("Buildings havent'been added!");
     }
 
     return result;
@@ -61,19 +88,19 @@ bool AddBuildingsToMap(model::Map& currentMap, const boost::json::value& mapObj)
 bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
     bool result = false;
     try {
-        for (const auto& office : mapObj.at("offices").as_array()) {
+        for (const auto& office : mapObj.at(OFFICES_STRING).as_array()) {
             const auto& officeObj = office.as_object();
             
-            auto id = officeObj.at("id").as_string();
+            auto id = officeObj.at(ID).as_string();
             model::Office::Id currentId({id.data(), id.size()});
             
             model::Point position;
-            position.x = officeObj.at("x").as_int64();
-            position.y = officeObj.at("y").as_int64();
+            position.x = officeObj.at(POSITION_X).as_int64();
+            position.y = officeObj.at(POSITION_Y).as_int64();
 
             model::Offset offset;
-            offset.dx = officeObj.at("offsetX").as_int64();
-            offset.dy = officeObj.at("offsetY").as_int64();
+            offset.dx = officeObj.at(OFFSET_X).as_int64();
+            offset.dy = officeObj.at(OFFSET_Y).as_int64();
 
             currentMap.AddOffice(
                 model::Office(std::move(currentId), std::move(position), std::move(offset)));
@@ -82,6 +109,7 @@ bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
         result = true;
     } catch (std::exception& e) {
         logger::LogErrorMessage(e.what());
+        throw std::runtime_error("Offices havent'been added!");
     }
 
     return result;
@@ -89,11 +117,11 @@ bool AddOfficesToMap(model::Map& currentMap, const boost::json::value& mapObj) {
 
 bool AddExtraData(const model::Map& currentMap, const boost::json::value& mapObj) {
     try {
-        const auto loot_array = mapObj.at("lootTypes").as_array();
+        const auto loot_array = mapObj.at(LOOT_TYPES_STRING).as_array();
         return model::ExtraData::GetInstance().AddLootToMap(currentMap.GetId(), loot_array);
     } catch(std::exception& e) {
         logger::LogErrorMessage(e.what());
-        return false;
+        throw std::runtime_error("Extra data hasn't been added!");
     }
 
     return false;
@@ -103,8 +131,8 @@ bool SetMapDogSpeed(model::Map &currentMap, const boost::json::value &mapObj) {
     bool result = false;
 
     try {
-        if (mapObj.as_object().contains("dogSpeed")) {
-            auto speed = mapObj.at("dogSpeed").as_double();
+        if (mapObj.as_object().contains(DOG_SPEED_STRING)) {
+            auto speed = mapObj.at(DOG_SPEED_STRING).as_double();
             currentMap.SetSpeed(speed);
             result = true;
         }
@@ -116,8 +144,8 @@ bool SetMapDogSpeed(model::Map &currentMap, const boost::json::value &mapObj) {
 }
 
 bool SetDefaultDogSpeed(model::Map& currentMap, const boost::json::value& configObj) {
-    if (configObj.as_object().contains("defaultDogSpeed")) {
-        currentMap.SetSpeed(configObj.as_object().at("defaultDogSpeed").as_double());
+    if (configObj.as_object().contains(DEFAULT_DOG_SPEED_STRING)) {
+        currentMap.SetSpeed(configObj.as_object().at(DEFAULT_DOG_SPEED_STRING).as_double());
     } else {
         currentMap.SetSpeed(model::DEFAULT_DOG_SPEED);
     }
@@ -128,9 +156,9 @@ bool SetLootGeneratorData(const boost::json::value& configObj) {
     bool result = false;
     
     try {
-        auto val = configObj.at("lootGeneratorConfig").as_object();
-        auto period = val.at("period").as_double();
-        auto probability = val.at("probability").as_double();
+        auto val = configObj.at(LOOT_GENERATOR_STRING).as_object();
+        auto period = val.at(PERIOD).as_double();
+        auto probability = val.at(PROBABILITY).as_double();
         model::ExtraData::GetInstance().SetLootGeneratorData(period, probability);
         result = true;
     } catch (std::exception& e) {
@@ -144,8 +172,8 @@ bool SetMapBagCapacity(model::Map &currentMap, const boost::json::value &mapObj)
     bool result = false;
 
     try {
-        if (mapObj.as_object().contains("bagCapacity")) {
-            auto bag_capacity = mapObj.at("bagCapacity").as_int64();
+        if (mapObj.as_object().contains(BAG_CAPACITY_STRING)) {
+            auto bag_capacity = mapObj.at(BAG_CAPACITY_STRING).as_int64();
             currentMap.SetBagCapacity(bag_capacity);
             result = true;
         }
@@ -157,8 +185,8 @@ bool SetMapBagCapacity(model::Map &currentMap, const boost::json::value &mapObj)
 }
 
 bool SetDefaultBagCapacity(model::Map &currentMap, const boost::json::value &configObj) {
-    if (configObj.as_object().contains("defaultBagCapacity")) {
-        currentMap.SetBagCapacity(configObj.as_object().at("defaultBagCapacity").as_int64());
+    if (configObj.as_object().contains(DEFAULT_BAG_CAPACITY_STRING)) {
+        currentMap.SetBagCapacity(configObj.as_object().at(DEFAULT_BAG_CAPACITY_STRING).as_int64());
     } else {
         currentMap.SetBagCapacity(model::DEFAULT_BAG_CAPACITY);
     }
@@ -171,13 +199,13 @@ boost::json::array CreateRoadsArray(const model::Map& map) {
     for (const auto& road : map.GetRoads()) {
         boost::json::object roadVal;
         
-        roadVal["x0"] = road.GetStart().x;
-        roadVal["y0"] = road.GetStart().y;
+        roadVal[START_X] = road.GetStart().x;
+        roadVal[START_Y] = road.GetStart().y;
         
         if (road.IsVertical()) {
-            roadVal["y1"] = road.GetEnd().y;
+            roadVal[END_Y] = road.GetEnd().y;
         } else {
-            roadVal["x1"] = road.GetEnd().x;
+            roadVal[END_X] = road.GetEnd().x;
         }
         roads.push_back(std::move(roadVal));
     }
@@ -191,10 +219,10 @@ boost::json::array CreateBuildingsArray(const model::Map& map) {
     for (const auto& building : map.GetBuildings()) {
         boost::json::object buildingVal; 
         
-        buildingVal["x"] = building.GetBounds().position.x;
-        buildingVal["y"] = building.GetBounds().position.y;
-        buildingVal["w"] = building.GetBounds().size.width;
-        buildingVal["h"] = building.GetBounds().size.height;
+        buildingVal[POSITION_X] = building.GetBounds().position.x;
+        buildingVal[POSITION_Y] = building.GetBounds().position.y;
+        buildingVal[WIDTH] = building.GetBounds().size.width;
+        buildingVal[HEIGTH] = building.GetBounds().size.height;
 
         buildings.push_back(std::move(buildingVal));
     }
@@ -208,11 +236,11 @@ boost::json::array CreateOfficesArray(const model::Map& map) {
     for (const auto& office : map.GetOffices()) {
         boost::json::object officeVal;
 
-        officeVal["id"] = *office.GetId();
-        officeVal["x"] = office.GetPosition().x;
-        officeVal["y"] = office.GetPosition().y;
-        officeVal["offsetX"] = office.GetOffset().dx;
-        officeVal["offsetY"] = office.GetOffset().dy;
+        officeVal[ID] = *office.GetId();
+        officeVal[POSITION_X] = office.GetPosition().x;
+        officeVal[POSITION_Y] = office.GetPosition().y;
+        officeVal[OFFSET_X] = office.GetOffset().dx;
+        officeVal[OFFSET_Y] = office.GetOffset().dy;
         
         offices.push_back(std::move(officeVal));
     }

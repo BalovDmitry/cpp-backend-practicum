@@ -44,32 +44,17 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
             model::Map::Id currentId({id.data(), id.size()});
             model::Map currentMap(currentId, { name.data(), name.size() });
 
-            if (!json_helper::AddRoadsToMap(currentMap, mapObj)) {
-                throw std::runtime_error("Roads havent'been added!");
-            }
-
-            if (!json_helper::AddBuildingsToMap(currentMap, mapObj)) {
-                throw std::runtime_error("Buildings havent'been added!");
-            }
-
-            if (!json_helper::AddOfficesToMap(currentMap, mapObj)) {
-                throw std::runtime_error("Offices havent'been added!");
-            }
+            json_helper::AddRoadsToMap(currentMap, mapObj);
+            json_helper::AddBuildingsToMap(currentMap, mapObj);
+            json_helper::AddOfficesToMap(currentMap, mapObj);
+            json_helper::AddExtraData(currentMap, mapObj);
 
             if (!json_helper::SetMapDogSpeed(currentMap, mapObj)) {
-                if(!json_helper::SetDefaultDogSpeed(currentMap, configObj)) {
-                    throw std::runtime_error("Default map speed hasn't been set!");
-                }
-            }
-
-            if (!json_helper::AddExtraData(currentMap, mapObj)) {
-                throw std::runtime_error("Extra data hasn't been added!");
+                json_helper::SetDefaultDogSpeed(currentMap, configObj);
             }
 
             if (!json_helper::SetMapBagCapacity(currentMap, mapObj)) {
-                if(!json_helper::SetDefaultBagCapacity(currentMap, configObj)) {
-                    throw std::runtime_error("Default bag capacity hasn't been set!");
-                }
+                json_helper::SetDefaultBagCapacity(currentMap, configObj);
             }
 
             game.AddMap(std::move(currentMap));

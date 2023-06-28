@@ -7,6 +7,8 @@
 
 namespace model {
 
+const static uint8_t TOKEN_SIZE = 32;
+
 Token PlayerTokens::AddPlayer(Player&& player) {
     std::stringstream buf;
 
@@ -16,14 +18,9 @@ Token PlayerTokens::AddPlayer(Player&& player) {
 
     std::string token_string;
     token_string += buf.str();
-    while (token_string.size() < 32) {
+    while (token_string.size() < TOKEN_SIZE) {
         token_string.insert(0, "0");
     }
-    // if (token_string.size() == 30) {
-    //     token_string.insert(0, "00");
-    // } else if (token_string.size() == 31) {
-    //     token_string.insert(0, "0");
-    // }
 
     auto result = Token(std::move(token_string));
     
