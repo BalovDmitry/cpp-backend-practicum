@@ -237,6 +237,7 @@ public:
     std::pair<Position, Speed> CalculatePositionAndSpeedOnRoad(const Road& current_road, const RoadBoarders& boarders, const Position& calculated_pos, const Speed& initial_speed);
     std::optional<Road> FindRoadByPosition(const Position& position);
     std::optional<Road> FindRoadByPositionExceptRoadId(const Position& position, int excepted_id);
+    std::vector<Road> FindRoadsByPositionExceptRoadId(const Position &position, int excepted_id);
     Position GetRandomPosition() const;
 
 private:

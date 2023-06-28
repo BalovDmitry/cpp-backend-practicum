@@ -5,7 +5,7 @@
 namespace http_server {
 
 void ReportError(beast::error_code ec, std::string_view what) {
-    logger::LogJsonAndMessage(json_helper::CreateNetworkErrorValue(ec.value(), ec.message(), std::string(what)), "error");
+    //logger::LogJsonAndMessage(json_helper::CreateNetworkErrorValue(ec.value(), ec.message(), std::string(what)), "error");
 }
 
 void ReportRequest(const tcp::endpoint& endpoint, std::string_view uri, std::string_view method) {

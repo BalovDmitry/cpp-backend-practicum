@@ -116,6 +116,16 @@ std::optional<Road> Map::FindRoadByPositionExceptRoadId(const Position &position
     return std::optional<Road>();
 }
 
+std::vector<Road> Map::FindRoadsByPositionExceptRoadId(const Position& position, int excepted_id) {
+    std::vector<Road> result;
+    for (int i = 0; i < road_boarders_.size(); ++i) {
+        if (i != excepted_id && road_boarders_[i].ContainPosition(position)) {
+            result.push_back(roads_[i]);
+        }
+    }
+    return result;
+}
+
 Position Map::GetRandomPosition() const {
     try {
         int road_id = rand()%(roads_.size());

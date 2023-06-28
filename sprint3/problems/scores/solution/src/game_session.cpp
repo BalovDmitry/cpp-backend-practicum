@@ -5,6 +5,8 @@
 #include <utility>
 #include <iostream>
 #include <random>
+#include <map>
+#include <utility>
 
 namespace model {
 
@@ -81,16 +83,6 @@ void GameSession::UpdateLootProvider() {
 void GameSession::UpdateCollisions() {
     auto gather_events = collision_detector::FindGatherEvents(loot_provider_);
 
-    // For debug only
-    // std::cout << "Available items: " << std::endl;
-    // for (const auto& item : available_loot_items_) {
-    //     std::cout << "id: " << item.first << ", x: " << item.second.position.x << ", y: " << item.second.position.y << std::endl;
-    // }
-
-    // if (!gather_events.empty()) {
-    //     std::cout << "Gather events size: " << gather_events.size() << std::endl;
-    // }
-
     for (const auto& e : gather_events) {
         auto gatherer_id = e.gatherer_id;
         auto item_id = e.item_id;
@@ -149,17 +141,51 @@ void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta)
     calculated_pos.x = dog->GetPosition().x + dog->GetSpeed().v_x * delta.count() / TIME_RATE;
     calculated_pos.y = dog->GetPosition().y + dog->GetSpeed().v_y * delta.count() / TIME_RATE;
 
+    std::multimap<double, std::pair<model::Position, model::Speed>> distance_to_calculated_data; 
+
     auto current_road = map_.FindRoadByPosition(dog->GetPosition());
     if (current_road.has_value()) {
         auto result_on_current_road = map_.CalculatePositionAndSpeedOnRoad(current_road.value(), map_.GetRoadBoarders().at(current_road.value().GetId()), calculated_pos, dog->GetSpeed());
         calculated_pos_on_current_road = result_on_current_road.first;
         calculated_speed_on_current_road = result_on_current_road.second;
 
-        auto other_road = map_.FindRoadByPositionExceptRoadId(dog->GetPosition(), current_road.value().GetId());
-        if (other_road.has_value()) {
-            auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(other_road.value(), map_.GetRoadBoarders().at(other_road.value().GetId()), calculated_pos, dog->GetSpeed());
-            calculated_pos_on_other_road = result_on_other_road.first;
-            calculated_speed_on_other_road = result_on_other_road.second;
+        // auto other_road = map_.FindRoadByPositionExceptRoadId(dog->GetPosition(), current_road.value().GetId());
+        // if (other_road.has_value()) {
+        //     auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(other_road.value(), map_.GetRoadBoarders().at(other_road.value().GetId()), calculated_pos, dog->GetSpeed());
+        //     calculated_pos_on_other_road = result_on_other_road.first;
+        //     calculated_speed_on_other_road = result_on_other_road.second;
+
+        //     std::cout << "Road id: " << other_road.value().GetId() << std::endl;
+        //     std::cout << "Old Position on this road: " << "x: " << result_on_other_road.first.x << ", y: " << result_on_other_road.first.y << std::endl;
+
+        //     std::cout << "Old Calculated distance: " << CalculateDistance(result_on_other_road.first, dog->GetPosition()) 
+        //                                 << ", x: " << result_on_other_road.first.x << ", y: " << result_on_other_road.first.y 
+        //                                 << ", v_x: " << result_on_other_road.second.v_x << ", v_y: " << result_on_other_road.second.v_y << std::endl;
+
+        //}
+
+        auto other_roads = map_.FindRoadsByPositionExceptRoadId(dog->GetPosition(), current_road.value().GetId());
+        for (const auto& road : other_roads) {
+            auto result_on_other_road = map_.CalculatePositionAndSpeedOnRoad(road, map_.GetRoadBoarders().at(road.GetId()), calculated_pos, dog->GetSpeed());
+            distance_to_calculated_data.insert( { CalculateDistance(result_on_other_road.first, dog->GetPosition()), std::move(result_on_other_road) } );
+        }
+    }
+
+    if (!distance_to_calculated_data.empty()) {
+        auto max_distance = std::prev(distance_to_calculated_data.end())->first;
+        auto max_speed = CalculateAbsSpeed(std::prev(distance_to_calculated_data.end())->second.second);
+
+        calculated_pos_on_other_road = std::prev(distance_to_calculated_data.end())->second.first;
+        calculated_speed_on_other_road = std::prev(distance_to_calculated_data.end())->second.second;
+
+        if (distance_to_calculated_data.count(max_distance) > 1) {
+            auto iters = distance_to_calculated_data.equal_range(max_distance);
+            for (auto it = iters.first; it != iters.second; ++it) {
+                if (CalculateAbsSpeed(it->second.second) > max_speed) {
+                    calculated_pos_on_other_road = it->second.first;
+                    calculated_speed_on_other_road = it->second.second;
+                } 
+            }
         }
     }
 
@@ -169,7 +195,9 @@ void GameSession::UpdateDogPosition(DogPtr dog, std::chrono::milliseconds delta)
     // std::cout << "Calculated pos on other road: " << calculated_pos_on_other_road.x << ", " << calculated_pos_on_other_road.y << std::endl;
 
     auto distance_on_current_road = CalculateDistance(calculated_pos_on_current_road, dog->GetPosition());
-    auto distance_on_other_road = CalculateDistance(calculated_pos_on_other_road, dog->GetPosition());
+    auto distance_on_other_road = !distance_to_calculated_data.empty() ? 
+                                std::prev(distance_to_calculated_data.end())->first : 
+                                CalculateDistance(calculated_pos_on_other_road, dog->GetPosition());
     
     if (distance_on_current_road > distance_on_other_road) {
         dog->SetPosition(calculated_pos_on_current_road);
