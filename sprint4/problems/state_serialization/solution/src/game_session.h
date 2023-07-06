@@ -46,7 +46,7 @@ public:
     const auto& GetMapId() const { return map_.GetId(); }
     double GetMapSpeed() const { return map_.GetSpeed(); }
     const auto& GetAvailableLoot() const { return available_loot_items_; }
-    int GetPlayerScore(uint32_t id);
+    int GetPlayerScore(uint32_t id) const { return id_to_dog_.at(id)->GetScore(); }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
 
     // Setters
@@ -69,7 +69,6 @@ private:
 private:
     std::unordered_map<std::string, uint32_t> name_to_id_;
     std::unordered_map<uint32_t, DogPtr> id_to_dog_;
-    std::unordered_map<uint32_t, int> id_to_score_;
     std::unordered_map<uint32_t, LootItem> available_loot_items_;
     model::Map& map_;
 

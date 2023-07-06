@@ -10,13 +10,6 @@
 
 namespace model {
 
-int GameSession::GetPlayerScore(uint32_t id) {
-    if (!id_to_score_.contains(id)) {
-        id_to_score_[id] = 0;
-    }
-    return id_to_score_.at(id);
-}
-
 std::optional<uint32_t> GameSession::GetPlayerIdByName(const std::string &name) {
     if (HasPlayerWithName(name)) {
         return name_to_id_.at(name);
@@ -97,15 +90,10 @@ bool GameSession::TryUpdateCollisionsWithOffice(const collision_detector::Gather
     if (gather_event.is_collision_with_base) {
         auto gatherer_id = gather_event.gatherer_id;
         auto item_id = gather_event.item_id;
-        if (!id_to_score_.contains(gatherer_id)) {
-            id_to_score_[gatherer_id] = 0;
-        }
-
         auto& dog = id_to_dog_.at(gatherer_id);
-        auto& current_score = id_to_score_.at(gatherer_id);
         for (const auto&[id, loot] : dog->GetBagContent()) {
             auto loot_value = ExtraData::GetInstance().GetLootValuesByMapId(map_.GetId()).at(loot.type);
-            current_score += loot_value;
+            dog->UpdateScore(loot_value);
         }
 
         dog->RemoveLootFromBag();

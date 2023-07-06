@@ -25,6 +25,7 @@ public:
     void SetSpeed(Speed speed) { speed_.v_x = speed.v_x; speed_.v_y = speed.v_y; }
     void AddLootIntoBag(unsigned id, const LootItem& loot) { bag_[id] = loot; }
     void RemoveLootFromBag() { bag_.clear(); }
+    void UpdateScore(int points) { score_ += points; }
 
     // Getters
     const Position& GetPosition() const { return position_; }
@@ -34,6 +35,7 @@ public:
     const std::string& GetFullName() const { return name_; }
     std::string GetDirectionString() const;
     const auto& GetBagContent() const { return bag_; }
+    const int GetScore() const { return score_; }
 
 private:
     const double map_speed_;
@@ -44,6 +46,7 @@ private:
     Speed speed_{0.0, 0.0};
     Direction direction_ = Direction::NO_DIRECTION;
     std::unordered_map<unsigned, LootItem> bag_;
+    int score_ = 0;
 };
 
 }
