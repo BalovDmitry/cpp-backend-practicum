@@ -51,7 +51,12 @@ protected:
 
 class RequestHandlerStrategyApi : public RequestHandlerStrategyIntf, public std::enable_shared_from_this<RequestHandlerStrategyApi> {
 public:
-    RequestHandlerStrategyApi(model::Game& game, Strand& strand, bool randomize_spawn_point = false, int tick_period = 0);
+    RequestHandlerStrategyApi(model::Game& game, 
+                                Strand& strand, 
+                                bool randomize_spawn_point = false, 
+                                int tick_period = 0, 
+                                const std::filesystem::path& state_file = "",
+                                int save_state_period = 0);
 
     struct RequestTypeSize {
         RequestTypeSize() = delete;
@@ -127,6 +132,8 @@ private:
     bool ticker_started_;
     bool is_debug_mode_;
     bool randomize_spawn_point_;
+    std::filesystem::path state_file_;
+    std::chrono::milliseconds save_state_period_;
 };
 
 class RequestHandlerStrategyStaticFile : public RequestHandlerStrategyIntf {

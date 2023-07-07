@@ -34,7 +34,8 @@ public:
         , strand_(net::make_strand(ioc)) 
         , args_(args) {
 
-        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_, strand_, args_.randomize_spawn_point, args_.tick_period);
+        strategy_api_ = std::make_shared<RequestHandlerStrategyApi>(game_, strand_, args_.randomize_spawn_point, args_.tick_period, 
+                                                                    fs::weakly_canonical(args_.state_file), args_.save_state_period);
         strategy_static_ = std::make_shared<RequestHandlerStrategyStaticFile>(fs::weakly_canonical(args_.source_dir));
     }
 

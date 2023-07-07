@@ -47,12 +47,19 @@ bool RequestHandlerStrategyIntf::MakeMethodNotAllowedBody(std::string &bodyText,
 
 //! API HANDLER METHODS
 
-RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game, Strand &strand, bool randomize_spawn_point, int tick_period)
+RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game, 
+                                                    Strand &strand, 
+                                                    bool randomize_spawn_point, 
+                                                    int tick_period, 
+                                                    const std::filesystem::path& state_file, 
+                                                    int save_state_period)
     : game_(game) 
     , randomize_spawn_point_(randomize_spawn_point)
     , ticker_started_(false)
     , strand_(strand)
-    , tick_period_(tick_period) {
+    , tick_period_(tick_period) 
+    , state_file_(state_file)
+    , save_state_period_(save_state_period) {
     
     using namespace std::chrono_literals;
     loot_generator_ = std::make_shared<loot_gen::LootGenerator>(
