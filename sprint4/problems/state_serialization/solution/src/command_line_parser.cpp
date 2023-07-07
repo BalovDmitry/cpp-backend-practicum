@@ -18,7 +18,9 @@ std::optional<Args> ParseCommandLine(int argc, const char *const argv[])
         ("tick-period,t", po::value(&args.tick_period)->value_name("milliseconds"s), "set tick period")
         ("config-file,c", po::value(&args.config_file)->value_name("file"s), "set config file path")
         ("www-root,w", po::value(&args.source_dir)->value_name("dir"s), "set static files root")
-        ("randomize-spawn-points", po::bool_switch(&args.randomize_spawn_point), "spawn dogs at random positions");
+        ("randomize-spawn-points", po::bool_switch(&args.randomize_spawn_point), "spawn dogs at random positions")
+        ("state-file,s", po::value(&args.state_file)->value_name("file"s), "set file path to save state")
+        ("save-state-period,st", po::value(&args.save_state_period)->value_name("milliseconds"s), "set period to save state");
     
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);

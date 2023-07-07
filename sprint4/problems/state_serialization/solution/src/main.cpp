@@ -51,8 +51,6 @@ int main(int argc, const char* argv[]) {
 
         if (auto args = command_line::ParseCommandLine(argc, argv)) {
             // 1. Загружаем карту из файла и построить модель игры
-            //std::string path = "/Users/balovdmitry/Desktop/SB/cpp-backend-practicum/sprint1/problems/map_json/precode/data/config.json";
-            //model::Game game = json_loader::LoadGame(path);
             model::Game game = json_loader::LoadGame(args.value().config_file);
 
             // 2. Инициализируем io_context
