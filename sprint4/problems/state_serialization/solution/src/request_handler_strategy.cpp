@@ -59,7 +59,8 @@ RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game,
     , strand_(strand)
     , tick_period_(tick_period) 
     , state_file_(state_file)
-    , save_state_period_(save_state_period) {
+    , save_state_period_(save_state_period)
+    , save_before_close_(false) {
     
     using namespace std::chrono_literals;
     loot_generator_ = std::make_shared<loot_gen::LootGenerator>(
@@ -68,7 +69,14 @@ RequestHandlerStrategyApi::RequestHandlerStrategyApi(model::Game &game,
     is_debug_mode_ = tick_period_.count() ? false : true;
 }
 
-StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req, http::status &status, std::string &body, std::string_view &content_type) {
+void RequestHandlerStrategyApi::TrySaveSessions() {
+    save_before_close_ = true;
+    for (auto& [map, session] : game_.GetMapToSession())
+        TrySaveSessionInFile(session);
+}
+
+StringResponse RequestHandlerStrategyApi::HandleRequestImpl(StringRequest &&req, http::status &status, std::string &body, std::string_view &content_type)
+{
     const auto text_response = [this, &req](http::status status, std::string_view text, RequestType type, std::string_view content_type) {
         return this->MakeStringResponse(status, text, req.version(), req.keep_alive(), type, content_type);
     };
@@ -252,6 +260,20 @@ bool RequestHandlerStrategyApi::CheckRequestCorrectness(const std::vector<std::s
     return false;
 }
 
+bool RequestHandlerStrategyApi::TrySaveSessionInFile(model::SessionPtr session) {
+    if (state_file_.empty())
+        return false;
+    
+    if ( (save_state_period_.count() && session->GetTimeSinceSave() >= save_state_period_) || save_before_close_) {
+        std::cout << "Try to save in file: " << state_file_ << ", time since last save: " << session->GetTimeSinceSave().count() << std::endl;
+        session->SetTimeSinceSave(0ms);
+        std::cout << "Time after saving: " << session->GetTimeSinceSave().count() << std::endl;
+        return true;
+    }
+
+    return false;
+}
+
 std::string_view RequestHandlerStrategyApi::ReceiveTokenFromRequest(const StringRequest &req) {
     std::string_view result;
 
@@ -309,6 +331,7 @@ std::chrono::milliseconds RequestHandlerStrategyApi::ReceiveTimeFromRequest(cons
 void RequestHandlerStrategyApi::UpdateTimeInSessions(std::chrono::milliseconds delta) {
     for (auto& [map, session] : game_.GetMapToSession()) {
         session->UpdateTime(delta);
+        TrySaveSessionInFile(session);
     }
 }
 
@@ -386,10 +409,11 @@ bool RequestHandlerStrategyApi::MakeGetGameStateBody(const StringRequest &req, s
         
         // Just to ensure that token is valid
         const auto& player = game_.FindPlayerByToken(model::Token(std::string(token)));
-        const auto& session = game_.FindSession(player.GetMapId());
 
         boost::json::object players_obj;
         for (const auto& player : game_.GetPlayers()) {
+            const auto& session = game_.FindSession(player.GetMapId());
+
             boost::json::object temp;
 
             const auto& dog = player.GetDog();

@@ -80,6 +80,8 @@ public:
         UNKNOWN
     };
 
+    void TrySaveSessions();
+
 protected:
     StringResponse HandleRequestImpl(
         StringRequest&& req, 
@@ -103,6 +105,7 @@ private:
         http::status &status);
     RequestType GetRequestType(const std::vector<std::string>& splitted_request);
     bool CheckRequestCorrectness(const std::vector<std::string>& splitted_request);
+    bool TrySaveSessionInFile(model::SessionPtr session);
     
     // Get responses
     bool MakeGetMapListBody(std::string& body, http::status& status);
@@ -134,6 +137,7 @@ private:
     bool randomize_spawn_point_;
     std::filesystem::path state_file_;
     std::chrono::milliseconds save_state_period_;
+    bool save_before_close_;
 };
 
 class RequestHandlerStrategyStaticFile : public RequestHandlerStrategyIntf {

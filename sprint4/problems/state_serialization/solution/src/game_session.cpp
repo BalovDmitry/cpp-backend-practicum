@@ -22,6 +22,10 @@ void GameSession::SetLootGeneratorData(double base_interval, double probability)
     loot_generator_ = std::make_shared<loot_gen::LootGenerator>(static_cast<long long>(base_interval) * 1ms, probability);
 }
 
+void GameSession::SetTimeSinceSave(std::chrono::milliseconds time_since_save) {
+    time_since_save_ = time_since_save;
+}
+
 DogPtr GameSession::AddDog(Position spawn_point, const std::string& name, uint32_t id) {
     auto dog = std::make_shared<Dog>(name, spawn_point, GetMapSpeed(), Direction::NORTH);
     name_to_id_[name] = id;
@@ -36,6 +40,7 @@ void GameSession::UpdateTime(std::chrono::milliseconds delta) {
     UpdateLostObjects(delta);
     UpdateLootProvider();
     UpdateCollisions();
+    time_since_save_ += delta;
 }
 
 void GameSession::UpdateLostObjects(std::chrono::milliseconds delta) {

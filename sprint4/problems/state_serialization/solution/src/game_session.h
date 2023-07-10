@@ -48,9 +48,11 @@ public:
     const auto& GetAvailableLoot() const { return available_loot_items_; }
     int GetPlayerScore(uint32_t id) const { return id_to_dog_.at(id)->GetScore(); }
     std::optional<uint32_t> GetPlayerIdByName(const std::string& name);
+    std::chrono::milliseconds GetTimeSinceSave() const { return time_since_save_; }
 
     // Setters
     void SetLootGeneratorData(double base_interval, double probability);
+    void SetTimeSinceSave(std::chrono::milliseconds time_since_save);
 
     // Update state
     DogPtr AddDog(Position spawn_point, const std::string& name, uint32_t id);
@@ -78,6 +80,9 @@ private:
     unsigned loot_id_ = 0;
 
     collision_detector::ItemGathererProviderBase loot_provider_;
+
+    // Field to save state
+    std::chrono::milliseconds time_since_save_{0};
 };
 
 }

@@ -41,6 +41,10 @@ public:
 
     RequestHandler(const RequestHandler&) = delete;
     RequestHandler& operator=(const RequestHandler&) = delete;
+    ~RequestHandler() { 
+        if (auto strategy_api = std::dynamic_pointer_cast<RequestHandlerStrategyApi>(strategy_api_))
+            strategy_api->TrySaveSessions();
+    }
 
     template <typename Body, typename Allocator, typename Send>
     void operator()(http::request<Body, http::basic_fields<Allocator>>&& req, Send&& send) {
