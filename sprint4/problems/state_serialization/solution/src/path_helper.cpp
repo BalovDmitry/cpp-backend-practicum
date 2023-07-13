@@ -20,7 +20,17 @@ bool IsSubPath(fs::path path, fs::path base) {
     return true;
 }
 
-fs::path GetAbsPath(const fs::path& basePath, const fs::path& relPath) {
+fs::path CreatePathForTemporaryFile(const fs::path& basePath) {
+    static const std::string POSTFIX = "_temp";
+    
+    auto newFilename = basePath.stem() += POSTFIX;
+    if (basePath.has_extension())
+        newFilename += basePath.extension();
+    return basePath.parent_path().replace_filename(newFilename);
+}
+
+fs::path GetAbsPath(const fs::path &basePath, const fs::path &relPath)
+{
     if (relPath.empty() || relPath.string() == "/") {
         return fs::weakly_canonical(basePath / fs::path("index.html"));
     }
