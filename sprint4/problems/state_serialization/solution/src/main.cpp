@@ -19,7 +19,7 @@ namespace {
 
 // Запускает функцию fn на n потоках, включая текущий
 template <typename Fn>
-void RunWorkers(unsigned workersCount, const Fn& fn) {
+int RunWorkers(unsigned workersCount, const Fn& fn) {
     workersCount = std::max(1u, workersCount);
 
     #ifdef __clang__
@@ -33,13 +33,16 @@ void RunWorkers(unsigned workersCount, const Fn& fn) {
     while (--workersCount) {
         workers.emplace_back(fn);
     }
-    fn();
+    
+    int result = fn();
 
     #ifdef __clang__
         for (auto& worker : workers) {
             worker.join();
         }
     #endif
+
+    return result;
 }
 
 }  // namespace
@@ -80,10 +83,18 @@ int main(int argc, const char* argv[]) {
             logger::LogJsonAndMessage(json_helper::CreateStartServerValue(port, address), "server has started");
 
             // 6. Запускаем обработку асинхронных операций
-            RunWorkers(std::max(1u, numThreads), [&ioc] {
-                ioc.run();
+            int result = RunWorkers(std::max(1u, numThreads), [&ioc] {
+                try {
+                    ioc.run();
+                    return EXIT_SUCCESS;
+                } catch (std::exception& e) {
+                    logger::LogErrorMessage(e.what());
+                    return EXIT_FAILURE;
+                }
             });
-            logger::LogJsonAndMessage(json_helper::CreateStopServerValue(EXIT_SUCCESS), "server exited");
+
+            logger::LogJsonAndMessage(json_helper::CreateStopServerValue(result), "server exited");
+            return result;
         }
     } catch (const std::exception& ex) {
         logger::LogJsonAndMessage(json_helper::CreateStopServerValue(EXIT_FAILURE, ex.what()), "server exited");
